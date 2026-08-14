@@ -1,4 +1,4 @@
-# Day 01 - MediaTrack Model
+# Challenge 001 - MediaTrack Model
 
 ## Objective
 
