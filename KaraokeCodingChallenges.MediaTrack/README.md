@@ -65,7 +65,11 @@ Create a reusable C# model for representing tracks in a music and karaoke librar
 
 ## Improvements
 
-No improvements come to mind at this time - this is just a simple model class. I will likely add more properties and methods as the karaoke application is developed though.
+- Add validation for required properties and invalid durations.
+- Consider making some properties less freely mutable.
+- Derive karaoke status from matching media files rather than setting it manually.
+- Review whether ToString() should remain a detailed multi-line representation.
+- Add unit tests for duration formatting and object construction.
 
 ## Sample Output
 
