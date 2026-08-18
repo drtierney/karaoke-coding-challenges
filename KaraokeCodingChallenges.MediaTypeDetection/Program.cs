@@ -13,7 +13,7 @@
             foreach (string file in files)
             {
                 Console.Write(Path.GetFileName(file) + " -> ");
-                Console.WriteLine(mediaTypeDetector.GetMediaType(file));
+                Console.WriteLine(MediaTypeDetector.GetMediaType(file));
             }
 
         }

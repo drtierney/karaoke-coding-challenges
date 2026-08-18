@@ -1,8 +1,8 @@
 ﻿namespace KaraokeCodingChallenges.MediaTypeDetection
 {
-    internal class MediaTypeDetector
+    public class MediaTypeDetector
     {
-        public MediaFileType GetMediaType(string filePath)
+        public static MediaFileType GetMediaType(string filePath)
         {
 
             string extension = Path.GetExtension(filePath).ToLowerInvariant();
