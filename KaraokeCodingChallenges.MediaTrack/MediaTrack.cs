@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KaraokeCodingChallenges.MediaTrack
 {
-    internal class MediaTrack
+    public class MediaTrack
     {
         public string Title { get; set; }
 
