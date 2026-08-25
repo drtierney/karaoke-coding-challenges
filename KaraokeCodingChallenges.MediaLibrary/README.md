@@ -2,7 +2,7 @@
 
 ## Objective
 
-Manage an in-memory collection of `MediaTrack` objects.
+Build an in-memory media library that supports adding, removing, finding, counting and clearing tracks while exposing its contents through a read-only collection.
 
 ## Requirements
 
@@ -37,10 +37,12 @@ Manage an in-memory collection of `MediaTrack` objects.
 
 ## What I Learned
 
-- Reinforced working with List<T> and collection methods.
-- Became more familiar with encapsulating collection logic inside a dedicated class.
-- Practised method overloading and nullable return values.
-- Got more exposure to lambda expressions through List<T>.Find()
+- How to encapsulate a `List<T>` inside a dedicated class.
+- How `IReadOnlyList<T>` can expose collection contents without allowing callers to modify them directly.
+- How method overloading can support removing tracks in different ways.
+- How nullable return types represent a search that may not find a match.
+- How lambda expressions can be used with `List<T>.Find()`.
+- How case-insensitive comparison makes file-path matching more reliable.
 
 ## Sample Output
 
