@@ -3,6 +3,7 @@
   <Project Path="KaraokeCodingChallenges.KaraokeFilePairing/KaraokeCodingChallenges.KaraokeFilePairing.csproj" Id="1149c48f-9176-4b73-9b8e-66b4e4719c95" />
   <Project Path="KaraokeCodingChallenges.LibraryScanner/KaraokeCodingChallenges.LibraryScanner.csproj" Id="f03023c2-4a18-4b5d-b667-9aa2c0971754" />
   <Project Path="KaraokeCodingChallenges.MediaLibrary/KaraokeCodingChallenges.MediaLibrary.csproj" Id="d4c11438-0c3a-42e4-adbc-d1198cde9ffe" />
+  <Project Path="KaraokeCodingChallenges.MediaLibraryQueries/KaraokeCodingChallenges.MediaLibraryQueries.csproj" Id="c3b9cfbc-5ce0-425a-b107-e983617dc845" />
   <Project Path="KaraokeCodingChallenges.MediaTrack/KaraokeCodingChallenges.MediaTrack.csproj" Id="d02d2f78-03fc-4c51-9461-763a409fd86b" />
   <Project Path="KaraokeCodingChallenges.MediaTypeDetection/KaraokeCodingChallenges.MediaTypeDetection.csproj" Id="90008a7f-7a6c-4229-b366-8239121843ca" />
 </Solution>
