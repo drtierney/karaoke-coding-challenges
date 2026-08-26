@@ -14,3 +14,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 006 | [Media Library](KaraokeCodingChallenges.MediaLibrary/README.md)                    | Collections, encapsulation, method overloading, read-only collections               |
 | 007 | [Media Library Queries](KaraokeCodingChallenges.MediaLibraryQueries/README.md)     | LINQ, Where, Any, IEnumerable, lambda expressions, case-insensitive searching       |
 | 008 | [Media Library Filtering](KaraokeCodingChallenges.MediaLibraryFiltering/README.md) | LINQ query syntax, IEnumerable, filtering, where, select                            |
+| 009 | [Track Sorting](KaraokeCodingChallenges.TrackSorting/README.md)                    | LINQ sorting, OrderBy, ThenBy, IComparer, custom comparison                         |
