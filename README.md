@@ -16,3 +16,5 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 008 | [Media Library Filtering](KaraokeCodingChallenges.MediaLibraryFiltering/README.md) | LINQ query syntax, IEnumerable, filtering, where, select                             |
 | 009 | [Track Sorting](KaraokeCodingChallenges.TrackSorting/README.md)                    | LINQ sorting, OrderBy, ThenBy, IComparer, custom comparison                          |
 | 010 | [Duplicate Detection](KaraokeCodingChallenges.DuplicateDetection/README.md)        | HashSet, IEqualityComparer, custom equality, hash codes, case-insensitive comparison |
+| 011 | [Media Library Processor](KaraokeCodingChallenges.MediaLibraryProcessor/README.md) | Integration, IEnumerable, filtering, sorting, duplicate detection, code reuse        |
+
