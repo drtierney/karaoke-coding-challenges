@@ -6,14 +6,40 @@ namespace KaraokeCodingChallenges.MediaMetadataScanner
     {
         static void Main(string[] args)
         {
-            MediaMetadataRecord metadata =MediaMetadataScanner.ReadMetadata(@"D:\KaraokeTest\01 - UB40 - Can't Help Falling In Love.mp3");
+            string[] filePaths =
+            [
+                @"D:\KaraokeTest\1975 - The Sound.mp3",
+                @"D:\KaraokeTest\01 - UB40 - Can't Help Falling In Love.mp3",
+                @"D:\KaraokeTest\Foxes Body Talk.mp3",
+                @"D:\KaraokeTest\Logic ft Alessia Cara & Khalid - 1-800-273-8255.mp3",
+                @"D:\KaraokeTest\MissingFile.mp3"
+            ];
 
-            DisplayMetadata(metadata);
+            foreach (string filePath in filePaths)
+            {
+                try
+                {
+                    Console.WriteLine(filePath);
+
+                    MediaMetadataRecord metadata =
+                        MediaMetadataScanner.ReadMetadata(filePath);
+
+                    DisplayMetadata(metadata);
+                }
+                catch (FileNotFoundException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
+                Console.WriteLine();
+            }
         }
 
         private static void DisplayMetadata(MediaMetadataRecord metadata)
         {
-            string fileSize = metadata.FileSizeBytes.HasValue ? $"{metadata.FileSizeBytes.Value / (1024.0 * 1024.0):F2} MB" : "N/A";
+            string fileSize = metadata.FileSizeBytes.HasValue
+                ? $"{metadata.FileSizeBytes.Value / (1024.0 * 1024.0):F2} MB"
+                : "N/A";
 
             Console.WriteLine($"File Path:        {metadata.FilePath}");
             Console.WriteLine($"File Name:        {metadata.FileName ?? "N/A"}");
@@ -31,5 +57,4 @@ namespace KaraokeCodingChallenges.MediaMetadataScanner
             Console.WriteLine($"Channels:         {metadata.Channels?.ToString() ?? "N/A"}");
         }
     }
-
 }
