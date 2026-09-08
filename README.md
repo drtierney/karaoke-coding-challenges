@@ -18,4 +18,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 010 | [Duplicate Detection](KaraokeCodingChallenges.DuplicateDetection/README.md)        | HashSet, IEqualityComparer, custom equality, hash codes, case-insensitive comparison |
 | 011 | [Media Library Processor](KaraokeCodingChallenges.MediaLibraryProcessor/README.md) | Integration, IEnumerable, filtering, sorting, duplicate detection, code reuse        |
 | 012 | [Media Metadata Model](KaraokeCodingChallenges.MediaMetadata/README.md)            | Records, nullable properties, required/init properties, immutability, value equality |
-
+| 013 | [Read Embedded Audio Metadata](KaraokeCodingChallenges.MediaMetadataScanner/README.md)  | NuGet, TagLibSharp, embedded metadata, FileInfo, resource disposal              |

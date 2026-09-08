@@ -8,6 +8,7 @@
   <Project Path="KaraokeCodingChallenges.MediaLibraryProcessor/KaraokeCodingChallenges.MediaLibraryProcessor.csproj" Id="76489397-28b4-4a5a-829b-514500fd8b3b" />
   <Project Path="KaraokeCodingChallenges.MediaLibraryQueries/KaraokeCodingChallenges.MediaLibraryQueries.csproj" Id="c3b9cfbc-5ce0-425a-b107-e983617dc845" />
   <Project Path="KaraokeCodingChallenges.MediaMetadata/KaraokeCodingChallenges.MediaMetadata.csproj" Id="63cd3358-cf09-45cb-9981-edb1e6d6b4a2" />
+  <Project Path="KaraokeCodingChallenges.MediaMetadataScanner/KaraokeCodingChallenges.MediaMetadataScanner.csproj" Id="53840b86-1549-4744-b3af-c1a67d4cd783" />
   <Project Path="KaraokeCodingChallenges.MediaTrack/KaraokeCodingChallenges.MediaTrack.csproj" Id="d02d2f78-03fc-4c51-9461-763a409fd86b" />
   <Project Path="KaraokeCodingChallenges.MediaTypeDetection/KaraokeCodingChallenges.MediaTypeDetection.csproj" Id="90008a7f-7a6c-4229-b366-8239121843ca" />
   <Project Path="KaraokeCodingChallenges.TrackSorting/KaraokeCodingChallenges.TrackSorting.csproj" Id="159b19c2-ceb7-4b1f-81e6-5d73b58d66ce" />
