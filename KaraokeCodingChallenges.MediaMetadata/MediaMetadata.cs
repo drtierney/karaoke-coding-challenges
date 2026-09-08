@@ -3,6 +3,10 @@
     public record MediaMetadata
     {
         public required string FilePath { get; init; }
+        public string? FileName { get; init; }
+        public string? Extension { get; init; }
+        public long? FileSizeBytes { get; init; }
+
         public string? Title { get; init; }
         public string? Artist { get; init; }
         public string? Album { get; init; }
