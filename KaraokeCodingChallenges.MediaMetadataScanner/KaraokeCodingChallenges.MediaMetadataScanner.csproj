@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TagLibSharp" Version="2.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\KaraokeCodingChallenges.MediaMetadata\KaraokeCodingChallenges.MediaMetadata.csproj" />
     <ProjectReference Include="..\KaraokeCodingChallenges.MetadataReader\KaraokeCodingChallenges.MetadataReader.csproj" />
   </ItemGroup>
