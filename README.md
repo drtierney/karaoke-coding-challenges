@@ -20,3 +20,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 012 | [Media Metadata Model](KaraokeCodingChallenges.MediaMetadata/README.md)            | Records, nullable properties, required/init properties, immutability, value equality |
 | 013 | [Read Embedded Audio Metadata](KaraokeCodingChallenges.MediaMetadataScanner/README.md#challenge-013---read-embedded-audio-metadata) | NuGet, TagLibSharp, embedded metadata, FileInfo, resource disposal |
 | 014 | [Filename Metadata Fallback](KaraokeCodingChallenges.MediaMetadataScanner/README.md#challenge-014---filename-metadata-fallback) | String parsing, TryParse, tuples, filename fallback, null handling |
+| 015 | [Metadata Resolution](KaraokeCodingChallenges.MetadataResolution/README.md)        | Fallback rules, null handling, precedence, pure functions, helper methods            |
