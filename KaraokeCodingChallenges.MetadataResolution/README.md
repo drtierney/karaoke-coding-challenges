@@ -4,14 +4,14 @@ Resolve metadata from multiple sources using clear precedence and fallback rules
 
 ## Concepts Practised
 
-* Fallback rules
-* Null handling
-* Metadata precedence
-* `string.IsNullOrWhiteSpace`
-* Nullable value types
-* Null-coalescing operator (`??`)
-* Pure functions
-* Records
+- Fallback rules
+- Null handling
+- Metadata precedence
+- `string.IsNullOrWhiteSpace`
+- Nullable value types
+- Null-coalescing operator (`??`)
+- Pure functions
+- Records
 
 ## Metadata Precedence
 
@@ -29,21 +29,21 @@ For string values, `null`, empty strings, and whitespace-only strings are treate
 
 Reusable helper methods handle resolution for:
 
-* String metadata using `string.IsNullOrWhiteSpace`
-* Nullable integer metadata using the null-coalescing operator
+- String metadata using `string.IsNullOrWhiteSpace`
+- Nullable integer metadata using the null-coalescing operator
 
 The resolver covers metadata including:
 
-* Title
-* Artist
-* Album
-* Genre
-* Year
-* Track number
-* Duration
-* Bitrate
-* Sample rate
-* Channels
+- Title
+- Artist
+- Album
+- Genre
+- Year
+- Track number
+- Duration
+- Bitrate
+- Sample rate
+- Channels
 
 File information such as the file path is carried forward from the scanned metadata rather than resolved using metadata precedence.
 
