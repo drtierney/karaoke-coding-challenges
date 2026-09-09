@@ -1,10 +1,11 @@
-﻿using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
+﻿using KaraokeCodingChallenges.MetadataReader;
+using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
 
 namespace KaraokeCodingChallenges.MediaMetadataScanner
 {
     public static class MediaMetadataScanner
     {
-        public static MediaMetadataRecord ReadMetadata(string filePath)
+        public static MediaMetadataRecord ReadMetadata(string filePath, IMetadataReader metadataReader)
         {
             if (!File.Exists(filePath))
             {
@@ -13,7 +14,7 @@ namespace KaraokeCodingChallenges.MediaMetadataScanner
 
             FileInfo fileInfo = new(filePath);
 
-            using TagLib.File tagFile = TagLib.File.Create(filePath);
+            EmbeddedMetadata metadata = metadataReader.Read(filePath);
 
             var (fileArtist, fileTitle, fileTrackNumber) = ParseFileName(fileInfo.Name);
 
@@ -24,22 +25,24 @@ namespace KaraokeCodingChallenges.MediaMetadataScanner
                 Extension = fileInfo.Extension,
                 FileSizeBytes = fileInfo.Length,
 
-                Artist = string.IsNullOrWhiteSpace(tagFile.Tag.FirstPerformer) ? fileArtist : tagFile.Tag.FirstPerformer,
-                Title = string.IsNullOrWhiteSpace(tagFile.Tag.Title) ? fileTitle : tagFile.Tag.Title,
-                TrackNumber = tagFile.Tag.Track > 0 ? (int)tagFile.Tag.Track : fileTrackNumber,
-                Album = tagFile.Tag.Album,
-                Genre = tagFile.Tag.FirstGenre,
-                Year = tagFile.Tag.Year > 0 ? (int)tagFile.Tag.Year : null,
-                DurationSeconds = (int)tagFile.Properties.Duration.TotalSeconds,
-                Bitrate = tagFile.Properties.AudioBitrate,
-                SampleRate = tagFile.Properties.AudioSampleRate,
-                Channels = tagFile.Properties.AudioChannels
+                Artist = string.IsNullOrWhiteSpace(metadata.Artist) ? fileArtist : metadata.Artist,
+                Title = string.IsNullOrWhiteSpace(metadata.Title) ? fileTitle : metadata.Title,
+                Album = metadata.Album,
+                Genre = metadata.Genre,
+                Year = metadata.Year,
+                TrackNumber = metadata.TrackNumber ?? fileTrackNumber,
+                DurationSeconds = metadata.DurationSeconds,
+                Bitrate = metadata.Bitrate,
+                SampleRate = metadata.SampleRate,
+                Channels = metadata.Channels
             };
         }
 
-        private static (string? Artist, string? Title, int? TrackNumber) ParseFileName(string fileName)
+        private static (string? Artist, string? Title, int? TrackNumber)
+            ParseFileName(string fileName)
         {
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+
             string[] parts = fileNameWithoutExtension.Split(" - ");
 
             string? artist = null;

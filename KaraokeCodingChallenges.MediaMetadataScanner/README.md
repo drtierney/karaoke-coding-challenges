@@ -204,3 +204,29 @@ Year:             2015
 - Embedded metadata takes priority when it is available.
 - Missing filename-derived values remain `null` in the underlying record and are displayed as `N/A`.
 - More complete metadata precedence and resolution rules are intentionally deferred to Challenge 015.
+
+## Challenge 016 Refactor
+
+Challenge 016 introduced an `IMetadataReader` abstraction and moved the TagLibSharp-specific metadata-reading logic into the separate `KaraokeCodingChallenges.MetadataReader` project.
+
+The scanner now receives an `IMetadataReader` rather than accessing TagLibSharp directly.
+
+The scanner remains responsible for:
+
+- File validation
+- File name, extension, and file size
+- Filename parsing
+- Filename fallback values
+- Combining embedded metadata with file-system information
+- Creating the final `MediaMetadata` record
+
+Embedded metadata reading is delegated through:
+
+```text
+MediaMetadataScanner
+    -> IMetadataReader
+        -> TagLibMetadataReader
+            -> TagLibSharp
+```
+
+This separates the scanner from the third-party metadata library while preserving the behaviour introduced in Challenges 013 and 014.

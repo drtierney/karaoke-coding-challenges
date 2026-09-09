@@ -1,4 +1,5 @@
-﻿using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
+﻿using KaraokeCodingChallenges.MetadataReader;
+using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
 
 namespace KaraokeCodingChallenges.MediaMetadataScanner
 {
@@ -15,14 +16,15 @@ namespace KaraokeCodingChallenges.MediaMetadataScanner
                 @"D:\KaraokeTest\MissingFile.mp3"
             ];
 
+            IMetadataReader metadataReader = new TagLibMetadataReader();
+
             foreach (string filePath in filePaths)
             {
                 try
                 {
                     Console.WriteLine(filePath);
 
-                    MediaMetadataRecord metadata =
-                        MediaMetadataScanner.ReadMetadata(filePath);
+                    MediaMetadataRecord metadata = MediaMetadataScanner.ReadMetadata(filePath, metadataReader);
 
                     DisplayMetadata(metadata);
                 }
