@@ -24,3 +24,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 016 | [Metadata Reader Interface](KaraokeCodingChallenges.MetadataReader/README.md)      | Interfaces, abstraction, dependency inversion, dependency injection, separation of responsibilities |
 | 017 | [Metadata Resolution Tests](KaraokeCodingChallenges.Metadata.Tests/README.md)      | xUnit, Fact, Theory, InlineData, assertions, fakes, edge cases, temporary test files |
 | 018 | [Scan Result Model](KaraokeCodingChallenges.ScanResult/README.md)                  | Records, nullable reference types, read-only collections, structured results, warnings and errors |
+| 019 | [Exception Handling & Error Reporting](KaraokeCodingChallenges.MediaScanService/README.md) | Exceptions, try/catch, recoverable failures, warnings, error reporting, yield return |
