@@ -1,14 +1,14 @@
-﻿using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
-using MediaMetadataScannerService = KaraokeCodingChallenges.MediaMetadataScanner.MediaMetadataScanner;
+﻿using KaraokeCodingChallenges.MediaMetadata;
+using KaraokeCodingChallenges.MediaMetadataScanner;
 using KaraokeCodingChallenges.MetadataReader;
-using ScanResultRecord = KaraokeCodingChallenges.ScanResult.ScanResult;
+using KaraokeCodingChallenges.ScanResult;
 
 
 namespace KaraokeCodingChallenges.MediaScanService
 {
-    public static class MediaScanService
+    public static class MediaScannerService
     {
-        public static IEnumerable<ScanResultRecord> ScanFiles(IEnumerable<string> filePaths, IMetadataReader metadataReader)
+        public static IEnumerable<MediaScanResult> ScanFiles(IEnumerable<string> filePaths, IMetadataReader metadataReader)
         {
             foreach (string filePath in filePaths)
             {
@@ -16,7 +16,7 @@ namespace KaraokeCodingChallenges.MediaScanService
             }
         }
 
-        public static ScanResultRecord ScanFile(string filePath, IMetadataReader metadataReader)
+        public static MediaScanResult ScanFile(string filePath, IMetadataReader metadataReader)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace KaraokeCodingChallenges.MediaScanService
                     warnings.Add("Title metadata is missing.");
                 }
 
-                return new ScanResultRecord
+                return new MediaScanResult
                 {
                     FilePath = filePath,
                     Metadata = metadata,
@@ -60,9 +60,9 @@ namespace KaraokeCodingChallenges.MediaScanService
             }
         }
 
-        private static ScanResultRecord CreateFailedResult(string filePath, string errorMessage)
+        private static MediaScanResult CreateFailedResult(string filePath, string errorMessage)
         {
-            return new ScanResultRecord
+            return new MediaScanResult
             {
                 FilePath = filePath,
                 Metadata = null,

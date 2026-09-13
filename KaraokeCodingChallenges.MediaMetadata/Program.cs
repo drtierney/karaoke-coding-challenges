@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            MediaMetadata queenTrack = new()
+            MediaMetadataRecord queenTrack = new()
             {
                 FilePath = @"D:\Music\Queen - Bohemian Rhapsody.mp3",
                 Title = "Bohemian Rhapsody",
@@ -19,7 +19,7 @@
                 Channels = 2
             };
 
-            MediaMetadata queenTrackCopy = new()
+            MediaMetadataRecord queenTrackCopy = new()
             {
                 FilePath = @"D:\Music\Queen - Bohemian Rhapsody.mp3",
                 Title = "Bohemian Rhapsody",
@@ -34,7 +34,7 @@
                 Channels = 2
             };
 
-            MediaMetadata incompleteTrack = new()
+            MediaMetadataRecord incompleteTrack = new()
             {
                 FilePath = @"D:\Music\untagged.opus",
                 DurationSeconds = null,
@@ -46,7 +46,7 @@
             Console.WriteLine("Record equality:");
             Console.WriteLine(queenTrack == queenTrackCopy);
 
-            MediaMetadata correctedTrack = queenTrack with
+            MediaMetadataRecord correctedTrack = queenTrack with
             {
                 Genre = "Classic Rock"
             };

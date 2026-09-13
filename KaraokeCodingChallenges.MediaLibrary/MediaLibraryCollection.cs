@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using MediaTrackModel = KaraokeCodingChallenges.MediaTrack.MediaTrack;
+﻿using KaraokeCodingChallenges.MediaTrack;
 
 namespace KaraokeCodingChallenges.MediaLibrary
 {
-    public class MediaLibrary
+    public class MediaLibraryCollection
     {
         private List<MediaTrackModel> library = [];
 

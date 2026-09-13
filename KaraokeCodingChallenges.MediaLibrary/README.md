@@ -6,7 +6,7 @@ Build an in-memory media library that supports adding, removing, finding, counti
 
 ## Requirements
 
-- Store `MediaTrack` objects in a private collection.
+- Store `MediaTrackModel` objects in a private collection.
 - Add a single track to the library.
 - Add multiple tracks to the library.
 - Remove a track by object reference.
@@ -17,7 +17,7 @@ Build an in-memory media library that supports adding, removing, finding, counti
 - Return the current number of tracks in the library.
 - Clear all tracks from the library.
 - Keep library management logic separate from console output.
-- Demonstrate the library operations using sample `MediaTrack` objects.
+- Demonstrate the library operations using sample `MediaTrackModel` objects.
 
 ## Concepts Practised
 

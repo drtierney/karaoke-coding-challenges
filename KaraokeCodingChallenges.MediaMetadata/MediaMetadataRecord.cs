@@ -1,6 +1,6 @@
 ﻿namespace KaraokeCodingChallenges.MediaMetadata
 {
-    public record MediaMetadata
+    public record MediaMetadataRecord
     {
         public required string FilePath { get; init; }
         public string? FileName { get; init; }

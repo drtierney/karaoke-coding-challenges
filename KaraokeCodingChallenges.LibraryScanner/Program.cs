@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            LibraryScanner scanner = new LibraryScanner();
+            LibraryScannerService scanner = new LibraryScannerService();
             Console.WriteLine("Enter folder to scan:");
             string? folderPath = Console.ReadLine();
 

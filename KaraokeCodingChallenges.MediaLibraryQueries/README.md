@@ -2,17 +2,17 @@
 
 ## Objective
 
-Use LINQ to search a collection of `MediaTrack` objects by artist, title and file path while supporting case-insensitive and partial matching.
+Use LINQ to search a collection of `MediaTrackModel` objects by artist, title and file path while supporting case-insensitive and partial matching.
 
 ## Requirements
 
-- Accept collections of `MediaTrack` objects using `IEnumerable<MediaTrack>`.
+- Accept collections of `MediaTrackModel` objects using `IEnumerable<MediaTrackModel>`.
 - Find all tracks by a specified artist.
 - Match artist names case-insensitively.
 - Find tracks containing a search term in the title.
 - Find tracks containing a search term in the file path.
 - Perform title and file-path searches case-insensitively.
-- Return matching `MediaTrack` objects rather than formatted strings.
+- Return matching `MediaTrackModel` objects rather than formatted strings.
 - Handle searches that return no matching tracks.
 - Use `Any()` to determine whether query results contain tracks before printing.
 - Keep LINQ query logic separate from console output.
@@ -33,13 +33,13 @@ Use LINQ to search a collection of `MediaTrack` objects by artist, title and fil
 - Collection expressions
 - Helper methods
 - Project references
-- Reusing the `MediaTrack` model from another project
+- Reusing the `MediaTrackModel` model from another project
 - Separation of query logic from console output
 
 ## What I Learned
 
 - How `Where()` can filter a collection and return all objects that match a condition.
-- How LINQ queries can return `IEnumerable<MediaTrack>` without needing to create a new `List<MediaTrack>`.
+- How LINQ queries can return `IEnumerable<MediaTrackModel>` without needing to create a new `List<MediaTrackModel>`.
 - How exact searches and partial searches can use different string comparison methods.
 - How `StringComparison.OrdinalIgnoreCase` allows searches to work regardless of character casing.
 - How `Contains()` can be used for partial title and file-path searches.

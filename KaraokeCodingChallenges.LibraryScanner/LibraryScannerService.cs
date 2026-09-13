@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.IO;
-
-namespace KaraokeCodingChallenges.LibraryScanner
+﻿namespace KaraokeCodingChallenges.LibraryScanner
 {
-    internal class LibraryScanner
+    public class LibraryScannerService
     {
         private static readonly HashSet<string> supportedExtensions =
             new(StringComparer.OrdinalIgnoreCase)

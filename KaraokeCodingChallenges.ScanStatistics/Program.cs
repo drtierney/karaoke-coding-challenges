@@ -1,6 +1,6 @@
-﻿using ScanResultRecord = KaraokeCodingChallenges.ScanResult.ScanResult;
-using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
-using KaraokeFilePairingService = KaraokeCodingChallenges.KaraokeFilePairing.KaraokeFilePairing;
+﻿using KaraokeCodingChallenges.ScanResult;
+using KaraokeCodingChallenges.MediaMetadata;
+using KaraokeCodingChallenges.KaraokeFilePairing;
 
 namespace KaraokeCodingChallenges.ScanStatistics
 {
@@ -8,9 +8,9 @@ namespace KaraokeCodingChallenges.ScanStatistics
     {
         static void Main()
         {
-            List<ScanResultRecord> scanResults =
+            List<MediaScanResult> scanResults =
             [
-                new ScanResultRecord
+                new MediaScanResult
                 {
                     FilePath = @"D:\Music\Queen - Bohemian Rhapsody.mp3",
                     IsSuccess = true,
@@ -25,7 +25,7 @@ namespace KaraokeCodingChallenges.ScanStatistics
                     }
                 },
 
-                new ScanResultRecord
+                new MediaScanResult
                 {
                     FilePath = @"D:\Music\Unknown Artist - Song.opus",
                     IsSuccess = true,
@@ -44,7 +44,7 @@ namespace KaraokeCodingChallenges.ScanStatistics
                     ]
                 },
 
-                new ScanResultRecord
+                new MediaScanResult
                 {
                     FilePath = @"D:\Music\ABBA - Dancing Queen.flac",
                     IsSuccess = true,
@@ -65,7 +65,7 @@ namespace KaraokeCodingChallenges.ScanStatistics
                     ]
                 },
 
-                new ScanResultRecord
+                new MediaScanResult
                 {
                     FilePath = @"D:\Music\Missing.mp3",
                     IsSuccess = false,
@@ -93,11 +93,11 @@ namespace KaraokeCodingChallenges.ScanStatistics
             KaraokeFilePairingService karaokeFilePairing = new();
             karaokeFilePairing.PairFiles(karaokeFiles);
 
-            ScanStatistics statistics = ScanStatisticsService.GenerateStatistics(scanResults, karaokeFilePairing);
+            ScanStatisticsSummary statistics = ScanStatisticsService.GenerateStatistics(scanResults, karaokeFilePairing);
             DisplayStatistics(statistics);
         }
 
-        private static void DisplayStatistics(ScanStatistics statistics)
+        private static void DisplayStatistics(ScanStatisticsSummary statistics)
         {
             Console.WriteLine("Scan Summary");
             Console.WriteLine($"Total Scans: {statistics.TotalScans}");

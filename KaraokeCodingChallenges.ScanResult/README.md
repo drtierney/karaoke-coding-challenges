@@ -16,7 +16,7 @@ Create a structured model for representing the outcome of scanning a media file.
 
 ## Implementation
 
-The `ScanResult` record represents the result of scanning a single media file.
+The `MediaScanResult` record represents the result of scanning a single media file.
 
 Each result contains:
 
@@ -38,7 +38,7 @@ The application demonstrates three scan outcomes:
 - A successful scan with missing metadata and warnings.
 - A failed scan with no metadata and an error message.
 
-A helper method formats each result for console output while keeping presentation logic separate from the `ScanResult` record.
+A helper method formats each result for console output while keeping presentation logic separate from the `MediaScanResult` record.
 
 ```text
 File: D:\Music\Queen - Bohemian Rhapsody.mp3

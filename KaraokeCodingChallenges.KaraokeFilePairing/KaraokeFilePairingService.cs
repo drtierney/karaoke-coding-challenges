@@ -1,6 +1,6 @@
 ﻿namespace KaraokeCodingChallenges.KaraokeFilePairing;
 
-public class KaraokeFilePairing
+public class KaraokeFilePairingService
 {
     public List<KaraokeFilePair> MatchedPairs { get; } = new();
     public List<string> UnmatchedMp3Files { get; } = new();

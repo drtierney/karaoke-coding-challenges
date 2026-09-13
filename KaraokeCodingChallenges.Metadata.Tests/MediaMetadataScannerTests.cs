@@ -1,6 +1,6 @@
 ﻿using KaraokeCodingChallenges.MetadataReader;
-using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
-using MetadataScanner = KaraokeCodingChallenges.MediaMetadataScanner.MediaMetadataScanner;
+using KaraokeCodingChallenges.MediaMetadata;
+using KaraokeCodingChallenges.MediaMetadataScanner;
 
 
 namespace KaraokeCodingChallenges.Metadata.Tests
@@ -38,7 +38,7 @@ namespace KaraokeCodingChallenges.Metadata.Tests
                 FakeMetadataReader metadataReader = new(new EmbeddedMetadata());
 
                 // Act
-                MediaMetadataRecord result = MetadataScanner.ReadMetadata(filePath, metadataReader);
+                MediaMetadataRecord result = MediaMetadataScannerService.ReadMetadata(filePath, metadataReader);
 
                 // Assert
                 Assert.Equal("Queen", result.Artist);
@@ -65,7 +65,7 @@ namespace KaraokeCodingChallenges.Metadata.Tests
                 FakeMetadataReader metadataReader = new(new EmbeddedMetadata());
 
                 // Act
-                MediaMetadataRecord result = MetadataScanner.ReadMetadata(filePath, metadataReader);
+                MediaMetadataRecord result = MediaMetadataScannerService.ReadMetadata(filePath, metadataReader);
 
                 // Assert
                 Assert.Equal(1, result.TrackNumber);
@@ -97,7 +97,7 @@ namespace KaraokeCodingChallenges.Metadata.Tests
                 FakeMetadataReader metadataReader = new(new EmbeddedMetadata());
 
                 // Act
-                MediaMetadataRecord result = MetadataScanner.ReadMetadata(filePath, metadataReader);
+                MediaMetadataRecord result = MediaMetadataScannerService.ReadMetadata(filePath, metadataReader);
 
                 // Assert
                 Assert.Equal(expectedArtist, result.Artist);
@@ -117,7 +117,7 @@ namespace KaraokeCodingChallenges.Metadata.Tests
             FakeMetadataReader metadataReader = new(new EmbeddedMetadata());
 
             // Act & Assert
-            Assert.Throws<FileNotFoundException>(() => MetadataScanner.ReadMetadata(filePath, metadataReader));
+            Assert.Throws<FileNotFoundException>(() => MediaMetadataScannerService.ReadMetadata(filePath, metadataReader));
         }
 
         [Fact]
@@ -147,7 +147,7 @@ namespace KaraokeCodingChallenges.Metadata.Tests
                 FakeMetadataReader metadataReader = new(embeddedMetadata);
 
                 // Act
-                MediaMetadataRecord result = MetadataScanner.ReadMetadata(filePath, metadataReader);
+                MediaMetadataRecord result = MediaMetadataScannerService.ReadMetadata(filePath, metadataReader);
 
                 // Assert
                 Assert.Equal(embeddedMetadata.Artist, result.Artist);
@@ -176,7 +176,7 @@ namespace KaraokeCodingChallenges.Metadata.Tests
                 FakeMetadataReader metadataReader = new(new EmbeddedMetadata());
 
                 // Act
-                MediaMetadataRecord result = MetadataScanner.ReadMetadata(filePath, metadataReader);
+                MediaMetadataRecord result = MediaMetadataScannerService.ReadMetadata(filePath, metadataReader);
 
                 // Assert
                 Assert.Null(result.Artist);
@@ -206,7 +206,7 @@ namespace KaraokeCodingChallenges.Metadata.Tests
                 FakeMetadataReader metadataReader = new(new EmbeddedMetadata());
 
                 // Act
-                MediaMetadataRecord result = MetadataScanner.ReadMetadata(filePath, metadataReader);
+                MediaMetadataRecord result = MediaMetadataScannerService.ReadMetadata(filePath, metadataReader);
 
                 // Assert
                 Assert.Null(result.Artist);
@@ -243,7 +243,7 @@ namespace KaraokeCodingChallenges.Metadata.Tests
                 FakeMetadataReader metadataReader = new(embeddedMetadata);
 
                 // Act
-                MediaMetadataRecord result = MetadataScanner.ReadMetadata(filePath, metadataReader);
+                MediaMetadataRecord result = MediaMetadataScannerService.ReadMetadata(filePath, metadataReader);
 
                 // Assert
                 Assert.Equal("Embedded Queen", result.Artist);

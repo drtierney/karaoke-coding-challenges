@@ -16,9 +16,9 @@ Handle recoverable media scan failures without allowing a single problem file to
 
 ## Implementation
 
-The `MediaScanService` provides a higher-level scanning layer around `MediaMetadataScanner`.
+The `MediaScanService` provides a higher-level scanning layer around `MediaMetadataScannerService`.
 
-`ScanFile` attempts to resolve metadata for a single media file and returns a `ScanResult` describing the outcome.
+`ScanFile` attempts to resolve metadata for a single media file and returns a `MediaMediaScanResult` describing the outcome.
 
 Successful scans return:
 
@@ -57,7 +57,7 @@ Warnings do not change `IsSuccess` to `false` because the file was still success
 
 ## Batch Scanning
 
-`ScanFiles` accepts an `IEnumerable<string>` of file paths and uses `yield return` to return each `ScanResult` individually.
+`ScanFiles` accepts an `IEnumerable<string>` of file paths and uses `yield return` to return each `MediaMediaScanResult` individually.
 
 Each file is processed through `ScanFile`, allowing failed files to produce structured error results while later files continue to be scanned.
 

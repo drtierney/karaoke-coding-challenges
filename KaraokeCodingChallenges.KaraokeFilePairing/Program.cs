@@ -16,7 +16,7 @@
 
             Console.WriteLine();
 
-            KaraokeFilePairing filePairing = new KaraokeFilePairing();
+            KaraokeFilePairingService filePairing = new KaraokeFilePairingService();
             filePairing.PairFiles(files);
 
             Console.WriteLine("Matched Karaoke Pairs:");

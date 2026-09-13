@@ -1,4 +1,4 @@
-﻿using MediaTrackModel = KaraokeCodingChallenges.MediaTrack.MediaTrack;
+﻿using KaraokeCodingChallenges.MediaTrack;
 
 namespace KaraokeCodingChallenges.MediaLibrary
 {
@@ -6,7 +6,7 @@ namespace KaraokeCodingChallenges.MediaLibrary
     {
         static void Main(string[] args)
         {
-            MediaLibrary library = new();
+            MediaLibraryCollection library = new();
 
             MediaTrackModel testTrack = new(
                 "title",

@@ -7,16 +7,16 @@ Sort media library tracks using LINQ and a custom comparer.
 ## Requirements
 
 - Create a `MediaLibrarySortService` class.
-- Accept `IEnumerable<MediaTrack>` collections as input.
+- Accept `IEnumerable<MediaTrackModel>` collections as input.
 - Sort tracks by artist and then title.
 - Sort tracks by title.
 - Sort tracks by duration from shortest to longest.
 - Sort tracks by duration from longest to shortest.
 - Use both LINQ method syntax and query syntax.
-- Create a custom `IComparer<MediaTrack>` for sorting by artist and title.
+- Create a custom `IComparer<MediaTrackModel>` for sorting by artist and title.
 - Perform case-insensitive artist and title comparisons in the custom comparer.
 - Return sorted results without modifying the original collection.
-- Demonstrate each sorting method against a sample collection of `MediaTrack` objects.
+- Demonstrate each sorting method against a sample collection of `MediaTrackModel` objects.
 - Display the sorted results clearly in the console.
 
 ## Concepts Practised

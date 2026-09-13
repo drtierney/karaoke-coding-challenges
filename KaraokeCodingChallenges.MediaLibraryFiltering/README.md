@@ -7,14 +7,14 @@ Filter media library tracks using LINQ query syntax based on useful track proper
 ## Requirements
 
 - Create a `MediaLibraryFilterService` class.
-- Accept `IEnumerable<MediaTrack>` collections as input.
+- Accept `IEnumerable<MediaTrackModel>` collections as input.
 - Use LINQ query syntax for filtering.
 - Filter karaoke tracks.
 - Filter non-karaoke music tracks.
 - Filter tracks by a minimum duration.
 - Filter tracks by a maximum duration.
 - Return filtered results without modifying the original collection.
-- Demonstrate each filter against a sample collection of `MediaTrack` objects.
+- Demonstrate each filter against a sample collection of `MediaTrackModel` objects.
 - Display the filtered results clearly in the console.
 
 ## Concepts Practised

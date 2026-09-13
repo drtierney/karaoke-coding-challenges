@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace KaraokeCodingChallenges.MediaTrack
+﻿namespace KaraokeCodingChallenges.MediaTrack
 {
-    public class MediaTrack
+    public class MediaTrackModel
     {
         public string Title { get; set; }
 
@@ -17,7 +14,7 @@ namespace KaraokeCodingChallenges.MediaTrack
 
         public string DisplayName { get { return $"{Artist} - {Title}"; } }
 
-        public MediaTrack(string title, string artist, string filePath, int durationSeconds = 0, bool isKaraoke = false)
+        public MediaTrackModel(string title, string artist, string filePath, int durationSeconds = 0, bool isKaraoke = false)
         {
             Title = title;
             Artist = artist;

@@ -6,12 +6,12 @@ Identify duplicate media tracks using custom equality rules.
 
 ## Requirements
 
-- Accept a collection of `MediaTrack` objects.
+- Accept a collection of `MediaTrackModel` objects.
 - Compare tracks using artist and title.
 - Perform artist and title comparisons case-insensitively.
 - Treat tracks with matching artist and title as duplicates even when their file paths differ.
-- Use an `IEqualityComparer<MediaTrack>` to define equality.
-- Use a `HashSet<MediaTrack>` to identify distinct and duplicate tracks.
+- Use an `IEqualityComparer<MediaTrackModel>` to define equality.
+- Use a `HashSet<MediaTrackModel>` to identify distinct and duplicate tracks.
 - Return distinct and duplicate tracks separately.
 - Demonstrate duplicate detection using sample track data.
 
