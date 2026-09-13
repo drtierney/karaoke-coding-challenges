@@ -1,7 +1,7 @@
 ﻿using KaraokeCodingChallenges.DuplicateDetection;
 using KaraokeCodingChallenges.MediaLibraryFiltering;
 using KaraokeCodingChallenges.TrackSorting;
-using MediaTrackModel = KaraokeCodingChallenges.MediaTrack.MediaTrack;
+using KaraokeCodingChallenges.MediaTrack;
 
 namespace KaraokeCodingChallenges.MediaLibraryProcessor;
 

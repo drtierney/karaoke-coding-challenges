@@ -6,7 +6,7 @@ Create a reusable C# model for representing tracks in a music and karaoke librar
 
 ## Requirements
 
-* Create a `MediaTrack` class.
+* Create a `MediaTrackModel` class.
 * Add properties for:
 
   * `Title`
@@ -19,7 +19,7 @@ Create a reusable C# model for representing tracks in a music and karaoke librar
   * Allow duration to default to `0` when it is not yet known.
   * Allow karaoke status to default to `false`.
 * Create at least five sample tracks.
-* Store the tracks in a `List<MediaTrack>`.
+* Store the tracks in a `List<MediaTrackModel>`.
 * Display each track using a `foreach` loop.
 * Add a method that formats the track duration from seconds into minutes and seconds.
 
@@ -27,7 +27,7 @@ Create a reusable C# model for representing tracks in a music and karaoke librar
 * Create a read-only `DisplayName` property that returns the artist and title in this format:
 
   * `Artist - Title`
-* Override the `ToString()` method to provide a readable multi-line representation of a `MediaTrack`.
+* Override the `ToString()` method to provide a readable multi-line representation of a `MediaTrackModel`.
 * Use the `ToString()` override to simplify displaying tracks with `Console.WriteLine(track)`.
 
 ## Concepts Practised
@@ -60,7 +60,7 @@ Create a reusable C# model for representing tracks in a music and karaoke librar
 ## Notes
 
 * This is my first project in this coding challenge using Visual Studio, so I had to figure out how to create a new project and add a class to it.
-* I tested with a console application, but I could have also used a unit test project to test the `MediaTrack` class.
+* I tested with a console application, but I could have also used a unit test project to test the `MediaTrackModel` class.
 * I found that certain Unicode characters did not display correctly in the console, such as `Axwell Λ Ingrosso`. This appears to be related to the console output or rendering rather than the string itself and could be investigated further in a future exercise.
 
 ## Improvements

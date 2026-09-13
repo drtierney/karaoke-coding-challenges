@@ -76,7 +76,7 @@ The rest of the application does not need to know that TagLibSharp is being used
 
 ## Scanner Integration
 
-The existing `MediaMetadataScanner` was refactored to accept an `IMetadataReader`:
+The existing `MediaMetadataScannerService` was refactored to accept an `IMetadataReader`:
 
 ```csharp
 MediaMetadataRecord ReadMetadata(string filePath, IMetadataReader metadataReader)
@@ -94,7 +94,7 @@ The scanner remains responsible for:
 The dependency flow is now:
 
 ```text
-MediaMetadataScanner
+MediaMetadataScannerService
     -> IMetadataReader
         -> TagLibMetadataReader
             -> TagLibSharp

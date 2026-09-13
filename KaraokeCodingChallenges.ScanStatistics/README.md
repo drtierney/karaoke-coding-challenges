@@ -20,7 +20,7 @@ Produce useful summary statistics from media scan results, metadata quality, and
 
 ## Implementation
 
-The `ScanStatisticsService` generates a `ScanStatistics` summary from a collection of `ScanResult` objects and existing karaoke file pairing results.
+The `ScanStatisticsService` generates a `ScanStatisticsSummary` from a collection of `MediaScanResult` objects and existing karaoke file pairing results.
 
 The scan results are materialised into a list before statistics are calculated so the input does not need to be repeatedly enumerated.
 

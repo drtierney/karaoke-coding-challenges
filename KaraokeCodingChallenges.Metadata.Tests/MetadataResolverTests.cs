@@ -1,4 +1,4 @@
-﻿using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
+﻿using KaraokeCodingChallenges.MediaMetadata;
 using KaraokeCodingChallenges.MetadataResolution;
 
 namespace KaraokeCodingChallenges.Metadata.Tests

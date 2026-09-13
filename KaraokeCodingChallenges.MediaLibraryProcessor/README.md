@@ -6,7 +6,7 @@ Combine functionality from previous challenges into a simple media library proce
 
 ## Requirements
 
-- Accept a collection of `MediaTrack` objects.
+- Accept a collection of `MediaScannerService` objects.
 - Identify duplicate tracks using the existing duplicate detection service.
 - Create a distinct collection containing one track for each artist and title combination.
 - Filter the distinct collection to karaoke tracks.

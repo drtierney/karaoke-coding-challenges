@@ -1,4 +1,4 @@
-﻿using MediaTrackModel = KaraokeCodingChallenges.MediaTrack.MediaTrack;
+﻿using KaraokeCodingChallenges.MediaTrack;
 
 namespace KaraokeCodingChallenges.DuplicateDetection;
 

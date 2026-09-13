@@ -1,6 +1,6 @@
 ﻿namespace KaraokeCodingChallenges.ScanStatistics
 {
-    public record ScanStatistics
+    public record ScanStatisticsSummary
     {
         public int TotalScans { get; init; }
         public int SuccessfulScans { get; init; }

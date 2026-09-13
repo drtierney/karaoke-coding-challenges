@@ -1,8 +1,8 @@
-﻿using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
+﻿using KaraokeCodingChallenges.MediaMetadata;
 
 namespace KaraokeCodingChallenges.ScanResult
 {
-    public record ScanResult
+    public record MediaScanResult
     {
         public required string FilePath { get; init; }
 

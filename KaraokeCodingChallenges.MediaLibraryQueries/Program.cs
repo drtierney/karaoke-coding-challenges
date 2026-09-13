@@ -1,4 +1,4 @@
-﻿using MediaTrackModel = KaraokeCodingChallenges.MediaTrack.MediaTrack;
+﻿using KaraokeCodingChallenges.MediaTrack;
 
 namespace KaraokeCodingChallenges.MediaLibraryQueries
 {
@@ -69,7 +69,7 @@ namespace KaraokeCodingChallenges.MediaLibraryQueries
             PrintDisplayNames(sampleTracks);
 
             var abbaTracks =
-                MediaLibraryQueries.FindTracksByArtist(sampleTracks, "Abba");
+                MediaLibraryQueryService.FindTracksByArtist(sampleTracks, "Abba");
 
             Console.WriteLine("ABBA Tracks:");
             PrintAllDetails(abbaTracks);
@@ -88,7 +88,7 @@ namespace KaraokeCodingChallenges.MediaLibraryQueries
                 Console.WriteLine($"Search results for: {artist}");
 
                 var tracks =
-                    MediaLibraryQueries.FindTracksByArtist(
+                    MediaLibraryQueryService.FindTracksByArtist(
                         sampleTracks,
                         artist);
 
@@ -96,7 +96,7 @@ namespace KaraokeCodingChallenges.MediaLibraryQueries
             }
 
             var titleContainingStop =
-                MediaLibraryQueries.FindTracksByTitle(
+                MediaLibraryQueryService.FindTracksByTitle(
                     sampleTracks,
                     "stop");
 
@@ -104,7 +104,7 @@ namespace KaraokeCodingChallenges.MediaLibraryQueries
             PrintDisplayNames(titleContainingStop);
 
             var missingTitle =
-                MediaLibraryQueries.FindTracksByTitle(
+                MediaLibraryQueryService.FindTracksByTitle(
                     sampleTracks,
                     "Yesterday");
 
@@ -112,7 +112,7 @@ namespace KaraokeCodingChallenges.MediaLibraryQueries
             PrintDisplayNames(missingTitle);
 
             var filePathContainingTake =
-                MediaLibraryQueries.FindTracksByFilePath(
+                MediaLibraryQueryService.FindTracksByFilePath(
                     sampleTracks,
                     "take");
 
@@ -122,7 +122,7 @@ namespace KaraokeCodingChallenges.MediaLibraryQueries
             string filePathSearch = @"D:\Music\a";
 
             var filePathMatches =
-                MediaLibraryQueries.FindTracksByFilePath(
+                MediaLibraryQueryService.FindTracksByFilePath(
                     sampleTracks,
                     filePathSearch);
 

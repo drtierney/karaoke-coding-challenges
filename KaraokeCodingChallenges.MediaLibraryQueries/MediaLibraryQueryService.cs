@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using MediaTrackModel = KaraokeCodingChallenges.MediaTrack.MediaTrack;
+﻿using KaraokeCodingChallenges.MediaTrack;
 
 namespace KaraokeCodingChallenges.MediaLibraryQueries;
 
-public static class MediaLibraryQueries
+public static class MediaLibraryQueryService
 {
     public static IEnumerable<MediaTrackModel> FindTracksByArtist(
         IEnumerable<MediaTrackModel> tracks,

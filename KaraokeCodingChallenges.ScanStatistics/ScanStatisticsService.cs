@@ -1,11 +1,11 @@
-﻿using ScanResultRecord = KaraokeCodingChallenges.ScanResult.ScanResult;
-using KaraokeFilePairingService = KaraokeCodingChallenges.KaraokeFilePairing.KaraokeFilePairing;
+﻿using KaraokeCodingChallenges.ScanResult;
+using KaraokeCodingChallenges.KaraokeFilePairing;
 
 namespace KaraokeCodingChallenges.ScanStatistics
 {
     public static class ScanStatisticsService
     {
-        public static ScanStatistics GenerateStatistics(IEnumerable<ScanResultRecord> scanResults, KaraokeFilePairingService karaokeFilePairing)
+        public static ScanStatisticsSummary GenerateStatistics(IEnumerable<MediaScanResult> scanResults, KaraokeFilePairingService karaokeFilePairing)
         {
             var results = scanResults.ToList();
 
@@ -42,7 +42,7 @@ namespace KaraokeCodingChallenges.ScanStatistics
 
             double completeMetadataPercentage = successfulMetadata.Count > 0 ? (double)completeMetadataCount / successfulMetadata.Count * 100 : 0;
 
-            return new ScanStatistics
+            return new ScanStatisticsSummary
             {
                 TotalScans = totalScans,
                 SuccessfulScans = successfulScans,

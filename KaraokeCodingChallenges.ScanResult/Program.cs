@@ -1,4 +1,4 @@
-﻿using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
+﻿using KaraokeCodingChallenges.MediaMetadata;
 
 namespace KaraokeCodingChallenges.ScanResult
 {
@@ -6,7 +6,7 @@ namespace KaraokeCodingChallenges.ScanResult
     {
         static void Main(string[] args)
         {
-            ScanResult successfulScan = new()
+            MediaScanResult successfulScan = new()
             {
                 FilePath = @"D:\Music\Queen - Bohemian Rhapsody.mp3",
                 Metadata = new MediaMetadataRecord
@@ -26,7 +26,7 @@ namespace KaraokeCodingChallenges.ScanResult
                 IsSuccess = true
             };
 
-            ScanResult warningScan = new()
+            MediaScanResult warningScan = new()
             {
                 FilePath = @"D:\Music\Unknown Artist - Mystery Song.mp3",
                 Metadata = new MediaMetadataRecord
@@ -43,7 +43,7 @@ namespace KaraokeCodingChallenges.ScanResult
                 ]
             };
 
-            ScanResult failedScan = new()
+            MediaScanResult failedScan = new()
             {
                 FilePath = @"D:\Music\BrokenFile.mp3",
                 Metadata = null,
@@ -58,7 +58,7 @@ namespace KaraokeCodingChallenges.ScanResult
             PrintScanResult(warningScan);
             PrintScanResult(failedScan);
         }
-        static void PrintScanResult(ScanResult result)
+        static void PrintScanResult(MediaScanResult result)
         {
             Console.WriteLine($"File: {result.FilePath}");
             Console.WriteLine($"Success: {result.IsSuccess}");

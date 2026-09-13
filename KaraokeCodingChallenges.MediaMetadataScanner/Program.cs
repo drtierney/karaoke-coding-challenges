@@ -1,5 +1,5 @@
 ﻿using KaraokeCodingChallenges.MetadataReader;
-using MediaMetadataRecord = KaraokeCodingChallenges.MediaMetadata.MediaMetadata;
+using KaraokeCodingChallenges.MediaMetadata;
 
 namespace KaraokeCodingChallenges.MediaMetadataScanner
 {
@@ -24,7 +24,7 @@ namespace KaraokeCodingChallenges.MediaMetadataScanner
                 {
                     Console.WriteLine(filePath);
 
-                    MediaMetadataRecord metadata = MediaMetadataScanner.ReadMetadata(filePath, metadataReader);
+                    MediaMetadataRecord metadata = MediaMetadataScannerService.ReadMetadata(filePath, metadataReader);
 
                     DisplayMetadata(metadata);
                 }

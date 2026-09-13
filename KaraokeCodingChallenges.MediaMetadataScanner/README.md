@@ -223,7 +223,7 @@ The scanner remains responsible for:
 Embedded metadata reading is delegated through:
 
 ```text
-MediaMetadataScanner
+MediaMetadataScannerService
     -> IMetadataReader
         -> TagLibMetadataReader
             -> TagLibSharp
