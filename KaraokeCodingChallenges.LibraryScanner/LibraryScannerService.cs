@@ -2,7 +2,7 @@
 {
     public class LibraryScannerService
     {
-        private static readonly HashSet<string> supportedExtensions =
+        private static readonly HashSet<string> SupportedExtensions =
             new(StringComparer.OrdinalIgnoreCase)
             {
                 ".mp3",
@@ -11,7 +11,7 @@
                 ".cdg"
             };
 
-        internal List<string> Scan(string? folderPath)
+        public List<string> Scan(string? folderPath)
         {
             List<string> supportedFiles = [];
 
@@ -29,7 +29,7 @@
             {
                 string extension = Path.GetExtension(file);
 
-                if (supportedExtensions.Contains(extension))
+                if (SupportedExtensions.Contains(extension))
                 {
                     supportedFiles.Add(file);
                 }
