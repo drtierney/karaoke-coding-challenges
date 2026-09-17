@@ -27,3 +27,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 019 | [Exception Handling & Error Reporting](KaraokeCodingChallenges.MediaScanService/README.md) | Exceptions, try/catch, recoverable failures, warnings, error reporting, yield return |
 | 020 | [Scan Statistics](KaraokeCodingChallenges.ScanStatistics/README.md)                | LINQ, GroupBy, aggregates, percentages, metadata quality, summary statistics         |
 | 021 | [Metadata Library Milestone](KaraokeCodingChallenges.MetadataLibraryMilestone/README.md) | Integration, project references, metadata filtering, diagnostics, karaoke pairing, scan statistics |
+| 022 | [Configuration File](KaraokeCodingChallenges.Configuration/README.md)              | JSON configuration, `System.Text.Json`, deserialization, validation, exception handling |
