@@ -36,6 +36,20 @@ namespace KaraokeCodingChallenges.MetadataLibraryMilestone
                 return;
             }
 
+            IReadOnlyCollection<string> errors = ConfigurationValidator.Validate(config);
+
+            if (errors.Count > 0)
+            {
+                Console.WriteLine("Configuration errors:");
+
+                foreach (string error in errors)
+                {
+                    Console.WriteLine($"- {error}");
+                }
+
+                return;
+            }
+
             Console.WriteLine("Configuration loaded.");
 
             LibraryScannerService scanner = new();

@@ -1,4 +1,6 @@
-﻿namespace KaraokeCodingChallenges.Configuration
+﻿using System.Text.Json;
+
+namespace KaraokeCodingChallenges.Configuration
 {
     internal class Program
     {
@@ -8,13 +10,27 @@
             {
                 AppConfiguration config = ConfigurationLoader.Load("appsettings.json");
 
+                IReadOnlyCollection<string> errors = ConfigurationValidator.Validate(config);
+
+                if (errors.Count > 0)
+                {
+                    Console.WriteLine("Configuration errors:");
+
+                    foreach (string error in errors)
+                    {
+                        Console.WriteLine($"- {error}");
+                    }
+
+                    return;
+                }
+
                 Console.WriteLine($"Library Path: {config.LibraryPath}");
             }
             catch (FileNotFoundException)
             {
                 Console.WriteLine("Configuration file not found.");
             }
-            catch (System.Text.Json.JsonException)
+            catch (JsonException)
             {
                 Console.WriteLine("Configuration file contains invalid JSON.");
             }
