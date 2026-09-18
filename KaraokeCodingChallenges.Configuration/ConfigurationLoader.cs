@@ -15,11 +15,6 @@ namespace KaraokeCodingChallenges.Configuration
                 throw new InvalidOperationException("Failed to load configuration.");
             }
 
-            if (string.IsNullOrWhiteSpace(config.LibraryPath))
-            {
-                throw new InvalidOperationException("LibraryPath is missing from configuration.");
-            }
-
             return config;
         }
     }
