@@ -29,3 +29,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 021 | [Metadata Library Milestone](KaraokeCodingChallenges.MetadataLibraryMilestone/README.md) | Integration, project references, metadata filtering, diagnostics, karaoke pairing, scan statistics |
 | 022 | [Configuration File](KaraokeCodingChallenges.Configuration/README.md#challenge-022---configuration-file) | JSON configuration, `System.Text.Json`, deserialization, file handling, exception handling |
 | 023 | [Configuration Validation](KaraokeCodingChallenges.Configuration/README.md#challenge-023---configuration-validation) | Validation, separation of responsibilities, `IReadOnlyCollection<T>`, validation errors |
+| 024 | [Multiple Library Sources](KaraokeCodingChallenges.Configuration/README.md#challenge-024---multiple-library-sources) | Collections, configuration models, enums, enabled/disabled sources, disconnected drives |

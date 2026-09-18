@@ -54,7 +54,24 @@ namespace KaraokeCodingChallenges.MetadataLibraryMilestone
 
             LibraryScannerService scanner = new();
 
-            List<string> files = scanner.Scan(config.LibraryPath);
+            List<string> files = [];
+
+            foreach (LibrarySource source in config.LibrarySources)
+            {
+                if (!source.Enabled)
+                {
+                    Console.WriteLine($"Skipping disabled {source.Type} source: {source.Path}");
+                    continue;
+                }
+
+                if (!Directory.Exists(source.Path))
+                {
+                    Console.WriteLine($"Library source unavailable: {source.Type} - {source.Path}");
+                    continue;
+                }
+                Console.WriteLine($"Scanning {source.Type} source: {source.Path}");
+                files.AddRange(scanner.Scan(source.Path));
+            }
 
             if (files.Count == 0)
             {

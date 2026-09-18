@@ -6,6 +6,6 @@ namespace KaraokeCodingChallenges.Configuration
 {
     public class AppConfiguration
     {
-        public required string LibraryPath { get; init; }
+        public required IReadOnlyCollection<LibrarySource> LibrarySources { get; init; }
     }
 }
