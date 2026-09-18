@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace KaraokeCodingChallenges.Configuration
 {
@@ -8,7 +9,11 @@ namespace KaraokeCodingChallenges.Configuration
         {
             string json = File.ReadAllText(filePath);
 
-            AppConfiguration? config = JsonSerializer.Deserialize<AppConfiguration>(json);
+            JsonSerializerOptions options = new();
+
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            AppConfiguration? config = JsonSerializer.Deserialize<AppConfiguration>(json, options);
 
             if (config == null)
             {

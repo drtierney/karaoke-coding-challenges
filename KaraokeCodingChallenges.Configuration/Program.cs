@@ -24,7 +24,13 @@ namespace KaraokeCodingChallenges.Configuration
                     return;
                 }
 
-                Console.WriteLine($"Library Path: {config.LibraryPath}");
+                foreach (LibrarySource source in config.LibrarySources)
+                {
+                    Console.WriteLine($"Path: {source.Path}");
+                    Console.WriteLine($"Type: {source.Type}");
+                    Console.WriteLine($"Enabled: {source.Enabled}");
+                    Console.WriteLine();
+                }
             }
             catch (FileNotFoundException)
             {

@@ -96,3 +96,101 @@ Metadata files: 8
 ```
 
 The exact scan results depend on the contents of the configured library folder.
+
+## Challenge 024 - Multiple Library Sources
+
+Challenge 024 expanded application configuration from a single library path to multiple configurable library sources.
+
+### Concepts Practised
+
+- Collections in configuration models
+- Enums
+- JSON enum serialization
+- `JsonStringEnumConverter`
+- `HashSet<T>`
+- Case-insensitive duplicate detection
+- Enabled and disabled configuration entries
+- Handling unavailable or disconnected drives
+- Combining results from multiple sources
+- Separation of configuration validation from runtime availability
+
+### Implementation
+
+Created a `LibrarySource` model containing:
+
+- `Path` for the configured library folder.
+- `Type` to distinguish music and karaoke sources.
+- `Enabled` to control whether the source should be scanned.
+
+Created a `LibrarySourceType` enum containing:
+
+- `Music`
+- `Karaoke`
+- `Mixed`
+
+`AppConfiguration` was updated to store an `IReadOnlyCollection<LibrarySource>` instead of a single library path.
+
+`ConfigurationLoader` was updated to use `JsonStringEnumConverter`, allowing source types to be represented using readable enum names in JSON.
+
+`ConfigurationValidator` was updated to:
+
+- Require at least one configured library source.
+- Reject missing or whitespace-only source paths.
+- Detect duplicate source paths.
+- Compare duplicate paths case-insensitively.
+
+Directory availability is intentionally not treated as a configuration validation error because removable or network drives may be temporarily unavailable.
+
+The Metadata Library Milestone application was updated to:
+
+- Iterate through configured library sources.
+- Skip disabled sources.
+- Report unavailable sources without stopping the scan.
+- Scan all enabled and available sources.
+- Combine discovered files into a single collection for metadata scanning, statistics, and karaoke pairing.
+- Display which sources are scanned, skipped, or unavailable.
+
+## Example Configuration
+
+```json
+{
+  "LibrarySources": [
+    {
+      "Path": "D:\\Music",
+      "Type": "Music",
+      "Enabled": true
+    },
+    {
+      "Path": "D:\\Karaoke",
+      "Type": "Karaoke",
+      "Enabled": false
+    },
+    {
+      "Path": "D:\\Backup",
+      "Type": "Mixed",
+      "Enabled": true
+    }
+  ]
+}
+```
+
+## Example Validation Error
+
+```text
+Configuration errors:
+- Duplicate library source path found: D:\Music
+```
+
+## Example Successful Output
+
+```text
+Metadata Library Milestone
+Configuration loaded.
+Scanning Music source: D:\Music
+Skipping disabled Karaoke source: D:\Karaoke
+Library source unavailable: Mixed - D:\Backup
+Files found: 6
+Metadata files: 6
+```
+
+The exact scan results depend on the contents and availability of the configured library sources.
