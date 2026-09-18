@@ -23,4 +23,4 @@ Challenges use the format `#NNN`, for example `#001`, so spreadsheet application
 
 ## Files
 
-- `challenge-roadmap-v1.1.csv` - the current structured roadmap.
+- `challenge-roadmap-v1.2.csv` - the current structured roadmap.
