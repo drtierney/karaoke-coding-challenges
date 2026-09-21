@@ -51,10 +51,12 @@ namespace KaraokeCodingChallenges.MetadataLibraryMilestone
             }
 
             Console.WriteLine("Configuration loaded.");
+            Console.WriteLine();
 
             LibraryScannerService scanner = new();
 
             List<string> files = [];
+            List<string> karaokeFiles = [];
 
             foreach (LibrarySource source in config.LibrarySources)
             {
@@ -69,8 +71,21 @@ namespace KaraokeCodingChallenges.MetadataLibraryMilestone
                     Console.WriteLine($"Library source unavailable: {source.Type} - {source.Path}");
                     continue;
                 }
+
                 Console.WriteLine($"Scanning {source.Type} source: {source.Path}");
-                files.AddRange(scanner.Scan(source.Path));
+
+                List<string> sourceFiles = scanner.Scan(source.Path);
+
+                //foreach (string file in sourceFiles)
+                //{
+                //    Console.WriteLine($"Found file: {file}");
+                //}
+
+                karaokeFiles.AddRange(LibrarySourceRulesService.GetKaraokeFiles(source.Type, sourceFiles));
+
+                files.AddRange(sourceFiles);
+                Console.WriteLine($"Total files found in {source.Type} source: {sourceFiles.Count}");
+                Console.WriteLine();
             }
 
             if (files.Count == 0)
@@ -95,16 +110,14 @@ namespace KaraokeCodingChallenges.MetadataLibraryMilestone
 
             TagLibMetadataReader metadataReader = new();
 
-            List<MediaScanResult> results =
-                MediaScannerService.ScanFiles(metadataFiles, metadataReader).ToList();
+            List<MediaScanResult> results = MediaScannerService.ScanFiles(metadataFiles, metadataReader).ToList();
 
             DisplayScanResults(results);
 
             KaraokeFilePairingService karaokeFilePairing = new();
-            karaokeFilePairing.PairFiles(files);
+            karaokeFilePairing.PairFiles(karaokeFiles);
 
-            ScanStatisticsSummary statistics =
-                ScanStatisticsService.GenerateStatistics(results, karaokeFilePairing);
+            ScanStatisticsSummary statistics = ScanStatisticsService.GenerateStatistics(results, karaokeFilePairing);
 
             DisplayStatistics(statistics);
         }
