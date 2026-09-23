@@ -31,3 +31,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 023 | [Configuration Validation](KaraokeCodingChallenges.Configuration/README.md#challenge-023---configuration-validation) | Validation, separation of responsibilities, `IReadOnlyCollection<T>`, validation errors |
 | 024 | [Multiple Library Sources](KaraokeCodingChallenges.Configuration/README.md#challenge-024---multiple-library-sources) | Collections, configuration models, enums, enabled/disabled sources, disconnected drives |
 | 025 | [Source-Specific Scan Rules](KaraokeCodingChallenges.MetadataLibraryMilestone/README.md#source-specific-scan-rules) | Enums, switch logic, configuration-driven behaviour, source-specific filtering, separation of concerns, xUnit testing |
+| 026 | [Playlist Model](KaraokeCodingChallenges.Playlist/README.md) | Ordered collections, encapsulation, Guid identifiers, read-only collections, method return values |
