@@ -18,6 +18,8 @@
   <Project Path="KaraokeCodingChallenges.MetadataLibraryMilestone/KaraokeCodingChallenges.MetadataLibraryMilestone.csproj" />
   <Project Path="KaraokeCodingChallenges.MetadataReader/KaraokeCodingChallenges.MetadataReader.csproj" Id="279a68d3-b7e1-47a3-8dfd-efe37a9c0138" />
   <Project Path="KaraokeCodingChallenges.MetadataResolution/KaraokeCodingChallenges.MetadataResolution.csproj" Id="1a50c92c-9ab7-4df1-964c-2822d3ec4f13" />
+  <Project Path="KaraokeCodingChallenges.Playlist.Tests/KaraokeCodingChallenges.Playlist.Tests.csproj" Id="f30a56c7-b880-46af-b4d6-20bacb8a291d" />
+  <Project Path="KaraokeCodingChallenges.Playlist/KaraokeCodingChallenges.Playlist.csproj" Id="452c17d8-92b7-43de-8a47-43f728bf3803" />
   <Project Path="KaraokeCodingChallenges.ScanResult/KaraokeCodingChallenges.ScanResult.csproj" Id="84efd74c-f31b-4682-99e8-e520b1b453c5" />
   <Project Path="KaraokeCodingChallenges.ScanStatistics/KaraokeCodingChallenges.ScanStatistics.csproj" Id="a904dc05-3061-4717-9f14-3940190410f8" />
   <Project Path="KaraokeCodingChallenges.TrackSorting/KaraokeCodingChallenges.TrackSorting.csproj" Id="159b19c2-ceb7-4b1f-81e6-5d73b58d66ce" />
