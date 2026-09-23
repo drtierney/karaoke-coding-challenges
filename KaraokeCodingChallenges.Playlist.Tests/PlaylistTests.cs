@@ -7,7 +7,7 @@ namespace KaraokeCodingChallenges.Playlist.Tests
         [Fact]
         public void Playlist_WhenCreated_StartsEmpty()
         {
-            Playlist playlist = new()
+            MediaPlaylist playlist = new()
             {
                 Name = "Test Playlist"
             };
@@ -19,7 +19,7 @@ namespace KaraokeCodingChallenges.Playlist.Tests
         [Fact]
         public void AddTrack_AddsTrackToPlaylist()
         {
-            Playlist playlist = new()
+            MediaPlaylist playlist = new()
             {
                 Name = "Test Playlist"
             };
@@ -39,7 +39,7 @@ namespace KaraokeCodingChallenges.Playlist.Tests
         [Fact]
         public void AddTrack_PreservesInsertionOrder()
         {
-            Playlist playlist = new()
+            MediaPlaylist playlist = new()
             {
                 Name = "Test Playlist"
             };
@@ -64,7 +64,7 @@ namespace KaraokeCodingChallenges.Playlist.Tests
         [Fact]
         public void RemoveTrack_WhenTrackExists_ReturnsTrue()
         {
-            Playlist playlist = new()
+            MediaPlaylist playlist = new()
             {
                 Name = "Test Playlist"
             };
@@ -86,7 +86,7 @@ namespace KaraokeCodingChallenges.Playlist.Tests
         [Fact]
         public void RemoveTrack_WhenTrackDoesNotExist_ReturnsFalse()
         {
-            Playlist playlist = new()
+            MediaPlaylist playlist = new()
             {
                 Name = "Test Playlist"
             };
@@ -105,7 +105,7 @@ namespace KaraokeCodingChallenges.Playlist.Tests
         [Fact]
         public void Clear_RemovesAllTracks()
         {
-            Playlist playlist = new()
+            MediaPlaylist playlist = new()
             {
                 Name = "Test Playlist"
             };

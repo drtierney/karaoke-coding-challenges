@@ -2,7 +2,7 @@
 
 namespace KaraokeCodingChallenges.Playlist
 {
-    public class Playlist
+    public class MediaPlaylist
     {
         public Guid Id { get; } = Guid.NewGuid();
 

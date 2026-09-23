@@ -8,7 +8,7 @@ Build a reusable playlist that can add, remove and clear tracks while preserving
 
 ## Requirements
 
-- Create a `Playlist` class.
+- Create a `MediaPlaylist` class.
 - Give each playlist a unique `Guid` identifier.
 - Require a playlist name when the playlist is created.
 - Store `MediaTrackModel` objects in a private collection.
@@ -33,7 +33,7 @@ Build a reusable playlist that can add, remove and clear tracks while preserving
 
 ## Implementation
 
-The `Playlist` class uses a private `List<MediaTrackModel>` to manage its tracks internally.
+The `MediaPlaylist` class uses a private `List<MediaTrackModel>` to manage its tracks internally.
 
 The tracks are exposed publicly through `IReadOnlyList<MediaTrackModel>`, allowing callers to inspect the playlist while ensuring changes are made through playlist methods.
 

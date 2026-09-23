@@ -32,3 +32,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 024 | [Multiple Library Sources](KaraokeCodingChallenges.Configuration/README.md#challenge-024---multiple-library-sources) | Collections, configuration models, enums, enabled/disabled sources, disconnected drives |
 | 025 | [Source-Specific Scan Rules](KaraokeCodingChallenges.MetadataLibraryMilestone/README.md#source-specific-scan-rules) | Enums, switch logic, configuration-driven behaviour, source-specific filtering, separation of concerns, xUnit testing |
 | 026 | [Playlist Model](KaraokeCodingChallenges.Playlist/README.md) | Ordered collections, encapsulation, Guid identifiers, read-only collections, method return values |
+| 027 | [M3U Playlist Import & Export](KaraokeCodingChallenges.PlaylistFile/README.md) | Text file handling, M3U format, relative and absolute paths, path resolution, interoperability, xUnit testing |

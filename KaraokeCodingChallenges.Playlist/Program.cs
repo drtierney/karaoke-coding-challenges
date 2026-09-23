@@ -24,7 +24,7 @@ namespace KaraokeCodingChallenges.Playlist
                 @"D:\Music\Harry Styles - Sign of the Times.mp3",
                 340);
 
-            Playlist playlist = new()
+            MediaPlaylist playlist = new()
             {
                 Name = "Test Playlist"
             };
@@ -56,7 +56,7 @@ namespace KaraokeCodingChallenges.Playlist
             DisplayPlaylistTrackList(playlist);
         }
 
-        private static void DisplayPlaylistInfo(Playlist playlist)
+        private static void DisplayPlaylistInfo(MediaPlaylist playlist)
         {
             Console.WriteLine($"Playlist: {playlist.Name}");
             Console.WriteLine($"Id: {playlist.Id}");
@@ -64,7 +64,7 @@ namespace KaraokeCodingChallenges.Playlist
             Console.WriteLine();
         }
 
-        private static void DisplayPlaylistTrackList(Playlist playlist)
+        private static void DisplayPlaylistTrackList(MediaPlaylist playlist)
         {
             foreach (var track in playlist.Tracks)
             {
