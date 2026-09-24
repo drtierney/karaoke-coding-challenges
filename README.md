@@ -35,3 +35,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 027 | [M3U Playlist Import & Export](KaraokeCodingChallenges.PlaylistFile/README.md) | Text file handling, M3U format, relative and absolute paths, path resolution, interoperability, xUnit testing |
 | 028 | [Playback Queue Manager](KaraokeCodingChallenges.Playback/README.md) | Queue-like behaviour, ordered collections, mutation, read-only collections, nullable return values, xUnit testing |
 | 029 | [Playback History & Play Counts](KaraokeCodingChallenges.PlaybackHistory/README.md) | Records, collections, LINQ, timestamps, counters, state management, input validation, xUnit testing |
+| 030 | [Favourites](KaraokeCodingChallenges.Favourites/README.md) | HashSet, state management, JSON serialization, persistence, identifiers, input validation, xUnit testing |
