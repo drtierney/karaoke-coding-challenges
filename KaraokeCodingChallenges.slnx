@@ -1,6 +1,9 @@
 <Solution>
   <Project Path="KaraokeCodingChallenges.Configuration/KaraokeCodingChallenges.Configuration.csproj" Id="4a792d29-cc22-4005-ad4b-3d646574bfee" />
   <Project Path="KaraokeCodingChallenges.DuplicateDetection/KaraokeCodingChallenges.DuplicateDetection.csproj" Id="03ffc57a-acaa-479f-a7fa-74b7cd48fea9" />
+  <Project Path="KaraokeCodingChallenges.Favourites.Demo/KaraokeCodingChallenges.Favourites.Demo.csproj" Id="04f221f3-776f-4a9d-aab1-428db12cacb9" />
+  <Project Path="KaraokeCodingChallenges.Favourites.Tests/KaraokeCodingChallenges.Favourites.Tests.csproj" Id="746e9867-3098-48cc-8601-d9ad17782071" />
+  <Project Path="KaraokeCodingChallenges.Favourites/KaraokeCodingChallenges.Favourites.csproj" Id="6c8f484e-79fd-4a7b-8094-00de89d69270" />
   <Project Path="KaraokeCodingChallenges.FileValidation/KaraokeCodingChallenges.FileValidation.csproj" Id="5cb74215-7e41-4e71-8bd4-07d132d6ba9e" />
   <Project Path="KaraokeCodingChallenges.KaraokeFilePairing/KaraokeCodingChallenges.KaraokeFilePairing.csproj" Id="1149c48f-9176-4b73-9b8e-66b4e4719c95" />
   <Project Path="KaraokeCodingChallenges.LibraryScanner/KaraokeCodingChallenges.LibraryScanner.csproj" Id="f03023c2-4a18-4b5d-b667-9aa2c0971754" />
