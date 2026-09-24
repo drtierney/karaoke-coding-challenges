@@ -21,6 +21,9 @@
   <Project Path="KaraokeCodingChallenges.Playback.Demo/KaraokeCodingChallenges.Playback.Demo.csproj" Id="49e79773-a122-485a-a312-d59364d0b8b1" />
   <Project Path="KaraokeCodingChallenges.Playback.Tests/KaraokeCodingChallenges.Playback.Tests.csproj" Id="7d3fbacf-e6cc-4077-b5e2-3d63fc830c9a" />
   <Project Path="KaraokeCodingChallenges.Playback/KaraokeCodingChallenges.Playback.csproj" Id="b39bf0d9-4b7c-4b72-94f1-213829870b57" />
+  <Project Path="KaraokeCodingChallenges.PlaybackHistory.Demo/KaraokeCodingChallenges.PlaybackHistory.Demo.csproj" Id="84ab85e8-6986-4646-8bc6-c9c1a27753d0" />
+  <Project Path="KaraokeCodingChallenges.PlaybackHistory.Tests/KaraokeCodingChallenges.PlaybackHistory.Tests.csproj" Id="0ffb6a17-8769-4a17-931c-e6ba33e05d32" />
+  <Project Path="KaraokeCodingChallenges.PlaybackHistory/KaraokeCodingChallenges.PlaybackHistory.csproj" Id="f5df5122-275f-44dc-b114-774b3b790ae7" />
   <Project Path="KaraokeCodingChallenges.Playlist.Tests/KaraokeCodingChallenges.Playlist.Tests.csproj" Id="f30a56c7-b880-46af-b4d6-20bacb8a291d" />
   <Project Path="KaraokeCodingChallenges.Playlist/KaraokeCodingChallenges.Playlist.csproj" Id="452c17d8-92b7-43de-8a47-43f728bf3803" />
   <Project Path="KaraokeCodingChallenges.PlaylistFile.Demo/KaraokeCodingChallenges.PlaylistFile.Demo.csproj" Id="1b288867-a2cd-4c45-b5d8-146a061884fe" />
