@@ -36,3 +36,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 028 | [Playback Queue Manager](KaraokeCodingChallenges.Playback/README.md) | Queue-like behaviour, ordered collections, mutation, read-only collections, nullable return values, xUnit testing |
 | 029 | [Playback History & Play Counts](KaraokeCodingChallenges.PlaybackHistory/README.md) | Records, collections, LINQ, timestamps, counters, state management, input validation, xUnit testing |
 | 030 | [Favourites](KaraokeCodingChallenges.Favourites/README.md) | HashSet, state management, JSON serialization, persistence, identifiers, input validation, xUnit testing |
+| 031 | [Smart Lists](KaraokeCodingChallenges.SmartLists/README.md) | Func<T, bool>, predicates, LINQ Where/All, reusable rules, read-only collections, input validation, xUnit testing |
