@@ -1,29 +1,31 @@
-﻿namespace KaraokeCodingChallenges.SmartLists.Tests;
+﻿using KaraokeCodingChallenges.MediaTrack;
+
+namespace KaraokeCodingChallenges.SmartLists.Tests;
 
 public class SmartListTests
 {
     [Fact]
     public void SmartList_WhenNameIsNull_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new SmartList(null!));
+        Assert.Throws<ArgumentException>(() => new SmartList<MediaTrackModel>(null!));
     }
 
     [Fact]
     public void SmartList_WhenNameIsEmpty_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new SmartList(string.Empty));
+        Assert.Throws<ArgumentException>(() => new SmartList<MediaTrackModel>(string.Empty));
     }
 
     [Fact]
     public void SmartList_WhenNameIsWhitespace_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new SmartList("   "));
+        Assert.Throws<ArgumentException>(() => new SmartList<MediaTrackModel>("   "));
     }
 
     [Fact]
     public void SmartList_WhenCreated_StoresName()
     {
-        SmartList smartList = new("Smart List");
+        SmartList<MediaTrackModel> smartList = new("Smart List");
 
         Assert.Equal("Smart List", smartList.Name);
     }
@@ -31,7 +33,7 @@ public class SmartListTests
     [Fact]
     public void SmartList_WhenCreated_StartsWithNoRules()
     {
-        SmartList smartList = new("Smart List");
+        SmartList<MediaTrackModel> smartList = new("Smart List");
 
         Assert.Empty(smartList.Rules);
     }
@@ -39,9 +41,9 @@ public class SmartListTests
     [Fact]
     public void AddRule_AddsRuleToSmartList()
     {
-        SmartList smartList = new("Smart List");
+        SmartList<MediaTrackModel> smartList = new("Smart List");
 
-        SmartListRule rule = new("Karaoke tracks", track => track.IsKaraoke);
+        SmartListRule<MediaTrackModel> rule = new("Karaoke tracks", track => track.IsKaraoke);
 
         smartList.AddRule(rule);
 
@@ -51,11 +53,11 @@ public class SmartListTests
     [Fact]
     public void AddRule_PreservesInsertionOrder()
     {
-        SmartList smartList = new("Smart List");
+        SmartList<MediaTrackModel> smartList = new("Smart List");
 
-        SmartListRule rule1 = new("Karaoke tracks", track => track.IsKaraoke);
+        SmartListRule<MediaTrackModel> rule1 = new("Karaoke tracks", track => track.IsKaraoke);
 
-        SmartListRule rule2 = new("Queen tracks", track => track.Artist == "Queen");
+        SmartListRule<MediaTrackModel> rule2 = new("Queen tracks", track => track.Artist == "Queen");
 
         smartList.AddRule(rule1);
         smartList.AddRule(rule2);
@@ -66,9 +68,9 @@ public class SmartListTests
     [Fact]
     public void RemoveRule_WhenRuleExists_ReturnsTrue()
     {
-        SmartList smartList = new("Smart List");
+        SmartList<MediaTrackModel> smartList = new("Smart List");
 
-        SmartListRule rule = new("Karaoke tracks", track => track.IsKaraoke);
+        SmartListRule<MediaTrackModel> rule = new("Karaoke tracks", track => track.IsKaraoke);
 
         smartList.AddRule(rule);
 
@@ -79,9 +81,9 @@ public class SmartListTests
     [Fact]
     public void RemoveRule_WhenRuleDoesNotExist_ReturnsFalse()
     {
-        SmartList smartList = new("Smart List");
+        SmartList<MediaTrackModel> smartList = new("Smart List");
 
-        SmartListRule rule = new("Karaoke tracks", track => track.IsKaraoke);
+        SmartListRule<MediaTrackModel> rule = new("Karaoke tracks", track => track.IsKaraoke);
 
         bool result = smartList.RemoveRule(rule);
         Assert.False(result);
@@ -90,14 +92,22 @@ public class SmartListTests
     [Fact]
     public void ClearRules_RemovesAllRules()
     {
-        SmartList smartList = new("Smart List");
+        SmartList<MediaTrackModel> smartList = new("Smart List");
 
-        SmartListRule rule = new("Karaoke tracks", track => track.IsKaraoke);
+        SmartListRule<MediaTrackModel> rule = new("Karaoke tracks", track => track.IsKaraoke);
 
         smartList.AddRule(rule);
 
         smartList.ClearRules();
 
         Assert.Empty(smartList.Rules);
+    }
+
+    [Fact]
+    public void Constructor_WithInvalidMatchMode_ThrowsArgumentOutOfRangeException()
+    {
+        SmartListMatchMode invalidMode = (SmartListMatchMode)999;
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => new SmartList<MediaTrackModel>("Smart List", invalidMode));
     }
 }

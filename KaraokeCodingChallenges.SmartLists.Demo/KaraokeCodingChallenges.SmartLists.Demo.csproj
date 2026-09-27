@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\KaraokeCodingChallenges.MediaTrack\KaraokeCodingChallenges.MediaTrack.csproj" />
     <ProjectReference Include="..\KaraokeCodingChallenges.SmartLists\KaraokeCodingChallenges.SmartLists.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.TrackSorting\KaraokeCodingChallenges.TrackSorting.csproj" />
   </ItemGroup>
 
 </Project>
