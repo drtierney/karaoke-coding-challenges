@@ -34,5 +34,8 @@
   <Project Path="KaraokeCodingChallenges.PlaylistFile/KaraokeCodingChallenges.PlaylistFile.csproj" Id="afcf6570-9f7f-4af2-80b0-67af5f49c9e4" />
   <Project Path="KaraokeCodingChallenges.ScanResult/KaraokeCodingChallenges.ScanResult.csproj" Id="84efd74c-f31b-4682-99e8-e520b1b453c5" />
   <Project Path="KaraokeCodingChallenges.ScanStatistics/KaraokeCodingChallenges.ScanStatistics.csproj" Id="a904dc05-3061-4717-9f14-3940190410f8" />
+  <Project Path="KaraokeCodingChallenges.SmartLists.Demo/KaraokeCodingChallenges.SmartLists.Demo.csproj" Id="ca83deb7-5100-4c22-a935-232705641109" />
+  <Project Path="KaraokeCodingChallenges.SmartLists.Tests/KaraokeCodingChallenges.SmartLists.Tests.csproj" Id="55dac593-b5bd-47da-9cff-d8c8529b0154" />
+  <Project Path="KaraokeCodingChallenges.SmartLists/KaraokeCodingChallenges.SmartLists.csproj" Id="0befeb68-062d-45ef-8a1b-f1c777f7fcc9" />
   <Project Path="KaraokeCodingChallenges.TrackSorting/KaraokeCodingChallenges.TrackSorting.csproj" Id="159b19c2-ceb7-4b1f-81e6-5d73b58d66ce" />
 </Solution>
