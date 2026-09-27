@@ -1,5 +1,6 @@
 ﻿using KaraokeCodingChallenges.MediaTrack;
 using KaraokeCodingChallenges.SmartLists;
+using KaraokeCodingChallenges.TrackSorting;
 
 List<MediaTrackModel> tracks =
 [
@@ -32,46 +33,50 @@ List<MediaTrackModel> tracks =
         isKaraoke: false)
 ];
 
-Console.WriteLine("All Tracks");
+Console.WriteLine("All Tracks:");
 Console.WriteLine();
 
 foreach (MediaTrackModel track in tracks)
 {
-    Console.WriteLine(track);
-    Console.WriteLine();
+    string type = track.IsKaraoke ? "Karaoke" : "Music";
+
+    Console.WriteLine(
+        $"{track.Artist} - {track.Title} [{type}] ({track.GetFormattedDuration()})");
 }
 
-SmartList smartList = new("Queen Karaoke");
+SmartList<MediaTrackModel> smartList = new("Long Karaoke");
 
-smartList.AddRule(
-    new SmartListRule(
-        "Karaoke tracks",
-        track => track.IsKaraoke));
+smartList.AddRule(MediaTrackRules.KaraokeOnly());
+smartList.AddRule(MediaTrackRules.MinimumDuration(180));
 
-smartList.AddRule(
-    new SmartListRule(
-        "Queen tracks",
-        track => track.Artist == "Queen"));
-
-Console.WriteLine($"Smart List: {smartList.Name}");
 Console.WriteLine();
+Console.WriteLine($"Smart List: {smartList.Name}");
+Console.WriteLine($"Match Mode: {smartList.MatchMode}");
+Console.WriteLine();
+Console.WriteLine("Rules:");
 
-foreach (SmartListRule rule in smartList.Rules)
+foreach (SmartListRule<MediaTrackModel> rule in smartList.Rules)
 {
-    Console.WriteLine($"Rule: {rule.Name}");
+    Console.WriteLine($"- {rule.Name}");
 }
 
 SmartListService service = new();
 
-IReadOnlyList<MediaTrackModel> results =
-    service.Apply(smartList, tracks);
+IReadOnlyList<MediaTrackModel> results = service.Apply(smartList, tracks);
+
+IEnumerable<MediaTrackModel> sortedResults = MediaLibrarySortService.SortByArtistThenTitle(results);
 
 Console.WriteLine();
-Console.WriteLine("Matching Tracks");
+Console.WriteLine("Matching Tracks (sorted by artist and title):");
 Console.WriteLine();
 
-foreach (MediaTrackModel track in results)
+foreach (MediaTrackModel track in sortedResults)
 {
-    Console.WriteLine(track);
-    Console.WriteLine();
+    string type = track.IsKaraoke ? "Karaoke" : "Music";
+
+    Console.WriteLine(
+        $"{track.Artist} - {track.Title} [{type}] ({track.GetFormattedDuration()})");
 }
+
+Console.WriteLine();
+Console.WriteLine($"{results.Count} of {tracks.Count} tracks matched.");

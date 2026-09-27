@@ -7,29 +7,25 @@ public class SmartListRuleTests
     [Fact]
     public void SmartListRule_WhenNameIsNull_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(
-            () => new SmartListRule(null!, track => track.IsKaraoke));
+        Assert.Throws<ArgumentException>(() => new SmartListRule<MediaTrackModel>(null!, track => track.IsKaraoke));
     }
 
     [Fact]
     public void SmartListRule_WhenNameIsEmpty_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(
-            () => new SmartListRule(string.Empty, track => track.IsKaraoke));
+        Assert.Throws<ArgumentException>(() => new SmartListRule<MediaTrackModel>(string.Empty, track => track.IsKaraoke));
     }
 
     [Fact]
     public void SmartListRule_WhenNameIsWhitespace_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(
-            () => new SmartListRule("   ", track => track.IsKaraoke));
+        Assert.Throws<ArgumentException>(() => new SmartListRule<MediaTrackModel>("   ", track => track.IsKaraoke));
     }
 
     [Fact]
     public void SmartListRule_WhenPredicateIsNull_ThrowsArgumentNullException()
     {
-        Assert.Throws<ArgumentNullException>(
-            () => new SmartListRule("Karaoke tracks", null!));
+        Assert.Throws<ArgumentNullException>(() => new SmartListRule<MediaTrackModel>("Karaoke tracks", null!));
     }
 
     [Fact]
@@ -37,7 +33,7 @@ public class SmartListRuleTests
     {
         MediaTrackModel track = new("Radio Ga Ga", "Queen", @"D:\Music\Queen - Radio Ga Ga.mp3", isKaraoke: true);
 
-        SmartListRule rule = new("Karaoke tracks", track => track.IsKaraoke);
+        SmartListRule<MediaTrackModel> rule = new("Karaoke tracks", track => track.IsKaraoke);
 
         bool result = rule.Matches(track);
 
@@ -49,7 +45,7 @@ public class SmartListRuleTests
     {
         MediaTrackModel track = new("Radio Ga Ga", "Queen", @"D:\Music\Queen - Radio Ga Ga.mp3", isKaraoke: false);
 
-        SmartListRule rule = new("Karaoke tracks", track => track.IsKaraoke);
+        SmartListRule<MediaTrackModel> rule = new("Karaoke tracks", track => track.IsKaraoke);
 
         bool result = rule.Matches(track);
 

@@ -1,6 +1,8 @@
 # Smart Lists Demo
 
-Manual verification application for Challenge 031 - Smart Lists.
+Manual verification application for Challenge 031 - Smart Lists and Challenge 032 - Advanced Search & Filter Rules.
+
+# Challenge 031 - Smart Lists
 
 ## Demonstration
 
@@ -58,4 +60,48 @@ Artist: Queen
 FilePath: D:\Karaoke\Queen - Bohemian Rhapsody.mp3
 DurationFormatted: 5:54
 IsKaraoke: True
+```
+
+# Challenge 032 - Advanced Search & Filter Rules
+
+## Demonstration
+
+The updated demo:
+
+- Creates a sample collection containing music and karaoke tracks.
+- Displays the available tracks in a compact format.
+- Creates a smart list named `Long Karaoke`.
+- Uses the `All` match mode.
+- Adds the reusable `KaraokeOnly()` rule.
+- Adds the reusable `MinimumDuration(180)` rule.
+- Applies the rules using `SmartListService`.
+- Sorts the matching tracks by artist and title using the existing `MediaLibrarySortService`.
+- Displays the filtered and sorted results.
+- Displays the number of tracks that matched.
+
+The updated demo shows how reusable smart list rules can be combined with existing library services without coupling filtering and sorting responsibilities.
+
+## Example Output
+
+```text
+All Tracks:
+
+Queen - Bohemian Rhapsody [Karaoke] (5:54)
+Queen - Don't Stop Me Now [Music] (3:30)
+Paramore - Misery Business [Karaoke] (3:20)
+Paramore - Still Into You [Music] (3:40)
+
+Smart List: Long Karaoke
+Match Mode: All
+
+Rules:
+- Karaoke only
+- At least 180 seconds
+
+Matching Tracks (sorted by artist and title):
+
+Paramore - Misery Business [Karaoke] (3:20)
+Queen - Bohemian Rhapsody [Karaoke] (5:54)
+
+2 of 4 tracks matched.
 ```

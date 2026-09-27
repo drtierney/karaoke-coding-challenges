@@ -1,14 +1,12 @@
-﻿using KaraokeCodingChallenges.MediaTrack;
+﻿namespace KaraokeCodingChallenges.SmartLists;
 
-namespace KaraokeCodingChallenges.SmartLists;
-
-public class SmartListRule
+public class SmartListRule<T>
 {
     public string Name { get; }
 
-    private readonly Func<MediaTrackModel, bool> _predicate;
+    private readonly Func<T, bool> _predicate;
 
-    public SmartListRule(string name, Func<MediaTrackModel, bool> predicate)
+    public SmartListRule(string name, Func<T, bool> predicate)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -20,8 +18,8 @@ public class SmartListRule
         Name = name;
     }
 
-    public bool Matches(MediaTrackModel track)
+    public bool Matches(T item)
     {
-        return _predicate(track);
+        return _predicate(item);
     }
 }
