@@ -15,13 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KaraokeCodingChallenges.Configuration\KaraokeCodingChallenges.Configuration.csproj" />
-    <ProjectReference Include="..\KaraokeCodingChallenges.KaraokeFilePairing\KaraokeCodingChallenges.KaraokeFilePairing.csproj" />
-    <ProjectReference Include="..\KaraokeCodingChallenges.MetadataLibraryMilestone\KaraokeCodingChallenges.MetadataLibraryMilestone.csproj" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.LibrarySourceRules\KaraokeCodingChallenges.LibrarySourceRules.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.Configuration\KaraokeCodingChallenges.Configuration.csproj" />
   </ItemGroup>
 
 </Project>

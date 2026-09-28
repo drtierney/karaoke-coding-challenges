@@ -85,9 +85,13 @@ It returns the files that should participate in karaoke pairing.
 
 This keeps `Program.cs` responsible for application orchestration while the rules for `Music`, `Karaoke`, and `Mixed` sources remain isolated in a dedicated service.
 
+During Challenge 033, `LibrarySourceRulesService` was extracted into the dedicated `KaraokeCodingChallenges.LibrarySourceRules` project so the same source-specific rules could be reused by other application workflows.
+
+The Metadata Library Milestone now references the dedicated project rather than containing the service directly.
+
 ## Automated Tests
 
-Challenge 025 added a dedicated `KaraokeCodingChallenges.MetadataLibraryMilestone.Tests` project.
+Challenge 025 originally added a dedicated `KaraokeCodingChallenges.MetadataLibraryMilestone.Tests` project for the source-specific scan rules.
 
 Six automated tests verify that:
 
@@ -98,6 +102,10 @@ Six automated tests verify that:
 - Mixed sources include unmatched CDG files.
 - Files with matching names in different directories are not incorrectly paired.
 - File extension matching is case-insensitive.
+
+During Challenge 033, these tests were moved to `KaraokeCodingChallenges.LibrarySourceRules.Tests` alongside the extracted service.
+
+The original `KaraokeCodingChallenges.MetadataLibraryMilestone.Tests` project was removed because it no longer contained milestone-specific tests.
 
 ## Example Results
 
@@ -143,4 +151,4 @@ The milestone demonstrates the difference between:
 
 Materialising scan results with `ToList()` allows the same results to be reused for both display and statistics without rescanning the files.
 
-Separating source-specific rules into `LibrarySourceRulesService` keeps configuration-driven behaviour out of the main orchestration logic and allows the rules to be tested independently.
+Extracting source-specific rules into the dedicated `KaraokeCodingChallenges.LibrarySourceRules` project keeps configuration-driven behaviour out of the main orchestration logic, allows the rules to be tested independently, and makes them reusable by later application workflows.

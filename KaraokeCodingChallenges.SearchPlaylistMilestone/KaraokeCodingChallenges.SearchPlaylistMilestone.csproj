@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\KaraokeCodingChallenges.ScanResult\KaraokeCodingChallenges.ScanResult.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MediaTrack\KaraokeCodingChallenges.MediaTrack.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MediaLibrary\KaraokeCodingChallenges.MediaLibrary.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.Playlist\KaraokeCodingChallenges.Playlist.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MediaMetadata\KaraokeCodingChallenges.MediaMetadata.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.SmartLists\KaraokeCodingChallenges.SmartLists.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.TrackSorting\KaraokeCodingChallenges.TrackSorting.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.Favourites\KaraokeCodingChallenges.Favourites.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.PlaylistFile\KaraokeCodingChallenges.PlaylistFile.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.Playback\KaraokeCodingChallenges.Playback.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.PlaybackHistory\KaraokeCodingChallenges.PlaybackHistory.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.Configuration\KaraokeCodingChallenges.Configuration.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.LibraryScanner\KaraokeCodingChallenges.LibraryScanner.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.LibrarySourceRules\KaraokeCodingChallenges.LibrarySourceRules.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MediaScanService\KaraokeCodingChallenges.MediaScanService.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MetadataReader\KaraokeCodingChallenges.MetadataReader.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

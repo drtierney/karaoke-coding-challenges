@@ -38,3 +38,4 @@ A collection of C# coding challenges designed to improve my C# skills while expl
 | 030 | [Favourites](KaraokeCodingChallenges.Favourites/README.md) | HashSet, state management, JSON serialization, persistence, identifiers, input validation, xUnit testing |
 | 031 | [Smart Lists](KaraokeCodingChallenges.SmartLists/README.md) | Func<T, bool>, predicates, LINQ Where/All, reusable rules, read-only collections, input validation, xUnit testing |
 | 032 | [Advanced Search & Filter Rules](KaraokeCodingChallenges.SmartLists/README.md#challenge-032---advanced-search--filter-rules) | Generics, predicates, LINQ All/Any, rule composition, reusable filters, enum-based behaviour, input validation |
+| 033 | [Search & Playlist Milestone](KaraokeCodingChallenges.SearchPlaylistMilestone/README.md) | Application composition, dependency injection, cross-project integration, mapping, integration testing, targeted refactoring |

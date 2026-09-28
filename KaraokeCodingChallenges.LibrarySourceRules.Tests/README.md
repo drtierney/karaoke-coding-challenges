@@ -1,6 +1,6 @@
-# Metadata Library Milestone Tests
+# Library Source Rules Tests
 
-Automated tests for source-specific library scan rules introduced in Challenge 025.
+Automated tests for the source-specific library scan rules introduced in Challenge 025 and extracted into a dedicated project during Challenge 033.
 
 ## Concepts Practised
 
@@ -9,10 +9,18 @@ Automated tests for source-specific library scan rules introduced in Challenge 0
 - Testing file pairing behaviour
 - Edge-case testing
 
-## Tests Performed
+## Test Coverage
+
+### Music Sources
 
 - Music sources return no karaoke files.
-- Karaoke sources return all discovered files for pairing.
+
+### Karaoke Sources
+
+- Karaoke sources return all discovered files.
+
+### Mixed Sources
+
 - Mixed sources include matched MP3/CDG pairs.
 - Mixed sources exclude standalone MP3 files.
 - Mixed sources include unmatched CDG files.
@@ -21,5 +29,5 @@ Automated tests for source-specific library scan rules introduced in Challenge 0
 
 ## Test Results
 
-- 6 Challenge 025 tests passing.
-- 21 total solution tests passing.
+- 6 library source rule tests passing.
+- 178 total solution tests passing.
