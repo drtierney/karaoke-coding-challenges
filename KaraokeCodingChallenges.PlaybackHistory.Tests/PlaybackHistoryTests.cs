@@ -46,6 +46,18 @@ public class PlaybackHistoryManagerTests
     }
 
     [Fact]
+    public void GetPlayCount_WhenPathUsesDifferentCase_ReturnsCount()
+    {
+        PlaybackHistoryManager manager = new();
+
+        manager.RecordPlay(@"D:\Music\Queen - Bohemian Rhapsody.mp3", new(2026, 9, 28, 18, 0, 0, TimeSpan.Zero));
+
+        int playCount = manager.GetPlayCount(@"D:\MUSIC\QUEEN - BOHEMIAN RHAPSODY.MP3");
+
+        Assert.Equal(1, playCount);
+    }
+
+    [Fact]
     public void GetLastPlayed_WhenTrackIsPlayed_ReturnsMostRecentTime()
     {
         PlaybackHistoryManager manager = new();
@@ -60,6 +72,20 @@ public class PlaybackHistoryManagerTests
         DateTimeOffset? lastPlayed = manager.GetLastPlayed("Queen - Bohemian Rhapsody.mp3");
 
         Assert.Equal(secondPlay, lastPlayed);
+    }
+
+    [Fact]
+    public void GetLastPlayed_WhenPathUsesDifferentCase_ReturnsMostRecentTime()
+    {
+        PlaybackHistoryManager manager = new();
+
+        DateTimeOffset playedAt = new(2026, 9, 28, 18, 0, 0, TimeSpan.Zero);
+
+        manager.RecordPlay(@"D:\Music\Queen - Bohemian Rhapsody.mp3", playedAt);
+
+        DateTimeOffset? lastPlayed = manager.GetLastPlayed(@"D:\MUSIC\QUEEN - BOHEMIAN RHAPSODY.MP3");
+
+        Assert.Equal(playedAt, lastPlayed);
     }
 
     [Fact]

@@ -41,6 +41,20 @@ public class FavouriteManagerTests
     }
 
     [Fact]
+    public void AddFavourite_WhenPathDiffersOnlyByCase_ReturnsFalse()
+    {
+        FavouriteManager manager = new();
+
+        manager.AddFavourite(@"D:\Music\Queen - Bohemian Rhapsody.mp3");
+
+        bool added = manager.AddFavourite(
+            @"D:\MUSIC\QUEEN - BOHEMIAN RHAPSODY.MP3"
+        );
+
+        Assert.False(added);
+    }
+
+    [Fact]
     public void IsFavourite_WhenTrackExists_ReturnsTrue()
     {
         FavouriteManager manager = new();
@@ -50,6 +64,30 @@ public class FavouriteManagerTests
         bool isFavourite = manager.IsFavourite("Queen - Bohemian Rhapsody.mp3");
 
         Assert.True(isFavourite);
+    }
+
+    [Fact]
+    public void IsFavourite_WhenPathUsesDifferentCase_ReturnsTrue()
+    {
+        FavouriteManager manager = new();
+
+        manager.AddFavourite(@"D:\Music\Queen - Bohemian Rhapsody.mp3");
+
+        bool isFavourite = manager.IsFavourite(
+            @"D:\MUSIC\QUEEN - BOHEMIAN RHAPSODY.MP3"
+        );
+
+        Assert.True(isFavourite);
+    }
+
+    [Fact]
+    public void IsFavourite_WhenTrackDoesNotExist_ReturnsFalse()
+    {
+        FavouriteManager manager = new();
+
+        bool isFavourite = manager.IsFavourite("Queen - Bohemian Rhapsody.mp3");
+
+        Assert.False(isFavourite);
     }
 
     [Fact]
@@ -72,16 +110,6 @@ public class FavouriteManagerTests
         bool removed = manager.RemoveFavourite("Queen - Bohemian Rhapsody.mp3");
 
         Assert.False(removed);
-    }
-
-    [Fact]
-    public void IsFavourite_WhenTrackDoesNotExist_ReturnsFalse()
-    {
-        FavouriteManager manager = new();
-
-        bool isFavourite = manager.IsFavourite("Queen - Bohemian Rhapsody.mp3");
-
-        Assert.False(isFavourite);
     }
 
     [Fact]

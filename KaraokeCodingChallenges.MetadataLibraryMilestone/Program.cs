@@ -5,6 +5,7 @@ using KaraokeCodingChallenges.ScanResult;
 using KaraokeCodingChallenges.KaraokeFilePairing;
 using KaraokeCodingChallenges.ScanStatistics;
 using KaraokeCodingChallenges.Configuration;
+using KaraokeCodingChallenges.LibrarySourceRules;
 
 namespace KaraokeCodingChallenges.MetadataLibraryMilestone
 {

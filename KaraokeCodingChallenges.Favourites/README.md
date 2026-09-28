@@ -24,6 +24,7 @@ Created a `FavouriteManager` class that:
 - Returns favourites through a read-only collection.
 - Rejects empty or whitespace-only track paths.
 - Supports initialization from an existing favourites collection.
+- Compares track paths case-insensitively.
 
 Created a `FavouriteStore` class that:
 
@@ -35,6 +36,6 @@ Created a `FavouriteStore` class that:
 - Rejects a `null` favourites collection.
 - Allows invalid JSON to surface as a `JsonException`.
 
-Track paths are currently used as identifiers for favourite entries, matching the existing playback-history approach.
+Track paths are currently used as identifiers for favourite entries, matching the existing playback-history approach. Path comparisons are case-insensitive so differently cased representations of the same path are treated as the same favourite.
 
 The persistence layer is kept separate from `FavouriteManager`, allowing favourite state management and file storage to remain independent responsibilities.

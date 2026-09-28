@@ -4,7 +4,7 @@ Unit tests for favourite state and persistence behaviour.
 
 ## Test Coverage
 
-The tests verify that:
+### Favourite Manager
 
 - A new favourites manager starts empty.
 - A `null` initial favourites collection is rejected.
@@ -17,6 +17,11 @@ The tests verify that:
 - Empty track paths are rejected.
 - Existing favourites can be supplied when creating the manager.
 - Duplicate initial favourites are removed.
+- Favourite path matching is case-insensitive.
+- Paths differing only by case are treated as the same favourite.
+
+### Favourite Persistence
+
 - Saved favourites can be loaded and restored into a manager.
 - Saving favourites creates a JSON file.
 - Saved favourites can be loaded successfully.
@@ -28,5 +33,5 @@ The tests verify that:
 ## Test Results
 
 ```text
-Test summary: total: 20, failed: 0, succeeded: 20, skipped: 0
+Test summary: total: 23, failed: 0, succeeded: 23, skipped: 0
 ```

@@ -3,7 +3,7 @@
 public class FavouriteManager
 {
 
-    private readonly HashSet<string> _favourites = [];
+    private readonly HashSet<string> _favourites = new(StringComparer.OrdinalIgnoreCase);
 
     public FavouriteManager()
     {
@@ -13,7 +13,7 @@ public class FavouriteManager
     {
         ArgumentNullException.ThrowIfNull(favourites);
 
-        _favourites = new HashSet<string>();
+        _favourites = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (string favourite in favourites)
         {

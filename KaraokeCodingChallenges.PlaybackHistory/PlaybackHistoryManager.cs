@@ -22,13 +22,20 @@ public class PlaybackHistoryManager
 
     public int GetPlayCount(string trackPath)
     {
-        return _history.Count(entry => entry.TrackPath == trackPath);
+        return _history.Count(entry =>
+            string.Equals(
+                entry.TrackPath,
+                trackPath,
+                StringComparison.OrdinalIgnoreCase));
     }
-
     public DateTimeOffset? GetLastPlayed(string trackPath)
     {
         return _history
-            .Where(entry => entry.TrackPath == trackPath)
+            .Where(entry =>
+                string.Equals(
+                    entry.TrackPath,
+                    trackPath,
+                    StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(entry => entry.PlayedAt)
             .Select(entry => (DateTimeOffset?)entry.PlayedAt)
             .FirstOrDefault();
