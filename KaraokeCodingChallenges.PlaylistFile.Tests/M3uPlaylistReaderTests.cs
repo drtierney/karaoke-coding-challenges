@@ -1,4 +1,4 @@
-﻿using KaraokeCodingChallenges.Playlist;
+using KaraokeCodingChallenges.Playlist;
 using KaraokeCodingChallenges.PlaylistFile;
 
 namespace KaraokeCodingChallenges.PlaylistFile.Tests
@@ -15,8 +15,8 @@ namespace KaraokeCodingChallenges.PlaylistFile.Tests
 
             string[] trackPaths =
             [
-                @"D:\Music\Queen - Bohemian Rhapsody.mp3",
-                @"D:\Music\Paramore - The Only Exception.mp3"
+                Path.Combine(tempDirectory, "Music", "Queen - Bohemian Rhapsody.mp3"),
+                Path.Combine(tempDirectory, "Music", "Paramore - The Only Exception.mp3")
             ];
 
             File.WriteAllLines(playlistPath, trackPaths);
@@ -48,7 +48,8 @@ namespace KaraokeCodingChallenges.PlaylistFile.Tests
             string tempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempDirectory);
             string playlistPath = Path.Combine(tempDirectory, "Queen Playlist.m3u");
-            string relativeTrackPath = @"Queen\Bohemian Rhapsody.mp3";
+
+            string relativeTrackPath = Path.Combine("Queen", "Bohemian Rhapsody.mp3");
             File.WriteAllLines(playlistPath, [relativeTrackPath]);
 
             try
@@ -78,12 +79,16 @@ namespace KaraokeCodingChallenges.PlaylistFile.Tests
             Directory.CreateDirectory(tempDirectory);
             string playlistPath = Path.Combine(tempDirectory, "Test Playlist.m3u");
 
+            string firstTrackPath = Path.Combine(tempDirectory, "Music", "Queen - Bohemian Rhapsody.mp3");
+
+            string secondTrackPath = Path.Combine(tempDirectory, "Music", "Paramore - The Only Exception.mp3");
+
             string[] lines =
             [
-                @"D:\Music\Queen - Bohemian Rhapsody.mp3",
+                firstTrackPath,
                 "",
                 "  ",
-                @"D:\Music\Paramore - The Only Exception.mp3"
+                secondTrackPath
             ];
 
             File.WriteAllLines(playlistPath, lines);
@@ -96,8 +101,8 @@ namespace KaraokeCodingChallenges.PlaylistFile.Tests
 
                 // Assert
                 Assert.Equal(2, playlist.Count);
-                Assert.Equal(@"D:\Music\Queen - Bohemian Rhapsody.mp3", playlist.Tracks[0].FilePath);
-                Assert.Equal(@"D:\Music\Paramore - The Only Exception.mp3",playlist.Tracks[1].FilePath);
+                Assert.Equal(firstTrackPath, playlist.Tracks[0].FilePath);
+                Assert.Equal(secondTrackPath, playlist.Tracks[1].FilePath);
             }
             finally
             {
@@ -113,12 +118,22 @@ namespace KaraokeCodingChallenges.PlaylistFile.Tests
             Directory.CreateDirectory(tempDirectory);
             string playlistPath = Path.Combine(tempDirectory,"Test Playlist.m3u");
 
+            string firstTrackPath = Path.Combine(
+                tempDirectory,
+                "Music",
+                "Queen - Bohemian Rhapsody.mp3");
+
+            string secondTrackPath = Path.Combine(
+                tempDirectory,
+                "Music",
+                "Paramore - The Only Exception.mp3");
+
             string[] lines =
             [
                 "#EXTM3U",
-                @"D:\Music\Queen - Bohemian Rhapsody.mp3",
+                firstTrackPath,
                 "# This is a comment",
-                @"D:\Music\Paramore - The Only Exception.mp3"
+                secondTrackPath
             ];
 
             File.WriteAllLines(playlistPath, lines);
@@ -132,8 +147,8 @@ namespace KaraokeCodingChallenges.PlaylistFile.Tests
 
                 // Assert
                 Assert.Equal(2, playlist.Count);
-                Assert.Equal(@"D:\Music\Queen - Bohemian Rhapsody.mp3", playlist.Tracks[0].FilePath);
-                Assert.Equal(@"D:\Music\Paramore - The Only Exception.mp3", playlist.Tracks[1].FilePath);
+                Assert.Equal(firstTrackPath, playlist.Tracks[0].FilePath);
+                Assert.Equal(secondTrackPath, playlist.Tracks[1].FilePath);
             }
             finally
             {
@@ -151,9 +166,9 @@ namespace KaraokeCodingChallenges.PlaylistFile.Tests
 
             string[] trackPaths =
             [
-                @"D:\Music\Track One.mp3",
-                @"D:\Music\Track Two.mp3",
-                @"D:\Music\Track Three.mp3"
+                Path.Combine(tempDirectory, "Music", "Track One.mp3"),
+                Path.Combine(tempDirectory, "Music", "Track Two.mp3"),
+                Path.Combine(tempDirectory, "Music", "Track Three.mp3")
             ];
 
             File.WriteAllLines(playlistPath, trackPaths);

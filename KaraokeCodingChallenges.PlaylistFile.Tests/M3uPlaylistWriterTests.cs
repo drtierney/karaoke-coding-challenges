@@ -1,4 +1,4 @@
-﻿using KaraokeCodingChallenges.MediaTrack;
+using KaraokeCodingChallenges.MediaTrack;
 using KaraokeCodingChallenges.Playlist;
 
 namespace KaraokeCodingChallenges.PlaylistFile.Tests
@@ -189,12 +189,13 @@ namespace KaraokeCodingChallenges.PlaylistFile.Tests
                 // Assert
                 string[] lines = File.ReadAllLines(playlistPath);
 
-                Assert.Equal(@"..\Music\Track One.mp3", lines[0]);
-                Assert.Equal(@"..\Music\Track Two.mp3", lines[1]);
+                Assert.Equal(Path.Combine("..", "Music", "Track One.mp3"), lines[0]);
+
+                Assert.Equal(Path.Combine("..", "Music", "Track Two.mp3"), lines[1]);
             }
             finally
             {
-                //Directory.Delete(tempDirectory, true);
+                Directory.Delete(tempDirectory, true);
             }
         }
     }
