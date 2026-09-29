@@ -1,0 +1,1193 @@
+{
+    "version": "1.3",
+    "roadmap": [
+        {
+            "number": 1,
+            "title": "MediaTrack Class",
+            "phase": "Foundations",
+            "category": "C# Fundamentals",
+            "concepts": [
+                "Classes",
+                "properties",
+                "constructors",
+                "collections"
+            ],
+            "buildsOn": [],
+            "outcome": "Create a reusable model for media tracks.",
+            "status": "Completed",
+            "notes": "First challenge completed in Visual Studio; introduced MediaTrackModel with calculated display and duration properties, optional constructor values, and a ToString() override. Console testing also highlighted a Unicode rendering issue for some artist names."
+        },
+        {
+            "number": 2,
+            "title": "Library Scanner",
+            "phase": "Foundations",
+            "category": "File I/O",
+            "concepts": [
+                "Directory traversal",
+                "file extensions",
+                "HashSet",
+                "dictionaries"
+            ],
+            "buildsOn": [],
+            "outcome": "Scan folders recursively and discover supported media files.",
+            "status": "Completed",
+            "notes": "Implemented recursive library scanning with a HashSet for supported extensions and a dictionary for extension counts. Required some guidance identifying the appropriate .NET directory-scanning and path APIs."
+        },
+        {
+            "number": 3,
+            "title": "Karaoke File Pairing",
+            "phase": "Foundations",
+            "category": "Collections",
+            "concepts": [
+                "Dictionaries",
+                "grouping",
+                "path handling",
+                "nullable values"
+            ],
+            "buildsOn": [
+                2
+            ],
+            "outcome": "Match MP3 and CDG files into karaoke pairs.",
+            "status": "Completed",
+            "notes": "Implemented directory-aware MP3/CDG pairing with case-insensitive extension handling. Including the directory in the pairing key prevents identically named files in different folders from being incorrectly matched."
+        },
+        {
+            "number": 4,
+            "title": "Media Type Detection",
+            "phase": "Foundations",
+            "category": "C# Fundamentals",
+            "concepts": [
+                "Enums",
+                "switch expressions",
+                "pattern matching"
+            ],
+            "buildsOn": [
+                2
+            ],
+            "outcome": "Classify discovered files by media type.",
+            "status": "Completed",
+            "notes": "Introduced MediaFileType and MediaTypeDetector, using a switch expression and normalized file extensions to classify audio, karaoke graphics, and unsupported files."
+        },
+        {
+            "number": 5,
+            "title": "File Validation",
+            "phase": "Foundations",
+            "category": "Validation",
+            "concepts": [
+                "Guard clauses",
+                "File.Exists",
+                "validation results"
+            ],
+            "buildsOn": [
+                4
+            ],
+            "outcome": "Validate file paths before processing.",
+            "status": "Completed",
+            "notes": "Reused MediaTypeDetector through a project reference and introduced descriptive FileValidationStatus results rather than simple boolean validation."
+        },
+        {
+            "number": 6,
+            "title": "Media Library",
+            "phase": "Foundations",
+            "category": "Collections",
+            "concepts": [
+                "Encapsulation",
+                "IEnumerable<T>",
+                "IReadOnlyList<T>",
+                "method overloading"
+            ],
+            "buildsOn": [
+                1
+            ],
+            "outcome": "Manage an in-memory collection of media tracks.",
+            "status": "Completed",
+            "notes": "Introduced MediaLibraryCollection with an encapsulated List<MediaTrackModel>, read-only public access, overloaded removal methods, and case-insensitive file-path lookup."
+        },
+        {
+            "number": 7,
+            "title": "Media Library Queries",
+            "phase": "Foundations",
+            "category": "LINQ",
+            "concepts": [
+                "Where",
+                "Any",
+                "lambda expressions",
+                "case-insensitive search"
+            ],
+            "buildsOn": [
+                6
+            ],
+            "outcome": "Search the media library using reusable LINQ queries.",
+            "status": "Completed",
+            "notes": "Introduced reusable LINQ query methods returning MediaTrackModel sequences, with case-insensitive exact artist matching and partial title/file-path searching kept separate from console presentation."
+        },
+        {
+            "number": 8,
+            "title": "Media Library Filtering",
+            "phase": "Foundations",
+            "category": "LINQ",
+            "concepts": [
+                "Query syntax",
+                "filtering",
+                "IEnumerable<T>"
+            ],
+            "buildsOn": [
+                6
+            ],
+            "outcome": "Filter tracks by karaoke status and duration.",
+            "status": "Completed",
+            "notes": "Practised LINQ query syntax through MediaLibraryFilterService, filtering karaoke/music tracks and duration ranges without modifying the original collection."
+        },
+        {
+            "number": 9,
+            "title": "Track Sorting",
+            "phase": "Foundations",
+            "category": "LINQ",
+            "concepts": [
+                "OrderBy",
+                "ThenBy",
+                "IComparer<T>",
+                "custom comparison"
+            ],
+            "buildsOn": [
+                6
+            ],
+            "outcome": "Sort tracks using LINQ and custom comparison logic.",
+            "status": "Completed",
+            "notes": "Implemented sorting with both LINQ method/query syntax and a custom ArtistTitleComparer using case-insensitive artist and title comparison; sorting returns new sequences without changing the original collection."
+        },
+        {
+            "number": 10,
+            "title": "Duplicate Detection",
+            "phase": "Foundations",
+            "category": "Collections",
+            "concepts": [
+                "HashSet<T>",
+                "IEqualityComparer<T>",
+                "Equals",
+                "GetHashCode"
+            ],
+            "buildsOn": [
+                6
+            ],
+            "outcome": "Detect duplicate tracks using custom equality rules.",
+            "status": "Completed",
+            "notes": "Implemented artist/title duplicate detection using HashSet<MediaTrackModel> and a custom IEqualityComparer<MediaTrackModel>, treating matching artist/title values as duplicates regardless of path or character casing."
+        },
+        {
+            "number": 11,
+            "title": "Media Library Processor",
+            "phase": "Milestone 1",
+            "category": "Integration",
+            "concepts": [
+                "Service composition",
+                "project references",
+                "processing pipelines"
+            ],
+            "buildsOn": [
+                6,
+                7,
+                8,
+                9,
+                10
+            ],
+            "outcome": "Combine the foundational library services into a processing workflow.",
+            "status": "Completed",
+            "notes": "Milestone 1 combined duplicate detection, filtering, sorting, and presentation into a staged workflow, demonstrating how outputs from small reusable services can be composed without duplicating their logic."
+        },
+        {
+            "number": 12,
+            "title": "Media Metadata Model",
+            "phase": "Metadata",
+            "category": "Data Modelling",
+            "concepts": [
+                "Records",
+                "nullable values",
+                "required properties",
+                "init properties"
+            ],
+            "buildsOn": [
+                1
+            ],
+            "outcome": "Represent embedded and technical media metadata.",
+            "status": "Completed",
+            "notes": "Implemented MediaMetadata as an immutable-style record with a required file path, nullable metadata fields, init-only properties, value equality, and with-expression support."
+        },
+        {
+            "number": 13,
+            "title": "Read Embedded Audio Metadata",
+            "phase": "Metadata",
+            "category": "NuGet & APIs",
+            "concepts": [
+                "NuGet",
+                "TagLibSharp",
+                "third-party APIs",
+                "resource disposal"
+            ],
+            "buildsOn": [
+                12
+            ],
+            "outcome": "Read embedded tags and technical audio properties.",
+            "status": "Completed",
+            "notes": "Introduced TagLibSharp for embedded tags and technical audio properties, with FileInfo supplying file-system metadata. Initial verification used MP3 files while additional supported formats were left for later testing."
+        },
+        {
+            "number": 14,
+            "title": "Filename Metadata Fallback",
+            "phase": "Metadata",
+            "category": "String Processing",
+            "concepts": [
+                "String parsing",
+                "tuples",
+                "TryParse",
+                "fallback logic"
+            ],
+            "buildsOn": [
+                13
+            ],
+            "outcome": "Recover missing metadata from supported filename formats.",
+            "status": "Completed",
+            "notes": "Added filename fallback for Artist - Title and TrackNumber - Artist - Title formats while preserving available embedded metadata. Unrecognised filenames fall back to the filename without its extension as the title."
+        },
+        {
+            "number": 15,
+            "title": "Metadata Resolution",
+            "phase": "Metadata",
+            "category": "Application Logic",
+            "concepts": [
+                "Precedence rules",
+                "null handling",
+                "pure functions"
+            ],
+            "buildsOn": [
+                12,
+                14
+            ],
+            "outcome": "Resolve the best available metadata from multiple sources.",
+            "status": "Completed",
+            "notes": "Centralised metadata precedence so embedded values take priority over filename-derived values, with null, empty, and whitespace-only strings treated as missing."
+        },
+        {
+            "number": 16,
+            "title": "Metadata Reader Interface",
+            "phase": "Metadata",
+            "category": "Architecture",
+            "concepts": [
+                "Interfaces",
+                "abstraction",
+                "dependency inversion",
+                "dependency injection"
+            ],
+            "buildsOn": [
+                13,
+                15
+            ],
+            "outcome": "Isolate third-party metadata reading behind an application-owned interface.",
+            "status": "Completed",
+            "notes": "Introduced IMetadataReader and EmbeddedMetadata, isolated TagLibSharp inside TagLibMetadataReader, and refactored MediaMetadataScannerService to depend on the application-owned abstraction while preserving existing scanner behaviour."
+        },
+        {
+            "number": 17,
+            "title": "Metadata Resolution Tests",
+            "phase": "Metadata",
+            "category": "Testing",
+            "concepts": [
+                "xUnit",
+                "Fact",
+                "Theory",
+                "InlineData",
+                "fakes",
+                "temporary files"
+            ],
+            "buildsOn": [
+                14,
+                15,
+                16
+            ],
+            "outcome": "Add automated tests around metadata resolution and fallback behaviour.",
+            "status": "Completed",
+            "notes": "Introduced the xUnit test project with 15 passing tests covering metadata precedence, filename fallback, parameterized cases, exceptions, fake metadata readers, and temporary-file handling."
+        },
+        {
+            "number": 18,
+            "title": "Scan Result Model",
+            "phase": "Metadata",
+            "category": "Data Modelling",
+            "concepts": [
+                "Records",
+                "nullable reference types",
+                "read-only collections",
+                "structured results"
+            ],
+            "buildsOn": [
+                12
+            ],
+            "outcome": "Represent successful and failed media scans consistently.",
+            "status": "Completed",
+            "notes": "Introduced MediaScanResult with an explicit success flag, nullable metadata for failed scans, and read-only warning/error collections so scan outcomes can be represented without mixing data with console presentation."
+        },
+        {
+            "number": 19,
+            "title": "Exception Handling & Error Reporting",
+            "phase": "Metadata",
+            "category": "Error Handling",
+            "concepts": [
+                "try/catch",
+                "recoverable errors",
+                "yield return",
+                "structured error reporting"
+            ],
+            "buildsOn": [
+                16,
+                18
+            ],
+            "outcome": "Continue scanning when individual media files fail.",
+            "status": "Completed",
+            "notes": "Introduced MediaScanService to convert recoverable file-level exceptions into structured failed results while allowing batch scanning to continue; non-fatal missing metadata is represented through warnings."
+        },
+        {
+            "number": 20,
+            "title": "Scan Statistics",
+            "phase": "Metadata",
+            "category": "LINQ",
+            "concepts": [
+                "Aggregates",
+                "GroupBy",
+                "ToDictionary",
+                "summary models"
+            ],
+            "buildsOn": [
+                18,
+                19
+            ],
+            "outcome": "Generate scan, metadata-quality, and karaoke-pairing statistics.",
+            "status": "Completed",
+            "notes": "Added reusable scan summaries covering success/failure rates, warnings, extension grouping, metadata completeness, and existing karaoke pairing results. Scan results are materialised before calculating multiple statistics."
+        },
+        {
+            "number": 21,
+            "title": "Metadata Library Milestone",
+            "phase": "Milestone 2",
+            "category": "Integration",
+            "concepts": [
+                "Service integration",
+                "file discovery",
+                "metadata processing",
+                "statistics"
+            ],
+            "buildsOn": [
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20
+            ],
+            "outcome": "Integrate metadata scanning into a complete library workflow.",
+            "status": "Completed",
+            "notes": "Milestone 2 integrated discovery, metadata reading and resolution, error reporting, karaoke pairing, and scan statistics. The original real-library run discovered 859 supported files, scanned 714 metadata-capable files successfully, and identified 145 karaoke pairs."
+        },
+        {
+            "number": 22,
+            "title": "Configuration File",
+            "phase": "Configuration",
+            "category": "Serialization",
+            "concepts": [
+                "JSON",
+                "System.Text.Json",
+                "configuration models",
+                "deserialization"
+            ],
+            "buildsOn": [
+                21
+            ],
+            "outcome": "Move library configuration out of hard-coded application values.",
+            "status": "Completed",
+            "notes": "Introduced AppConfiguration and ConfigurationLoader using System.Text.Json, replacing a hard-coded library location with JSON configuration integrated into the Metadata Library Milestone."
+        },
+        {
+            "number": 23,
+            "title": "Configuration Validation",
+            "phase": "Configuration",
+            "category": "Validation",
+            "concepts": [
+                "Validation services",
+                "read-only error collections",
+                "separation of responsibilities"
+            ],
+            "buildsOn": [
+                22
+            ],
+            "outcome": "Validate loaded configuration separately from file loading.",
+            "status": "Completed",
+            "notes": "Separated configuration loading from validation through ConfigurationValidator, distinguishing file/deserialization failures from invalid configuration values."
+        },
+        {
+            "number": 24,
+            "title": "Multiple Library Sources",
+            "phase": "Configuration",
+            "category": "Configuration",
+            "concepts": [
+                "Collections",
+                "enums",
+                "JSON enum conversion",
+                "duplicate detection"
+            ],
+            "buildsOn": [
+                22,
+                23
+            ],
+            "outcome": "Configure multiple music, karaoke, and mixed library sources.",
+            "status": "Completed",
+            "notes": "Expanded configuration from one library path to multiple Music, Karaoke, and Mixed sources with enabled/disabled state, readable JSON enum values, case-insensitive duplicate-path validation, and graceful handling of unavailable drives."
+        },
+        {
+            "number": 25,
+            "title": "Source-Specific Scan Rules",
+            "phase": "Configuration",
+            "category": "Application Logic",
+            "concepts": [
+                "Source-specific rules",
+                "mixed libraries",
+                "service extraction",
+                "unit testing"
+            ],
+            "buildsOn": [
+                3,
+                24
+            ],
+            "outcome": "Apply different karaoke-processing rules to music, karaoke, and mixed sources.",
+            "status": "Completed",
+            "notes": "Introduced source-specific karaoke rules so Music, Karaoke, and Mixed sources are processed differently. Mixed sources preserve standalone MP3 files as valid music while identifying MP3/CDG pairs and unmatched CDG files; six focused tests were added. The service and tests were later extracted into dedicated projects during Challenge 033."
+        },
+        {
+            "number": 26,
+            "title": "Playlist Model",
+            "phase": "Library Features",
+            "category": "Collections",
+            "concepts": [
+                "Ordered collections",
+                "encapsulation",
+                "Guid",
+                "read-only collections"
+            ],
+            "buildsOn": [
+                1
+            ],
+            "outcome": "Represent an ordered in-memory playlist.",
+            "status": "Completed",
+            "notes": "Introduced MediaPlaylist with Guid identity, ordered read-only track access, add/remove/clear operations, and 6 passing tests. Duplicate entries are deliberately allowed to support repeated tracks and different recordings or versions."
+        },
+        {
+            "number": 27,
+            "title": "M3U Playlist Import & Export",
+            "phase": "Library Features",
+            "category": "File I/O",
+            "concepts": [
+                "Text files",
+                "relative paths",
+                "absolute paths",
+                "interoperability"
+            ],
+            "buildsOn": [
+                26
+            ],
+            "outcome": "Import and export playlists using the M3U format.",
+            "status": "Completed",
+            "notes": "Implemented M3U import/export with absolute and relative path handling, comment/blank-line support, order preservation, and 11 automated tests. Generated playlists were manually verified in both VLC Media Player and Winamp."
+        },
+        {
+            "number": 28,
+            "title": "Playback Queue Manager",
+            "phase": "Library Features",
+            "category": "Collections",
+            "concepts": [
+                "Queue-like behaviour",
+                "ordered mutation",
+                "nullable returns",
+                "encapsulation"
+            ],
+            "buildsOn": [
+                1
+            ],
+            "outcome": "Manage an editable ordered playback queue.",
+            "status": "Completed",
+            "notes": "Introduced PlaybackQueue with enqueue, queue-next, peek, dequeue, remove, and clear operations. Twelve tests cover ordering, mutation, and empty-queue behaviour, with a console demo used for manual verification."
+        },
+        {
+            "number": 29,
+            "title": "Playback History & Play Counts",
+            "phase": "Library Features",
+            "category": "State Management",
+            "concepts": [
+                "Records",
+                "DateTimeOffset",
+                "LINQ",
+                "state management"
+            ],
+            "buildsOn": [
+                28
+            ],
+            "outcome": "Track playback events, play counts, and last-played times.",
+            "status": "Completed",
+            "notes": "Introduced PlaybackHistoryEntry and PlaybackHistoryManager for in-memory playback events, newest-first history, play counts, and last-played timestamps. Paths are preserved as recorded but queried case-insensitively."
+        },
+        {
+            "number": 30,
+            "title": "Favourites",
+            "phase": "Library Features",
+            "category": "State & Persistence",
+            "concepts": [
+                "HashSet<T>",
+                "JSON serialization",
+                "file persistence",
+                "state management"
+            ],
+            "buildsOn": [
+                1
+            ],
+            "outcome": "Store favourite tracks and persist them between runs.",
+            "status": "Completed",
+            "notes": "Introduced FavouriteManager with duplicate-safe, case-insensitive path state and FavouriteStore for JSON persistence. State management and file persistence remain separate responsibilities."
+        },
+        {
+            "number": 31,
+            "title": "Smart Lists",
+            "phase": "Library Features",
+            "category": "Filtering",
+            "concepts": [
+                "Func<T, bool>",
+                "predicates",
+                "LINQ",
+                "rule composition"
+            ],
+            "buildsOn": [
+                1,
+                7,
+                8
+            ],
+            "outcome": "Create dynamic track collections using reusable rules.",
+            "status": "Completed",
+            "notes": "Introduced predicate-based SmartListRule, SmartList, and SmartListService with validation, ordered rule management, read-only access, and AND matching. Empty smart lists return all supplied tracks."
+        },
+        {
+            "number": 32,
+            "title": "Advanced Search & Filter Rules",
+            "phase": "Library Features",
+            "category": "Generics & Filtering",
+            "concepts": [
+                "Generics",
+                "generic predicates",
+                "All",
+                "Any",
+                "rule composition"
+            ],
+            "buildsOn": [
+                31
+            ],
+            "outcome": "Generalise smart lists into a reusable filtering and search system.",
+            "status": "Completed",
+            "notes": "Generalised Smart Lists to SmartList<T> and SmartListRule<T>, added configurable All/Any matching and composite rules, and introduced reusable MediaTrackRules. The generic rule engine remains independent of media-specific filtering."
+        },
+        {
+            "number": 33,
+            "title": "Search & Playlist Milestone",
+            "phase": "Milestone 3",
+            "category": "Integration",
+            "concepts": [
+                "Application composition",
+                "dependency injection",
+                "cross-project integration",
+                "integration testing",
+                "targeted refactoring"
+            ],
+            "buildsOn": [
+                21,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32
+            ],
+            "outcome": "Compose the in-memory library, search, playlist, favourites, and playback features into an end-to-end workflow.",
+            "status": "Completed",
+            "notes": "Milestone 3 composed configuration, scanning, source rules, metadata mapping, the media library, Smart Lists, sorting, favourites, playlists, M3U resolution, playback queue, and playback history into an end-to-end workflow. LibrarySourceRulesService was extracted into a reusable project, path-based state was made case-insensitive, and the full solution reached 178 passing tests. Whole-library persistence was deliberately deferred to Challenge 034."
+        },
+        {
+            "number": 34,
+            "title": "JSON Library Persistence",
+            "phase": "Persistence",
+            "category": "Serialization",
+            "concepts": [
+                "Serialization",
+                "file I/O",
+                "DTOs",
+                "versioning"
+            ],
+            "buildsOn": [
+                6,
+                12,
+                22
+            ],
+            "outcome": "Save and reload a modest media library without rescanning.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 35,
+            "title": "SQLite Fundamentals",
+            "phase": "Persistence",
+            "category": "SQL",
+            "concepts": [
+                "SQLite",
+                "tables",
+                "primary keys",
+                "INSERT",
+                "SELECT",
+                "UPDATE",
+                "DELETE"
+            ],
+            "buildsOn": [
+                34
+            ],
+            "outcome": "Learn relational persistence using a small standalone SQLite database.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 36,
+            "title": "Media Library Database Schema",
+            "phase": "Persistence",
+            "category": "Database Design",
+            "concepts": [
+                "Normalization",
+                "keys",
+                "indexes",
+                "relationships",
+                "constraints"
+            ],
+            "buildsOn": [
+                12,
+                24,
+                26,
+                29,
+                35
+            ],
+            "outcome": "Design tables for tracks, sources, playlists, history, and related data.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 37,
+            "title": "Database Data Access Layer",
+            "phase": "Persistence",
+            "category": "Architecture",
+            "concepts": [
+                "Repository/data access pattern",
+                "parameterized SQL",
+                "interfaces"
+            ],
+            "buildsOn": [
+                35,
+                36
+            ],
+            "outcome": "Keep SQL and database concerns separate from library business logic.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 38,
+            "title": "Persist Scanned Tracks",
+            "phase": "Persistence",
+            "category": "SQL & Integration",
+            "concepts": [
+                "Transactions",
+                "upserts",
+                "identity",
+                "batching"
+            ],
+            "buildsOn": [
+                18,
+                36,
+                37
+            ],
+            "outcome": "Store scan results and resolved metadata in SQLite.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 39,
+            "title": "Database-Backed Search",
+            "phase": "Persistence",
+            "category": "SQL",
+            "concepts": [
+                "WHERE",
+                "ORDER BY",
+                "LIKE",
+                "indexes",
+                "query parameters"
+            ],
+            "buildsOn": [
+                32,
+                37,
+                38
+            ],
+            "outcome": "Search and filter a large library efficiently from SQLite.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 40,
+            "title": "Incremental Library Scanning",
+            "phase": "Persistence",
+            "category": "File Synchronization",
+            "concepts": [
+                "File timestamps",
+                "hashes/identifiers",
+                "change detection",
+                "upserts"
+            ],
+            "buildsOn": [
+                24,
+                38
+            ],
+            "outcome": "Scan only new or changed files.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 41,
+            "title": "Library Reconciliation",
+            "phase": "Persistence",
+            "category": "File Synchronization",
+            "concepts": [
+                "Set comparison",
+                "missing files",
+                "stale records",
+                "transactions"
+            ],
+            "buildsOn": [
+                40
+            ],
+            "outcome": "Detect deleted, moved, or unavailable tracks and reconcile stored records.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 42,
+            "title": "File System Watcher Library Updates",
+            "phase": "Persistence",
+            "category": "Events & File I/O",
+            "concepts": [
+                "FileSystemWatcher",
+                "debounce",
+                "events",
+                "race conditions"
+            ],
+            "buildsOn": [
+                40,
+                41
+            ],
+            "outcome": "React to library file changes without requiring a full manual rescan.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 43,
+            "title": "Database & Persistence Testing",
+            "phase": "Persistence",
+            "category": "Testing",
+            "concepts": [
+                "Temporary databases",
+                "integration tests",
+                "fixtures",
+                "cleanup"
+            ],
+            "buildsOn": [
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42
+            ],
+            "outcome": "Verify database persistence and incremental scanning behaviour.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 44,
+            "title": "Persistent Library Milestone",
+            "phase": "Milestone 4",
+            "category": "Integration",
+            "concepts": [
+                "Architecture review",
+                "performance measurement",
+                "refactoring"
+            ],
+            "buildsOn": [
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43
+            ],
+            "outcome": "Deliver a database-backed media library that survives restarts and updates efficiently.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 45,
+            "title": "Async Library Scanner",
+            "phase": "Application Architecture",
+            "category": "Async",
+            "concepts": [
+                "async/await",
+                "Task",
+                "asynchronous I/O",
+                "ConfigureAwait concepts"
+            ],
+            "buildsOn": [
+                18,
+                38
+            ],
+            "outcome": "Run slow library scanning work without blocking the application.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 46,
+            "title": "Scan Progress Reporting",
+            "phase": "Application Architecture",
+            "category": "Async & Events",
+            "concepts": [
+                "IProgress<T>",
+                "progress models",
+                "event-driven updates"
+            ],
+            "buildsOn": [
+                45
+            ],
+            "outcome": "Report useful scan progress to callers.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 47,
+            "title": "Cancellation Support",
+            "phase": "Application Architecture",
+            "category": "Async",
+            "concepts": [
+                "CancellationToken",
+                "cooperative cancellation",
+                "cleanup"
+            ],
+            "buildsOn": [
+                45,
+                46
+            ],
+            "outcome": "Allow long-running scans to be cancelled safely.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 48,
+            "title": "Application Events & Delegates",
+            "phase": "Application Architecture",
+            "category": "Events",
+            "concepts": [
+                "Events",
+                "delegates",
+                "EventHandler<T>",
+                "subscriptions"
+            ],
+            "buildsOn": [
+                28,
+                42,
+                46
+            ],
+            "outcome": "Communicate application state changes through events.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 49,
+            "title": "Service Interfaces",
+            "phase": "Application Architecture",
+            "category": "Interfaces",
+            "concepts": [
+                "Interfaces",
+                "dependency inversion",
+                "service contracts"
+            ],
+            "buildsOn": [
+                16,
+                37,
+                45
+            ],
+            "outcome": "Define stable contracts around major application services.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 50,
+            "title": "Dependency Injection",
+            "phase": "Application Architecture",
+            "category": "Architecture",
+            "concepts": [
+                "DI container",
+                "constructor injection",
+                "lifetimes",
+                "composition root"
+            ],
+            "buildsOn": [
+                49
+            ],
+            "outcome": "Compose application services using a dependency injection container.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 51,
+            "title": "Performance Profiling",
+            "phase": "Application Architecture",
+            "category": "Performance",
+            "concepts": [
+                "Stopwatch",
+                "benchmarking concepts",
+                "allocations",
+                "query timing"
+            ],
+            "buildsOn": [
+                44,
+                45
+            ],
+            "outcome": "Measure and investigate performance bottlenecks in realistic workflows.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 52,
+            "title": "Broader Unit & Integration Testing",
+            "phase": "Application Architecture",
+            "category": "Testing",
+            "concepts": [
+                "Mocks/fakes",
+                "integration boundaries",
+                "test design",
+                "regression tests"
+            ],
+            "buildsOn": [
+                17,
+                43,
+                49
+            ],
+            "outcome": "Expand automated coverage across application service boundaries.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 53,
+            "title": "Application Architecture Milestone",
+            "phase": "Milestone 5",
+            "category": "Refactoring",
+            "concepts": [
+                "Layering",
+                "dependency review",
+                "testability",
+                "maintainability"
+            ],
+            "buildsOn": [
+                45,
+                46,
+                47,
+                48,
+                49,
+                50,
+                51,
+                52
+            ],
+            "outcome": "Consolidate the application into a maintainable and testable architecture.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 54,
+            "title": "Playback State Model",
+            "phase": "Player",
+            "category": "State Modelling",
+            "concepts": [
+                "Enums",
+                "state transitions",
+                "timestamps",
+                "domain modelling"
+            ],
+            "buildsOn": [
+                28,
+                48
+            ],
+            "outcome": "Represent player state and valid playback transitions.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 55,
+            "title": "Player Commands",
+            "phase": "Player",
+            "category": "Application Logic",
+            "concepts": [
+                "Command methods",
+                "validation",
+                "state transitions",
+                "interfaces"
+            ],
+            "buildsOn": [
+                54
+            ],
+            "outcome": "Implement commands that control player state.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 56,
+            "title": "Karaoke Track Model",
+            "phase": "Player",
+            "category": "Domain Modelling",
+            "concepts": [
+                "Composition",
+                "optional components",
+                "invariants",
+                "equality"
+            ],
+            "buildsOn": [
+                3,
+                12,
+                54
+            ],
+            "outcome": "Represent the related audio and graphics components of a karaoke track.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 57,
+            "title": "Karaoke Playback Coordination",
+            "phase": "Player",
+            "category": "Playback Architecture",
+            "concepts": [
+                "Timing",
+                "synchronization",
+                "interfaces",
+                "events"
+            ],
+            "buildsOn": [
+                55,
+                56
+            ],
+            "outcome": "Coordinate karaoke audio and graphics playback.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 58,
+            "title": "MVVM & ViewModels",
+            "phase": "Player",
+            "category": "Desktop UI Architecture",
+            "concepts": [
+                "MVVM",
+                "observable state",
+                "commands",
+                "binding concepts"
+            ],
+            "buildsOn": [
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57
+            ],
+            "outcome": "Introduce a presentation architecture suitable for a desktop application.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 59,
+            "title": "Desktop Library UI",
+            "phase": "Player",
+            "category": "Desktop UI",
+            "concepts": [
+                "Data binding",
+                "lists",
+                "search controls",
+                "commands"
+            ],
+            "buildsOn": [
+                58
+            ],
+            "outcome": "Build a desktop interface for browsing and searching the media library.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 60,
+            "title": "Now Playing & Karaoke UI",
+            "phase": "Player",
+            "category": "Desktop UI",
+            "concepts": [
+                "Playback controls",
+                "progress",
+                "secondary display concepts",
+                "event updates"
+            ],
+            "buildsOn": [
+                57,
+                58,
+                59
+            ],
+            "outcome": "Display and control current playback through the desktop UI.",
+            "status": "Planned",
+            "notes": null
+        },
+        {
+            "number": 61,
+            "title": "Mini Karaoke Player Milestone",
+            "phase": "Milestone 6",
+            "category": "Integration",
+            "concepts": [
+                "End-to-end integration",
+                "packaging readiness",
+                "retrospective"
+            ],
+            "buildsOn": [
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                60
+            ],
+            "outcome": "Deliver a small end-to-end desktop music and karaoke player.",
+            "status": "Planned",
+            "notes": null
+        }
+    ]
+}
