@@ -1,4 +1,4 @@
-﻿using KaraokeCodingChallenges.MediaMetadata;
+using KaraokeCodingChallenges.MediaMetadata;
 using KaraokeCodingChallenges.ScanResult;
 
 namespace KaraokeCodingChallenges.SearchPlaylistMilestone.Tests;
@@ -8,13 +8,15 @@ public class MediaTrackMapperTests
     [Fact]
     public void Map_WhenScanIsSuccessful_MapsMetadataToMediaTrack()
     {
+        string filePath = Path.Combine(Path.GetTempPath(), "Music", "Queen", "Bohemian Rhapsody.mp3");
+
         MediaScanResult scanResult = new()
         {
-            FilePath = @"D:\Music\Queen\Bohemian Rhapsody.mp3",
+            FilePath = filePath,
             IsSuccess = true,
             Metadata = new MediaMetadataRecord
             {
-                FilePath = @"D:\Music\Queen\Bohemian Rhapsody.mp3",
+                FilePath = filePath,
                 Title = "Bohemian Rhapsody",
                 Artist = "Queen",
                 DurationSeconds = 354
@@ -28,7 +30,7 @@ public class MediaTrackMapperTests
         Assert.NotNull(track);
         Assert.Equal("Bohemian Rhapsody", track.Title);
         Assert.Equal("Queen", track.Artist);
-        Assert.Equal(@"D:\Music\Queen\Bohemian Rhapsody.mp3", track.FilePath);
+        Assert.Equal(filePath, track.FilePath);
         Assert.Equal(354, track.DurationSeconds);
         Assert.False(track.IsKaraoke);
     }
@@ -39,13 +41,15 @@ public class MediaTrackMapperTests
     [InlineData("   ")]
     public void Map_WhenTitleIsMissing_UsesFileNameAsTitle(string? title)
     {
+        string filePath = Path.Combine(Path.GetTempPath(), "Music", "Queen", "Bohemian Rhapsody.mp3");
+
         MediaScanResult scanResult = new()
         {
-            FilePath = @"D:\Music\Queen\Bohemian Rhapsody.mp3",
+            FilePath = filePath,
             IsSuccess = true,
             Metadata = new MediaMetadataRecord
             {
-                FilePath = @"D:\Music\Queen\Bohemian Rhapsody.mp3",
+                FilePath = filePath,
                 Title = title,
                 Artist = "Queen",
                 DurationSeconds = 354
