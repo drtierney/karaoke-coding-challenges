@@ -1,5 +1,7 @@
 # C# Karaoke Challenges
 
+[![.NET Build and Test](https://github.com/drtierney/karaoke-coding-challenges/actions/workflows/dotnet.yaml/badge.svg?branch=main)](https://github.com/drtierney/karaoke-coding-challenges/actions/workflows/dotnet.yaml)
+
 A collection of C# coding challenges designed to improve my C# skills while exploring concepts that could eventually contribute towards a Windows music and karaoke application.
 
 ## About This Repository
