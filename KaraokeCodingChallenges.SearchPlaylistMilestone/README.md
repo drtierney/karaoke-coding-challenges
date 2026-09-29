@@ -96,6 +96,8 @@ Disabled sources are skipped and unavailable source paths do not prevent other c
 
 The demo configuration uses a small mixed library source for quick manual verification. Larger library sources can be enabled when full-library verification is required.
 
+The included `appsettings.json` contains example library source paths with all sources disabled. Update the paths for the local environment and enable at least one source before running the milestone application.
+
 ## Targeted Refactoring
 
 `LibrarySourceRulesService` was extracted from the earlier Metadata Library Milestone into the dedicated `KaraokeCodingChallenges.LibrarySourceRules` project.
