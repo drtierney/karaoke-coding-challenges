@@ -119,3 +119,7 @@ Individual challenge READMEs contain additional information about their implemen
 | 059 | Desktop Library UI | ☐ Planned |
 | 060 | Now Playing & Karaoke UI | ☐ Planned |
 | 061 | Mini Karaoke Player Milestone | ☐ Planned |
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
