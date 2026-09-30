@@ -25,9 +25,9 @@ Milestone challenges periodically bring several earlier components together into
 
 ## Current Progress
 
-The challenge series has completed its third milestone, **Search & Playlist Milestone**, which brings together library scanning, metadata processing, search and filtering, favourites, playlists, playback queues, and playback history into an integrated workflow.
+The challenge series has completed **Challenge 034 - JSON Library Persistence**, introducing versioned JSON persistence for the in-memory media library using dedicated DTOs, mapping, validation, and save/load workflows.
 
-The next phase focuses on persistence and storage, beginning with JSON media library persistence before progressing toward database-backed storage and further application architecture.
+The persistence and storage phase now continues with SQLite fundamentals before progressing toward database-backed storage, incremental scanning, library reconciliation, and the **Persistent Library Milestone**.
 
 The challenge table below shows the completed challenges and the currently planned roadmap. More detailed roadmap information, including concepts, dependencies, expected outcomes, and notes, is available in the [roadmap](roadmap/README.md).
 
@@ -93,7 +93,7 @@ Individual challenge READMEs contain additional information about their implemen
 | 031 | [Smart Lists](KaraokeCodingChallenges.SmartLists/README.md) | ☑ Completed |
 | 032 | [Advanced Search & Filter Rules](KaraokeCodingChallenges.SmartLists/README.md#challenge-032---advanced-search--filter-rules) | ☑ Completed |
 | 033 | [Search & Playlist Milestone](KaraokeCodingChallenges.SearchPlaylistMilestone/README.md) | ☑ Completed |
-| 034 | JSON Library Persistence | ☐ Planned |
+| 034 | [JSON Library Persistence](KaraokeCodingChallenges.LibraryPersistence/README.md) | ☑ Completed |
 | 035 | SQLite Fundamentals | ☐ Planned |
 | 036 | Media Library Database Schema | ☐ Planned |
 | 037 | Database Data Access Layer | ☐ Planned |
