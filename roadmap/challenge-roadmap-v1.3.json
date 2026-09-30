@@ -637,8 +637,8 @@
                 22
             ],
             "outcome": "Save and reload a modest media library without rescanning.",
-            "status": "Planned",
-            "notes": null
+            "status": "Completed",
+            "notes": "Introduced versioned JSON persistence for MediaLibraryCollection using dedicated DTOs and a persistence mapper, keeping serialization concerns separate from domain models. JsonMediaLibraryStore supports save/load workflows, missing-file handling, validation, unsupported-version detection, human-readable JSON, and complete round-trip persistence while preserving track data and ordering."
         },
         {
             "number": 35,

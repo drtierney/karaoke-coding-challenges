@@ -6,6 +6,9 @@
   <Project Path="KaraokeCodingChallenges.Favourites/KaraokeCodingChallenges.Favourites.csproj" Id="6c8f484e-79fd-4a7b-8094-00de89d69270" />
   <Project Path="KaraokeCodingChallenges.FileValidation/KaraokeCodingChallenges.FileValidation.csproj" Id="5cb74215-7e41-4e71-8bd4-07d132d6ba9e" />
   <Project Path="KaraokeCodingChallenges.KaraokeFilePairing/KaraokeCodingChallenges.KaraokeFilePairing.csproj" Id="1149c48f-9176-4b73-9b8e-66b4e4719c95" />
+  <Project Path="KaraokeCodingChallenges.LibraryPersistence.Demo/KaraokeCodingChallenges.LibraryPersistence.Demo.csproj" />
+  <Project Path="KaraokeCodingChallenges.LibraryPersistence.Tests/KaraokeCodingChallenges.LibraryPersistence.Tests.csproj" />
+  <Project Path="KaraokeCodingChallenges.LibraryPersistence/KaraokeCodingChallenges.LibraryPersistence.csproj" />
   <Project Path="KaraokeCodingChallenges.LibraryScanner/KaraokeCodingChallenges.LibraryScanner.csproj" Id="f03023c2-4a18-4b5d-b667-9aa2c0971754" />
   <Project Path="KaraokeCodingChallenges.LibrarySourceRules.Tests/KaraokeCodingChallenges.LibrarySourceRules.Tests.csproj" />
   <Project Path="KaraokeCodingChallenges.LibrarySourceRules/KaraokeCodingChallenges.LibrarySourceRules.csproj" />
