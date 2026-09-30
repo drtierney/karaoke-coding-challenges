@@ -48,6 +48,19 @@ Later phases currently explore:
 
 The roadmap is expected to continue evolving as the challenges progress and earlier implementations influence later design decisions.
 
+## Challenge Dependency Map
+
+Shows how challenges build on earlier work. Dark nodes represent
+milestones. Solid arrows connect dependencies within a phase;
+dashed arrows connect dependencies between phases.
+
+The roadmap JSON remains the authoritative source.
+
+![Challenge dependency map](challenge-dependencies.svg)
+
+[Open full-size diagram](challenge-dependencies.svg) ·
+[View DOT source](challenge-dependencies.dot)
+
 ## Historical Roadmaps
 
 Previous roadmap versions are retained in the [`archive`](archive/) directory as snapshots of how the learning plan evolved.

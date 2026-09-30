@@ -1,0 +1,365 @@
+// Full karaoke challenge dependency map.
+// Solid arrows: dependencies within a phase.
+// Dashed arrows: dependencies between phases.
+// Invisible links at the end control placement only.
+// Colours distinguish challenges and milestones, not completion status.
+// Render: dot -Tsvg challenge-dependencies.dot -o challenge-dependencies.svg
+
+digraph KaraokeRoadmap {
+
+  // Layout and typography
+  graph [
+    rankdir=TB
+    splines=ortho
+    newrank=true
+    compound=true
+    nodesep=0.28
+    ranksep=0.8
+    pad=0.3
+    bgcolor="white"
+    fontname="Arial"
+    fontsize=18
+  ];
+
+  // Default challenge style
+  node [
+    shape=box
+    style="rounded,filled"
+    fillcolor="#F8FAFC"
+    color="#94A3B8"
+    fontcolor="#0F172A"
+    fontname="Arial"
+    fontsize=10
+    margin="0.12,0.08"
+    penwidth=1.2
+  ];
+
+  // Shared dependency arrow style
+  edge [
+    color="#64748B"
+    arrowsize=0.7
+    penwidth=1.3
+  ];
+
+  // Declare milestones before phase membership so they inherit this style.
+  subgraph milestone_style {
+    node [
+      fillcolor="#1E3A5F"
+      color="#0F172A"
+      fontcolor="white"
+      penwidth=2.2
+    ];
+    C11;
+    C21;
+    C33;
+    C44;
+    C53;
+    C61;
+  }
+
+  // Foundations nodes
+  subgraph cluster_foundations {
+    label="FOUNDATIONS: 01–11";
+    style="rounded,filled";
+    fillcolor="#F8FAFC";
+    color="#CBD5E1";
+
+    C01 [label="01: MediaTrack Class"];
+    C02 [label="02: Library Scanner"];
+    C03 [label="03: Karaoke File Pairing"];
+    C04 [label="04: Media Type Detection"];
+    C05 [label="05: File Validation"];
+    C06 [label="06: Media Library"];
+    C07 [label="07: Library Queries"];
+    C08 [label="08: Library Filtering"];
+    C09 [label="09: Track Sorting"];
+    C10 [label="10: Duplicate Detection"];
+    C11 [label="11: Media Library Processor\nMILESTONE 1"];
+  }
+
+  // Metadata nodes
+  subgraph cluster_metadata {
+    label="METADATA: 12–21";
+    style="rounded,filled";
+    fillcolor="#F8FAFC";
+    color="#CBD5E1";
+
+    C12 [label="12: Metadata Model"];
+    C13 [label="13: Embedded Audio Metadata"];
+    C14 [label="14: Filename Metadata Fallback"];
+    C15 [label="15: Metadata Resolution"];
+    C16 [label="16: Metadata Reader Interface"];
+    C17 [label="17: Resolution Tests"];
+    C18 [label="18: Scan Result Model"];
+    C19 [label="19: Error Reporting"];
+    C20 [label="20: Scan Statistics"];
+    C21 [label="21: Metadata Library\nMILESTONE 2"];
+  }
+
+  // Configuration nodes
+  subgraph cluster_configuration {
+    label="CONFIGURATION: 22–25";
+    style="rounded,filled";
+    fillcolor="#F8FAFC";
+    color="#CBD5E1";
+
+    C22 [label="22: Configuration File"];
+    C23 [label="23: Configuration Validation"];
+    C24 [label="24: Multiple Library Sources"];
+    C25 [label="25: Source-Specific Scan Rules"];
+  }
+
+  // Library Features nodes
+  subgraph cluster_features {
+    label="LIBRARY FEATURES: 26–33";
+    style="rounded,filled";
+    fillcolor="#F8FAFC";
+    color="#CBD5E1";
+
+    C26 [label="26: Playlist Model"];
+    C27 [label="27: M3U Import & Export"];
+    C28 [label="28: Playback Queue"];
+    C29 [label="29: Playback History"];
+    C30 [label="30: Favourites"];
+    C31 [label="31: Smart Lists"];
+    C32 [label="32: Advanced Search Rules"];
+    C33 [label="33: Search & Playlist\nMILESTONE 3"];
+  }
+
+  // Persistence nodes
+  subgraph cluster_persistence {
+    label="PERSISTENCE: 34–44";
+    style="rounded,filled";
+    fillcolor="#F8FAFC";
+    color="#CBD5E1";
+
+    C34 [label="34: JSON Persistence"];
+    C35 [label="35: SQLite Fundamentals"];
+    C36 [label="36: Database Schema"];
+    C37 [label="37: Data Access Layer"];
+    C38 [label="38: Persist Scanned Tracks"];
+    C39 [label="39: Database Search"];
+    C40 [label="40: Incremental Scanning"];
+    C41 [label="41: Library Reconciliation"];
+    C42 [label="42: File System Watcher"];
+    C43 [label="43: Persistence Testing"];
+    C44 [label="44: Persistent Library\nMILESTONE 4"];
+  }
+
+  // Application Architecture nodes
+  subgraph cluster_architecture {
+    label="APPLICATION ARCHITECTURE: 45–53";
+    style="rounded,filled";
+    fillcolor="#F8FAFC";
+    color="#CBD5E1";
+
+    C45 [label="45: Async Scanner"];
+    C46 [label="46: Progress Reporting"];
+    C47 [label="47: Cancellation"];
+    C48 [label="48: Application Events"];
+    C49 [label="49: Service Interfaces"];
+    C50 [label="50: Dependency Injection"];
+    C51 [label="51: Performance Profiling"];
+    C52 [label="52: Unit & Integration Testing"];
+    C53 [label="53: Application Architecture\nMILESTONE 5"];
+  }
+
+  // Player & Desktop UI nodes
+  subgraph cluster_player {
+    label="PLAYER & DESKTOP UI: 54–61";
+    style="rounded,filled";
+    fillcolor="#F8FAFC";
+    color="#CBD5E1";
+
+    C54 [label="54: Playback State"];
+    C55 [label="55: Player Commands"];
+    C56 [label="56: Karaoke Track Model"];
+    C57 [label="57: Playback Coordination"];
+    C58 [label="58: MVVM & ViewModels"];
+    C59 [label="59: Desktop Library UI"];
+    C60 [label="60: Now Playing & Karaoke UI"];
+    C61 [label="61: Mini Karaoke Player\nMILESTONE 6"];
+  }
+
+  // Foundations dependencies
+  C02 -> C03;
+  C02 -> C04;
+  C04 -> C05;
+  C01 -> C06;
+  C06 -> C07;
+  C06 -> C08;
+  C06 -> C09;
+  C06 -> C10;
+  C06 -> C11;
+  C07 -> C11;
+  C08 -> C11;
+  C09 -> C11;
+  C10 -> C11;
+
+  // Metadata dependencies
+  C01 -> C12 [style=dashed, constraint=false];
+  C12 -> C13;
+  C13 -> C14;
+  C12 -> C15;
+  C14 -> C15;
+  C13 -> C16;
+  C15 -> C16;
+  C14 -> C17;
+  C15 -> C17;
+  C16 -> C17;
+  C12 -> C18;
+  C16 -> C19;
+  C18 -> C19;
+  C18 -> C20;
+  C19 -> C20;
+  C12 -> C21;
+  C13 -> C21;
+  C14 -> C21;
+  C15 -> C21;
+  C16 -> C21;
+  C17 -> C21;
+  C18 -> C21;
+  C19 -> C21;
+  C20 -> C21;
+
+  // Configuration dependencies
+  C21 -> C22 [style=dashed, constraint=false];
+  C22 -> C23;
+  C22 -> C24;
+  C23 -> C24;
+  C03 -> C25 [style=dashed, constraint=false];
+  C24 -> C25;
+
+  // Library Features dependencies
+  C01 -> C26 [style=dashed, constraint=false];
+  C26 -> C27;
+  C01 -> C28 [style=dashed, constraint=false];
+  C28 -> C29;
+  C01 -> C30 [style=dashed, constraint=false];
+  C01 -> C31 [style=dashed, constraint=false];
+  C07 -> C31 [style=dashed, constraint=false];
+  C08 -> C31 [style=dashed, constraint=false];
+  C31 -> C32;
+  C21 -> C33 [style=dashed, constraint=false];
+  C24 -> C33 [style=dashed, constraint=false];
+  C25 -> C33 [style=dashed, constraint=false];
+  C26 -> C33;
+  C27 -> C33;
+  C28 -> C33;
+  C29 -> C33;
+  C30 -> C33;
+  C31 -> C33;
+  C32 -> C33;
+
+  // Persistence dependencies
+  C06 -> C34 [style=dashed, constraint=false];
+  C12 -> C34 [style=dashed, constraint=false];
+  C22 -> C34 [style=dashed, constraint=false];
+  C34 -> C35;
+  C12 -> C36 [style=dashed, constraint=false];
+  C24 -> C36 [style=dashed, constraint=false];
+  C26 -> C36 [style=dashed, constraint=false];
+  C29 -> C36 [style=dashed, constraint=false];
+  C35 -> C36;
+  C35 -> C37;
+  C36 -> C37;
+  C18 -> C38 [style=dashed, constraint=false];
+  C36 -> C38;
+  C37 -> C38;
+  C32 -> C39 [style=dashed, constraint=false];
+  C37 -> C39;
+  C38 -> C39;
+  C24 -> C40 [style=dashed, constraint=false];
+  C38 -> C40;
+  C40 -> C41;
+  C40 -> C42;
+  C41 -> C42;
+  C35 -> C43;
+  C36 -> C43;
+  C37 -> C43;
+  C38 -> C43;
+  C39 -> C43;
+  C40 -> C43;
+  C41 -> C43;
+  C42 -> C43;
+  C34 -> C44;
+  C35 -> C44;
+  C36 -> C44;
+  C37 -> C44;
+  C38 -> C44;
+  C39 -> C44;
+  C40 -> C44;
+  C41 -> C44;
+  C42 -> C44;
+  C43 -> C44;
+
+  // Application Architecture dependencies
+  C18 -> C45 [style=dashed, constraint=false];
+  C38 -> C45 [style=dashed, constraint=false];
+  C45 -> C46;
+  C45 -> C47;
+  C46 -> C47;
+  C28 -> C48 [style=dashed, constraint=false];
+  C42 -> C48 [style=dashed, constraint=false];
+  C46 -> C48;
+  C16 -> C49 [style=dashed, constraint=false];
+  C37 -> C49 [style=dashed, constraint=false];
+  C45 -> C49;
+  C49 -> C50;
+  C44 -> C51 [style=dashed, constraint=false];
+  C45 -> C51;
+  C17 -> C52 [style=dashed, constraint=false];
+  C43 -> C52 [style=dashed, constraint=false];
+  C49 -> C52;
+  C45 -> C53;
+  C46 -> C53;
+  C47 -> C53;
+  C48 -> C53;
+  C49 -> C53;
+  C50 -> C53;
+  C51 -> C53;
+  C52 -> C53;
+
+  // Player & Desktop UI dependencies
+  C28 -> C54 [style=dashed, constraint=false];
+  C48 -> C54 [style=dashed, constraint=false];
+  C54 -> C55;
+  C03 -> C56 [style=dashed, constraint=false];
+  C12 -> C56 [style=dashed, constraint=false];
+  C54 -> C56;
+  C55 -> C57;
+  C56 -> C57;
+  C48 -> C58 [style=dashed, constraint=false];
+  C49 -> C58 [style=dashed, constraint=false];
+  C50 -> C58 [style=dashed, constraint=false];
+  C51 -> C58 [style=dashed, constraint=false];
+  C52 -> C58 [style=dashed, constraint=false];
+  C53 -> C58 [style=dashed, constraint=false];
+  C54 -> C58;
+  C55 -> C58;
+  C56 -> C58;
+  C57 -> C58;
+  C58 -> C59;
+  C57 -> C60;
+  C58 -> C60;
+  C59 -> C60;
+  C54 -> C61;
+  C55 -> C61;
+  C56 -> C61;
+  C57 -> C61;
+  C58 -> C61;
+  C59 -> C61;
+  C60 -> C61;
+
+  // Phase ordering only: these invisible links are not prerequisites.
+  // The graph is intentionally non-strict: C21 -> C22 also has a visible dependency.
+  C11 -> C12 [style=invis, weight=100, minlen=2];
+  C21 -> C22 [style=invis, weight=100, minlen=2];
+  C25 -> C26 [style=invis, weight=100, minlen=2];
+  C25 -> C28 [style=invis, weight=100, minlen=2];
+  C25 -> C30 [style=invis, weight=100, minlen=2];
+  C25 -> C31 [style=invis, weight=100, minlen=2];
+  C33 -> C34 [style=invis, weight=100, minlen=2];
+  C44 -> C45 [style=invis, weight=100, minlen=2];
+  C53 -> C54 [style=invis, weight=100, minlen=2];
+}
