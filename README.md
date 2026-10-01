@@ -25,9 +25,9 @@ Milestone challenges periodically bring several earlier components together into
 
 ## Current Progress
 
-The challenge series has completed **Challenge 034 - JSON Library Persistence**, introducing versioned JSON persistence for the in-memory media library using dedicated DTOs, mapping, validation, and save/load workflows.
+The challenge series has completed **Challenge 035 - SQLite Fundamentals**, introducing relational persistence through a standalone SQLite database with parameterized CRUD operations and automated database tests.
 
-The persistence and storage phase now continues with SQLite fundamentals before progressing toward database-backed storage, incremental scanning, library reconciliation, and the **Persistent Library Milestone**.
+The persistence and storage phase now continues with media library database schema design before progressing toward database-backed storage, incremental scanning, library reconciliation, and the **Persistent Library Milestone**.
 
 The challenge table below shows the completed challenges and the currently planned roadmap. More detailed roadmap information, including concepts, dependencies, expected outcomes, and notes, is available in the [roadmap](roadmap/README.md).
 
@@ -37,6 +37,7 @@ The challenge table below shows the completed challenges and the currently plann
 - .NET 10
 - xUnit
 - System.Text.Json
+- Microsoft.Data.Sqlite
 - TagLibSharp
 - Visual Studio
 
@@ -94,7 +95,7 @@ Individual challenge READMEs contain additional information about their implemen
 | 032 | [Advanced Search & Filter Rules](KaraokeCodingChallenges.SmartLists/README.md#challenge-032---advanced-search--filter-rules) | ☑ Completed |
 | 033 | [Search & Playlist Milestone](KaraokeCodingChallenges.SearchPlaylistMilestone/README.md) | ☑ Completed |
 | 034 | [JSON Library Persistence](KaraokeCodingChallenges.LibraryPersistence/README.md) | ☑ Completed |
-| 035 | SQLite Fundamentals | ☐ Planned |
+| 035 | [SQLite Fundamentals](KaraokeCodingChallenges.Sqlite/README.md) | ☑ Completed |
 | 036 | Media Library Database Schema | ☐ Planned |
 | 037 | Database Data Access Layer | ☐ Planned |
 | 038 | Persist Scanned Tracks | ☐ Planned |
