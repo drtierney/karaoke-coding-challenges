@@ -43,5 +43,8 @@
   <Project Path="KaraokeCodingChallenges.SmartLists.Demo/KaraokeCodingChallenges.SmartLists.Demo.csproj" Id="ca83deb7-5100-4c22-a935-232705641109" />
   <Project Path="KaraokeCodingChallenges.SmartLists.Tests/KaraokeCodingChallenges.SmartLists.Tests.csproj" Id="55dac593-b5bd-47da-9cff-d8c8529b0154" />
   <Project Path="KaraokeCodingChallenges.SmartLists/KaraokeCodingChallenges.SmartLists.csproj" Id="0befeb68-062d-45ef-8a1b-f1c777f7fcc9" />
+  <Project Path="KaraokeCodingChallenges.Sqlite.Demo/KaraokeCodingChallenges.Sqlite.Demo.csproj" Id="98fcd700-d45f-49b7-afc1-77d052784330" />
+  <Project Path="KaraokeCodingChallenges.Sqlite.Tests/KaraokeCodingChallenges.Sqlite.Tests.csproj" Id="50324fc7-c251-4e51-862d-e495703d4865" />
+  <Project Path="KaraokeCodingChallenges.Sqlite/KaraokeCodingChallenges.Sqlite.csproj" Id="0b1c8157-2174-4d0e-b7c0-7b682ea73cc4" />
   <Project Path="KaraokeCodingChallenges.TrackSorting/KaraokeCodingChallenges.TrackSorting.csproj" Id="159b19c2-ceb7-4b1f-81e6-5d73b58d66ce" />
 </Solution>
