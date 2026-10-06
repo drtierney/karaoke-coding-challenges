@@ -641,25 +641,25 @@
             "notes": "Introduced versioned JSON persistence for MediaLibraryCollection using dedicated DTOs and a persistence mapper, keeping serialization concerns separate from domain models. JsonMediaLibraryStore supports save/load workflows, missing-file handling, validation, unsupported-version detection, human-readable JSON, and complete round-trip persistence while preserving track data and ordering."
         },
         {
-        "number": 35,
-        "title": "SQLite Fundamentals",
-        "phase": "Persistence",
-        "category": "SQL",
-        "concepts": [
-            "SQLite",
-            "tables",
-            "primary keys",
-            "INSERT",
-            "SELECT",
-            "UPDATE",
-            "DELETE"
-        ],
-        "buildsOn": [
-            34
-        ],
-        "outcome": "Learn relational persistence using a small standalone SQLite database.",
-        "status": "Completed",
-        "notes": "Introduced SQLite through Microsoft.Data.Sqlite using a standalone Songs table with an auto-incrementing primary key. SqliteDatabase implements parameterized INSERT, SELECT, UPDATE, and DELETE operations, maps query results into SongRecord objects, and uses temporary databases for isolated automated tests. A console demo exercises the complete CRUD lifecycle before the full media library schema is introduced in Challenge 036."
+            "number": 35,
+            "title": "SQLite Fundamentals",
+            "phase": "Persistence",
+            "category": "SQL",
+            "concepts": [
+                "SQLite",
+                "tables",
+                "primary keys",
+                "INSERT",
+                "SELECT",
+                "UPDATE",
+                "DELETE"
+            ],
+            "buildsOn": [
+                34
+            ],
+            "outcome": "Learn relational persistence using a small standalone SQLite database.",
+            "status": "Completed",
+            "notes": "Introduced SQLite through Microsoft.Data.Sqlite using a standalone Songs table with an auto-incrementing primary key. SqliteDatabase implements parameterized INSERT, SELECT, UPDATE, and DELETE operations, maps query results into SongRecord objects, and uses temporary databases for isolated automated tests. A console demo exercises the complete CRUD lifecycle before the full media library schema is introduced in Challenge 036."
         },
         {
             "number": 36,
@@ -681,8 +681,8 @@
                 35
             ],
             "outcome": "Design tables for tracks, sources, playlists, history, and related data.",
-            "status": "Planned",
-            "notes": null
+            "status": "Completed",
+            "notes": "Introduced the relational SQLite schema for library sources, tracks, karaoke companion files, playlists, playlist entries, and playback history. The schema uses primary and foreign keys, uniqueness and validation constraints, explicit indexes, case-insensitive path uniqueness, one-to-zero-or-one karaoke file relationships, cascading cleanup for dependent data, and restricted track deletion when playlist references remain. The schema is stored as an embedded SQL resource and initialized through MediaLibraryDatabaseInitializer, with 21 isolated SQLite tests verifying schema creation, constraints, relationships, indexes, and delete behaviour."
         },
         {
             "number": 37,

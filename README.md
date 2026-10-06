@@ -25,9 +25,9 @@ Milestone challenges periodically bring several earlier components together into
 
 ## Current Progress
 
-The challenge series has completed **Challenge 035 - SQLite Fundamentals**, introducing relational persistence through a standalone SQLite database with parameterized CRUD operations and automated database tests.
+The challenge series has completed **Challenge 036 - Media Library Database Schema**, introducing the relational SQLite schema for library sources, tracks, karaoke companion files, playlists, playlist entries, and playback history.
 
-The persistence and storage phase now continues with media library database schema design before progressing toward database-backed storage, incremental scanning, library reconciliation, and the **Persistent Library Milestone**.
+The persistence and storage phase now continues with the database data access layer before progressing toward persisted scan results, database-backed search, incremental scanning, library reconciliation, and the **Persistent Library Milestone**.
 
 The challenge table below shows the completed challenges and the currently planned roadmap. More detailed roadmap information, including concepts, dependencies, expected outcomes, and notes, is available in the [roadmap](roadmap/README.md).
 
@@ -96,7 +96,7 @@ Individual challenge READMEs contain additional information about their implemen
 | 033 | [Search & Playlist Milestone](KaraokeCodingChallenges.SearchPlaylistMilestone/README.md) | ☑ Completed |
 | 034 | [JSON Library Persistence](KaraokeCodingChallenges.LibraryPersistence/README.md) | ☑ Completed |
 | 035 | [SQLite Fundamentals](KaraokeCodingChallenges.Sqlite/README.md) | ☑ Completed |
-| 036 | Media Library Database Schema | ☐ Planned |
+| 036 | [Media Library Database Schema](KaraokeCodingChallenges.MediaLibraryDatabase/README.md) | ☑ Completed |
 | 037 | Database Data Access Layer | ☐ Planned |
 | 038 | Persist Scanned Tracks | ☐ Planned |
 | 039 | Database-Backed Search | ☐ Planned |
