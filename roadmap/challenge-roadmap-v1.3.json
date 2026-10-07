@@ -699,8 +699,8 @@
                 36
             ],
             "outcome": "Keep SQL and database concerns separate from library business logic.",
-            "status": "Planned",
-            "notes": null
+            "status": "Completed",
+            "notes": "Introduced repository-based data access for library sources and media tracks using ILibrarySourceRepository and IMediaTrackRepository with SQLite-backed implementations. Added database record models with generated identities and source relationships, parameterized CRUD operations, row mapping, file-path lookup, and preservation of case-insensitive uniqueness and foreign-key constraints. Added 22 repository tests, bringing the complete solution to 250 passing tests, and extended the database demo to exercise repository-based persistence without direct CRUD SQL."
         },
         {
             "number": 38,

@@ -1,8 +1,15 @@
 # Media Library Database Tests
 
-Tests the SQLite schema introduced in **Challenge 036 - Media Library Database Schema**.
+Tests the SQLite database schema and repository data-access layer introduced across:
 
-The test suite contains **21 tests** covering schema creation, constraints, relationships, referential integrity, delete behaviour, and indexes.
+- **Challenge 036 - Media Library Database Schema**
+- **Challenge 037 - Database Data Access Layer**
+
+The project contains **43 tests** covering schema creation, constraints, relationships, referential integrity, delete behaviour, indexes, repository CRUD operations, and database constraint behaviour through the repository layer.
+
+# Challenge 036 - Schema Tests
+
+Challenge 036 contributes **21 tests** covering the relational database schema.
 
 ## Schema Initialization
 
@@ -83,6 +90,46 @@ The tests verify creation of:
 
 SQLite-generated `sqlite_autoindex_*` indexes are excluded from the explicit-index test.
 
+# Challenge 037 - Repository Tests
+
+Challenge 037 adds **22 tests** covering the library-source and media-track repositories.
+
+## Library Source Repository
+
+The `LibrarySourceRepository` tests verify:
+
+- Adding a source returns its generated database ID
+- A source can be retrieved by ID
+- Retrieving an unknown ID returns `null`
+- All sources can be retrieved
+- Existing sources can be updated
+- Updating an unknown source returns `false`
+- Existing sources can be deleted
+- Deleting an unknown source returns `false`
+- Paths differing only by casing remain rejected
+- Deleting a source that still contains tracks is rejected
+
+These tests verify both repository behaviour and preservation of the schema constraints introduced in Challenge 036.
+
+## Media Track Repository
+
+The `MediaTrackRepository` tests verify:
+
+- Adding a track returns its generated database ID
+- A track can be retrieved by ID
+- Retrieving an unknown ID returns `null`
+- A track can be retrieved by file path
+- Retrieving an unknown file path returns `null`
+- All tracks can be retrieved
+- Existing tracks can be updated
+- Updating an unknown track returns `false`
+- Existing tracks can be deleted
+- Deleting an unknown track returns `false`
+- File paths differing only by casing remain rejected
+- Tracks cannot reference an unknown library source
+
+Repository tests use the public repository APIs for normal CRUD verification rather than querying the database directly.
+
 ## Temporary Databases
 
 Each test uses a separate SQLite database created in the operating system temporary directory.
@@ -106,7 +153,7 @@ Using a separate database for each test keeps the tests isolated and prevents da
 
 ## Running the Tests
 
-Run the database-schema tests with:
+Run the media-library database tests with:
 
 ```text
 dotnet test KaraokeCodingChallenges.MediaLibraryDatabase.Tests
@@ -120,6 +167,8 @@ dotnet test
 
 ## Test Results
 
+After Challenge 037, the complete solution test suite reports:
+
 ```text
-Test summary: total: 21, failed: 0, succeeded: 21, skipped: 0
+Test summary: total: 250, failed: 0, succeeded: 250, skipped: 0
 ```
