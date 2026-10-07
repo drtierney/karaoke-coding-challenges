@@ -18,4 +18,8 @@
     <EmbeddedResource Include="Sql\CreateSchema.sql" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KaraokeCodingChallenges.Configuration\KaraokeCodingChallenges.Configuration.csproj" />
+  </ItemGroup>
+
 </Project>
