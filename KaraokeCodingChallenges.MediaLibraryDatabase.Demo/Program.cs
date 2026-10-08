@@ -2,7 +2,11 @@ using KaraokeCodingChallenges.Configuration;
 using KaraokeCodingChallenges.MediaLibraryDatabase;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Models;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Repositories;
+using KaraokeCodingChallenges.MediaLibraryDatabase.Services;
+using KaraokeCodingChallenges.MediaMetadata;
+using KaraokeCodingChallenges.ScanResult;
 using Microsoft.Data.Sqlite;
+
 
 string databasePath = Path.Combine(Path.GetTempPath(), "karaoke-media-library-demo.db");
 
@@ -192,6 +196,101 @@ foreach (MediaTrackRecord track in trackRepository.GetAll())
     Console.WriteLine($"{track.Id} - {track.Artist} - {track.Title} ({track.DurationSeconds} seconds)");
 }
 
+Console.WriteLine();
+Console.WriteLine("Challenge 038 - Persist Scanned Tracks");
+Console.WriteLine();
+
+ScannedTrackPersistenceService persistenceService =
+    new ScannedTrackPersistenceService(
+        trackRepository,
+        connectionString);
+
+List<MediaScanResult> scanResults =
+[
+    new MediaScanResult
+    {
+        FilePath = @"D:\Music\Queen - Bohemian Rhapsody.mp3",
+        IsSuccess = true,
+        Metadata = new MediaMetadataRecord
+        {
+            FilePath = @"D:\Music\Queen - Bohemian Rhapsody.mp3",
+            Title = "Bohemian Rhapsody",
+            Artist = "Queen",
+            DurationSeconds = 354
+        }
+    },
+    new MediaScanResult
+    {
+        FilePath = @"D:\Music\The Beatles - Hey Jude.mp3",
+        IsSuccess = true,
+        Metadata = new MediaMetadataRecord
+        {
+            FilePath = @"D:\Music\The Beatles - Hey Jude.mp3",
+            Title = "Hey Jude",
+            Artist = "The Beatles",
+            DurationSeconds = 431
+        }
+    }
+];
+
+IReadOnlyList<long> persistedTrackIds =
+    persistenceService.PersistBatch(
+        scanResults,
+        musicSourceId,
+        false);
+
+Console.WriteLine("Persisted Scan Results");
+Console.WriteLine();
+
+foreach (long trackId in persistedTrackIds)
+{
+    MediaTrackRecord? track =
+        trackRepository.GetById(trackId);
+
+    if (track is not null)
+    {
+        Console.WriteLine(
+            $"{track.Id} - {track.Artist} - {track.Title} ({track.DurationSeconds} seconds)");
+    }
+}
+
+Console.WriteLine();
+Console.WriteLine("Updating Existing Scanned Track");
+Console.WriteLine();
+
+MediaScanResult updatedScanResult =
+    new MediaScanResult
+    {
+        FilePath = @"D:\Music\Queen - Bohemian Rhapsody.mp3",
+        IsSuccess = true,
+        Metadata = new MediaMetadataRecord
+        {
+            FilePath = @"D:\Music\Queen - Bohemian Rhapsody.mp3",
+            Title = "Bohemian Rhapsody - Remastered",
+            Artist = "Queen",
+            DurationSeconds = 355
+        }
+    };
+
+long? updatedTrackId =
+    persistenceService.Persist(
+        updatedScanResult,
+        musicSourceId,
+        false);
+
+if (updatedTrackId.HasValue)
+{
+    MediaTrackRecord? updatedTrack =
+        trackRepository.GetById(updatedTrackId.Value);
+
+    if (updatedTrack is not null)
+    {
+        Console.WriteLine(
+            $"{updatedTrack.Id} - {updatedTrack.Artist} - {updatedTrack.Title} ({updatedTrack.DurationSeconds} seconds)");
+    }
+}
+
+// Helper methods
 static void PrintForeignKeys(SqliteConnection connection, string tableName)
 {
     using SqliteCommand command =
