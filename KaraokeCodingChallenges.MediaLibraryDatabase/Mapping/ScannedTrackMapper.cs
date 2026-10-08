@@ -12,8 +12,10 @@ public static class ScannedTrackMapper
             return null;
         }
 
-        string title = string.IsNullOrWhiteSpace(scanResult.Metadata.Title) 
-            ? Path.GetFileNameWithoutExtension(scanResult.FilePath) 
+        string fileName = scanResult.FilePath.Split('\\', '/').Last();
+
+        string title = string.IsNullOrWhiteSpace(scanResult.Metadata.Title)
+            ? Path.GetFileNameWithoutExtension(fileName)
             : scanResult.Metadata.Title;
 
         return new MediaTrackRecord
