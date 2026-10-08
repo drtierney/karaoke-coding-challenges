@@ -25,9 +25,9 @@ Milestone challenges periodically bring several earlier components together into
 
 ## Current Progress
 
-The challenge series has completed **Challenge 037 - Database Data Access Layer**, introducing repository interfaces and SQLite-backed implementations for accessing persisted library sources and media tracks while keeping SQL and database concerns separate from wider application logic.
+The challenge series has completed **Challenge 038 - Persist Scanned Tracks**, connecting media scan results to the SQLite persistence layer through mapping, upsert behaviour, batch persistence, and transaction handling.
 
-The persistence and storage phase now continues with **Challenge 038 - Persist Scanned Tracks**, before progressing toward database-backed search, incremental scanning, library reconciliation, and the **Persistent Library Milestone**.
+The persistence and storage phase now continues with **Challenge 039 - Database-Backed Search**, before progressing toward incremental scanning, library reconciliation, and the **Persistent Library Milestone**.
 
 The challenge table below shows the completed challenges and the currently planned roadmap. More detailed roadmap information, including concepts, dependencies, expected outcomes, and notes, is available in the [roadmap](roadmap/README.md).
 
@@ -98,7 +98,7 @@ Individual challenge READMEs contain additional information about their implemen
 | 035 | [SQLite Fundamentals](KaraokeCodingChallenges.Sqlite/README.md) | ☑ Completed |
 | 036 | [Media Library Database Schema](KaraokeCodingChallenges.MediaLibraryDatabase/README.md) | ☑ Completed |
 | 037 | [Database Data Access Layer](KaraokeCodingChallenges.MediaLibraryDatabase/README.md#challenge-037---database-data-access-layer) | ☑ Completed |
-| 038 | Persist Scanned Tracks | ☐ Planned |
+| 038 | [Persist Scanned Tracks](KaraokeCodingChallenges.MediaLibraryDatabase/README.md#challenge-038---persist-scanned-tracks) | ☑ Completed |
 | 039 | Database-Backed Search | ☐ Planned |
 | 040 | Incremental Library Scanning | ☐ Planned |
 | 041 | Library Reconciliation | ☐ Planned |

@@ -409,3 +409,212 @@ The following remain intentionally deferred:
 - Playback-history repositories
 
 These capabilities are introduced when required by later persistence challenges.
+
+---
+
+# Challenge 038 - Persist Scanned Tracks
+
+Integrates the existing media scan results with the SQLite persistence layer introduced in Challenges 036 and 037.
+
+The challenge introduces mapping from `MediaScanResult` into database records, insert-or-update behaviour for scanned tracks, batch persistence, and transaction handling so multiple scan results can be persisted atomically.
+
+## Concepts Practised
+
+- Transactions
+- Upserts
+- Batch persistence
+- Database identities
+- Integration between application and persistence models
+- Transaction-aware repository operations
+- Rollback behaviour
+- Case-insensitive identity lookup
+- Service orchestration
+
+## Scan Result Mapping
+
+`ScannedTrackMapper` converts successful `MediaScanResult` values into `MediaTrackRecord` objects suitable for persistence.
+
+The mapper:
+
+- Returns `null` for failed scan results
+- Returns `null` when scan metadata is unavailable
+- Associates the track with the supplied database source ID
+- Uses resolved metadata when available
+- Falls back to the filename when the title is missing, empty, or whitespace
+- Uses an empty string when the artist is unavailable
+- Uses `0` when duration metadata is unavailable
+- Preserves the scanned file path
+- Applies the supplied karaoke status
+
+Only the fields currently represented by the `Tracks` table are persisted.
+
+Additional metadata available through `MediaMetadataRecord`, such as album, genre, year, bitrate, sample rate, and channels, remains outside the scope of the current database schema.
+
+## `ScannedTrackPersistenceService`
+
+`ScannedTrackPersistenceService` coordinates scan-result mapping and database persistence.
+
+The service supports:
+
+- Persisting an individual scan result
+- Persisting multiple scan results as a batch
+- Inserting newly discovered tracks
+- Updating previously persisted tracks
+- Preserving existing database identities during updates
+- Skipping failed or unmappable scan results
+- Performing transactional batch persistence
+
+### Single-Track Persistence
+
+`Persist` maps the supplied scan result and checks the database for an existing track using its file path.
+
+If no track exists:
+
+```text
+MediaScanResult
+        ↓
+ScannedTrackMapper
+        ↓
+MediaTrackRecord
+        ↓
+INSERT
+        ↓
+Generated database ID
+```
+
+If a track already exists:
+
+```text
+MediaScanResult
+        ↓
+ScannedTrackMapper
+        ↓
+Find existing track by file path
+        ↓
+Preserve existing database ID
+        ↓
+UPDATE
+```
+
+This provides upsert-style behaviour while keeping the database-generated identity stable.
+
+## Case-Insensitive File Paths
+
+The `Tracks.FilePath` column uses SQLite `COLLATE NOCASE`.
+
+The persistence workflow therefore treats paths differing only by casing as the same track.
+
+For example:
+
+```text
+D:\Music\Queen - Bohemian Rhapsody.mp3
+```
+
+and:
+
+```text
+D:\MUSIC\QUEEN - BOHEMIAN RHAPSODY.MP3
+```
+
+resolve to the same persisted track rather than creating duplicate rows.
+
+When updated metadata is supplied through a differently cased path, the existing database ID is retained.
+
+## Transaction-Aware Repository Operations
+
+Challenge 037 repository operations normally create and manage their own SQLite connections.
+
+Challenge 038 extends `IMediaTrackRepository` with transaction-aware overloads for the operations required by batch persistence:
+
+- `Add`
+- `GetByFilePath`
+- `Update`
+
+These overloads accept an existing:
+
+- `SqliteConnection`
+- `SqliteTransaction`
+
+This allows several database operations to participate in the same transaction rather than being committed independently.
+
+The original repository methods remain available for normal single-record operations.
+
+## Batch Persistence
+
+`PersistBatch` persists multiple scan results using one SQLite connection and one transaction.
+
+The batch workflow is:
+
+```text
+Open SQLite connection
+        ↓
+Begin transaction
+        ↓
+Map each scan result
+        ↓
+Skip unmappable results
+        ↓
+Insert or update each valid track
+        ↓
+All operations successful?
+        ↓
+      Yes ── Commit
+       │
+       No
+       ↓
+    Roll back
+       ↓
+  Rethrow error
+```
+
+Successful scan results are returned as a read-only collection of persisted track IDs.
+
+Failed scan results and scan results without metadata are skipped without aborting an otherwise valid batch.
+
+## Transaction Rollback
+
+If a database operation fails while processing a batch, the complete transaction is rolled back.
+
+For example, if:
+
+1. The first track is inserted successfully.
+2. A later track violates a database constraint.
+3. SQLite raises an exception.
+
+The earlier insert is rolled back so the database is not left in a partially updated state.
+
+This provides atomic batch persistence: either all database changes in the batch succeed or none of them are committed.
+
+## Preserved Database Behaviour
+
+Challenge 038 continues to rely on the schema and repository behaviour introduced in Challenges 036 and 037.
+
+This includes:
+
+- Database-generated track identities
+- Case-insensitive unique file paths
+- Foreign-key relationships to library sources
+- Non-negative duration constraints
+- Parameterized SQL
+- SQLite constraint enforcement
+
+The persistence service coordinates these capabilities rather than duplicating database rules in application logic.
+
+## Scope
+
+Challenge 038 connects scanned media data to the relational persistence layer.
+
+The following remain intentionally deferred:
+
+- Database-backed search and filtering
+- Detecting whether files have changed since a previous scan
+- Incremental scanning
+- Detecting deleted or moved files
+- Library reconciliation
+- File-system watcher updates
+- Persisting every `MediaMetadataRecord` field
+- Playlist persistence workflows
+- Playback-history persistence workflows
+- Full karaoke companion-file persistence workflows
+
+These capabilities are introduced when required by later persistence challenges.

@@ -4,8 +4,9 @@ Demonstrates the SQLite database functionality introduced across:
 
 - **Challenge 036 - Media Library Database Schema**
 - **Challenge 037 - Database Data Access Layer**
+- **Challenge 038 - Persist Scanned Tracks**
 
-The demo first initializes and inspects the relational schema before demonstrating repository-based CRUD operations for library sources and media tracks.
+The demo first initializes and inspects the relational schema, then demonstrates repository-based CRUD operations, and finally persists scanned media results into the database.
 
 ## Challenge 036 - Schema Demo
 
@@ -65,6 +66,61 @@ Delete a track
         ↓
 Retrieve remaining tracks
 ```
+
+## Challenge 038 - Persist Scanned Tracks Demo
+
+The final part of the demo connects media scan results to the SQLite persistence layer introduced in the previous challenges.
+
+The demo:
+
+- Creates `ScannedTrackPersistenceService`
+- Builds multiple successful `MediaScanResult` values
+- Persists the scan results as a batch
+- Retrieves the generated database records
+- Displays the database-generated track IDs
+- Persists an updated scan result for an existing file path
+- Confirms that the existing database ID is preserved
+- Displays the updated metadata
+
+### Scan Persistence Demo Flow
+
+```text
+Create persistence service
+        ↓
+Create scan results
+        ↓
+Persist scan results as a batch
+        ↓
+Map scan results to database records
+        ↓
+Insert new tracks
+        ↓
+Retrieve persisted tracks
+        ↓
+Persist updated scan result
+        ↓
+Find existing track by file path
+        ↓
+Update existing database row
+        ↓
+Preserve existing track ID
+```
+
+The update portion demonstrates upsert-style behaviour.
+
+For example, the initial scan persists:
+
+```text
+3 - Queen - Bohemian Rhapsody (354 seconds)
+```
+
+A later scan of the same file path updates the existing row:
+
+```text
+3 - Queen - Bohemian Rhapsody - Remastered (355 seconds)
+```
+
+The database identity remains `3`, showing that the track is updated rather than inserted as a duplicate.
 
 ## Running the Demo
 
@@ -134,6 +190,17 @@ Deleted track: True
 Remaining Tracks
 
 1 - Queen - Don't Stop Me Now (210 seconds)
+
+Challenge 038 - Persist Scanned Tracks
+
+Persisted Scan Results
+
+3 - Queen - Bohemian Rhapsody (354 seconds)
+4 - The Beatles - Hey Jude (431 seconds)
+
+Updating Existing Scanned Track
+
+3 - Queen - Bohemian Rhapsody - Remastered (355 seconds)
 ```
 
 ## Schema Inspection
@@ -164,4 +231,4 @@ PRAGMA foreign_keys = ON;
 
 The demo also queries the setting and confirms that enforcement is enabled before inspecting the schema.
 
-Repository operations continue to use the constraints defined by the initialized database schema.
+Repository and persistence operations continue to use the constraints defined by the initialized database schema.

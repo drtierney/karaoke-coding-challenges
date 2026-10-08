@@ -719,8 +719,8 @@
                 37
             ],
             "outcome": "Store scan results and resolved metadata in SQLite.",
-            "status": "Planned",
-            "notes": null
+            "status": "Completed",
+            "notes": "Connected MediaScanResult data to the SQLite persistence layer through ScannedTrackMapper and ScannedTrackPersistenceService. Successful scan results are mapped into MediaTrackRecord values, new tracks are inserted, existing tracks are updated by case-insensitive file path while preserving database identity, and unmappable scan results are skipped. Added transaction-aware media-track repository operations so batch persistence uses a shared SQLite connection and transaction, committing successful batches and rolling back all changes when a database operation fails. Added 18 tests covering mapping, single-track persistence, case-insensitive upserts, batch inserts and updates, commit, rollback, and skipped scan results, bringing the complete solution to 268 passing tests."
         },
         {
             "number": 39,
