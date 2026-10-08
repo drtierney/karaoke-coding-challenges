@@ -56,15 +56,47 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
             """;
 
             command.Parameters.AddWithValue("$sourceId", track.SourceId);
-
             command.Parameters.AddWithValue("$title", track.Title);
-
             command.Parameters.AddWithValue("$artist", track.Artist);
-
             command.Parameters.AddWithValue("$filePath", track.FilePath);
-
             command.Parameters.AddWithValue("$durationSeconds", track.DurationSeconds);
+            command.Parameters.AddWithValue("$isKaraoke", track.IsKaraoke ? 1 : 0);
 
+            return (long)command.ExecuteScalar()!;
+        }
+
+        public long Add(MediaTrackRecord track, SqliteConnection connection, SqliteTransaction transaction)
+        {
+            using SqliteCommand command = connection.CreateCommand();
+
+            command.Transaction = transaction;
+
+            command.CommandText = """
+            INSERT INTO Tracks (
+                SourceId,
+                Title,
+                Artist,
+                FilePath,
+                DurationSeconds,
+                IsKaraoke
+            )
+            VALUES (
+                $sourceId,
+                $title,
+                $artist,
+                $filePath,
+                $durationSeconds,
+                $isKaraoke
+            );
+
+            SELECT last_insert_rowid();
+            """;
+
+            command.Parameters.AddWithValue("$sourceId", track.SourceId);
+            command.Parameters.AddWithValue("$title", track.Title);
+            command.Parameters.AddWithValue("$artist", track.Artist);
+            command.Parameters.AddWithValue("$filePath", track.FilePath);
+            command.Parameters.AddWithValue("$durationSeconds", track.DurationSeconds);
             command.Parameters.AddWithValue("$isKaraoke", track.IsKaraoke ? 1 : 0);
 
             return (long)command.ExecuteScalar()!;
@@ -72,13 +104,11 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
 
         public MediaTrackRecord? GetById(long id)
         {
-            using SqliteConnection connection =
-                new SqliteConnection(_connectionString);
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
 
             connection.Open();
 
-            using SqliteCommand command =
-                connection.CreateCommand();
+            using SqliteCommand command = connection.CreateCommand();
 
             command.CommandText = """
             SELECT
@@ -112,6 +142,37 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
             connection.Open();
 
             using SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = """
+            SELECT
+                Id,
+                SourceId,
+                Title,
+                Artist,
+                FilePath,
+                DurationSeconds,
+                IsKaraoke
+            FROM Tracks
+            WHERE FilePath = $filePath;
+            """;
+
+            command.Parameters.AddWithValue("$filePath", filePath);
+
+            using SqliteDataReader reader = command.ExecuteReader();
+
+            if (!reader.Read())
+            {
+                return null;
+            }
+
+            return MapMediaTrack(reader);
+        }
+
+        public MediaTrackRecord? GetByFilePath(string filePath, SqliteConnection connection, SqliteTransaction transaction)
+        {
+            using SqliteCommand command = connection.CreateCommand();
+
+            command.Transaction = transaction;
 
             command.CommandText = """
             SELECT
@@ -178,6 +239,37 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
             connection.Open();
 
             using SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = """
+            UPDATE Tracks
+            SET
+                SourceId = $sourceId,
+                Title = $title,
+                Artist = $artist,
+                FilePath = $filePath,
+                DurationSeconds = $durationSeconds,
+                IsKaraoke = $isKaraoke
+            WHERE Id = $id;
+            """;
+
+            command.Parameters.AddWithValue("$id", track.Id);
+            command.Parameters.AddWithValue("$sourceId", track.SourceId);
+            command.Parameters.AddWithValue("$title", track.Title);
+            command.Parameters.AddWithValue("$artist", track.Artist);
+            command.Parameters.AddWithValue("$filePath", track.FilePath);
+            command.Parameters.AddWithValue("$durationSeconds", track.DurationSeconds);
+            command.Parameters.AddWithValue("$isKaraoke", track.IsKaraoke ? 1 : 0);
+
+            int rowsAffected = command.ExecuteNonQuery();
+
+            return rowsAffected > 0;
+        }
+
+        public bool Update(MediaTrackRecord track, SqliteConnection connection, SqliteTransaction transaction)
+        {
+            using SqliteCommand command = connection.CreateCommand();
+
+            command.Transaction = transaction;
 
             command.CommandText = """
             UPDATE Tracks

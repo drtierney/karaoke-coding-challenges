@@ -20,6 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KaraokeCodingChallenges.Configuration\KaraokeCodingChallenges.Configuration.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MediaMetadata\KaraokeCodingChallenges.MediaMetadata.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.ScanResult\KaraokeCodingChallenges.ScanResult.csproj" />
   </ItemGroup>
 
 </Project>
