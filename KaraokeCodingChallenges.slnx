@@ -19,6 +19,9 @@
   <Project Path="KaraokeCodingChallenges.MediaLibraryFiltering/KaraokeCodingChallenges.MediaLibraryFiltering.csproj" Id="f60f6151-54ed-4176-86b2-e34fd44b0605" />
   <Project Path="KaraokeCodingChallenges.MediaLibraryProcessor/KaraokeCodingChallenges.MediaLibraryProcessor.csproj" Id="76489397-28b4-4a5a-829b-514500fd8b3b" />
   <Project Path="KaraokeCodingChallenges.MediaLibraryQueries/KaraokeCodingChallenges.MediaLibraryQueries.csproj" Id="c3b9cfbc-5ce0-425a-b107-e983617dc845" />
+  <Project Path="KaraokeCodingChallenges.MediaLibrarySearch.Demo/KaraokeCodingChallenges.MediaLibrarySearch.Demo.csproj" Id="f2d710dc-aa3d-4c33-b52c-1ce97995ccbc" />
+  <Project Path="KaraokeCodingChallenges.MediaLibrarySearch.Tests/KaraokeCodingChallenges.MediaLibrarySearch.Tests.csproj" Id="df586e9c-fafc-414f-ad5f-296f2092a590" />
+  <Project Path="KaraokeCodingChallenges.MediaLibrarySearch/KaraokeCodingChallenges.MediaLibrarySearch.csproj" />
   <Project Path="KaraokeCodingChallenges.MediaMetadata/KaraokeCodingChallenges.MediaMetadata.csproj" Id="63cd3358-cf09-45cb-9981-edb1e6d6b4a2" />
   <Project Path="KaraokeCodingChallenges.MediaMetadataScanner/KaraokeCodingChallenges.MediaMetadataScanner.csproj" Id="53840b86-1549-4744-b3af-c1a67d4cd783" />
   <Project Path="KaraokeCodingChallenges.MediaScanService/KaraokeCodingChallenges.MediaScanService.csproj" Id="ceeedafe-c702-4d53-ab97-6c26c8df8126" />

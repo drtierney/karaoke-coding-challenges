@@ -731,17 +731,20 @@
                 "WHERE",
                 "ORDER BY",
                 "LIKE",
-                "indexes",
-                "query parameters"
+                "AND/OR conditions",
+                "query parameters",
+                "dynamic SQL conditions",
+                "wildcard escaping",
+                "integration testing"
             ],
             "buildsOn": [
                 32,
                 37,
                 38
             ],
-            "outcome": "Search and filter a large library efficiently from SQLite.",
-            "status": "Planned",
-            "notes": null
+            "outcome": "Search persisted media tracks directly in SQLite using optional title and artist criteria.",
+            "status": "Completed",
+            "notes": "Introduced SqliteMediaTrackSearchService with MediaTrackSearchCriteria and MediaTrackSearchMatchMode for database-backed title and artist searches. Queries use parameterized SQL, partial case-insensitive matching, dynamically combined AND/OR conditions, and deterministic ID ordering. Null, empty, and whitespace-only criteria are ignored, while user-supplied %, _, and backslash characters are escaped for literal LIKE matching. Added validation for connection strings, null criteria, and invalid match modes. Created 32 tests using isolated temporary SQLite databases and a console demo covering seven search scenarios across music and karaoke sources, bringing the complete solution to 300 passing tests."
         },
         {
             "number": 40,
