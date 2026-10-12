@@ -22,7 +22,17 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 Artist = reader.GetString(3),
                 FilePath = reader.GetString(4),
                 DurationSeconds = reader.GetInt32(5),
-                IsKaraoke = reader.GetInt32(6) == 1
+                IsKaraoke = reader.GetInt32(6) == 1,
+                FileSize = reader.IsDBNull(7) 
+                    ? null 
+                    : reader.GetInt64(7),
+                LastModifiedUtc = reader.IsDBNull(8)
+                    ? null
+                    : DateTime.ParseExact(
+                        reader.GetString(8),
+                        "o",
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.RoundtripKind)
             };
         }
 
@@ -41,7 +51,9 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 Artist,
                 FilePath,
                 DurationSeconds,
-                IsKaraoke
+                IsKaraoke,
+                FileSize,
+                LastModifiedUtc
             )
             VALUES (
                 $sourceId,
@@ -49,7 +61,9 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 $artist,
                 $filePath,
                 $durationSeconds,
-                $isKaraoke
+                $isKaraoke,
+                $fileSize,
+                $lastModifiedUtc
             );
 
             SELECT last_insert_rowid();
@@ -61,6 +75,8 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
             command.Parameters.AddWithValue("$filePath", track.FilePath);
             command.Parameters.AddWithValue("$durationSeconds", track.DurationSeconds);
             command.Parameters.AddWithValue("$isKaraoke", track.IsKaraoke ? 1 : 0);
+            command.Parameters.AddWithValue("$fileSize", (object?)track.FileSize ?? DBNull.Value);
+            command.Parameters.AddWithValue("$lastModifiedUtc", (object?)track.LastModifiedUtc?.ToString("o") ?? DBNull.Value);
 
             return (long)command.ExecuteScalar()!;
         }
@@ -78,7 +94,9 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 Artist,
                 FilePath,
                 DurationSeconds,
-                IsKaraoke
+                IsKaraoke,
+                FileSize,
+                LastModifiedUtc
             )
             VALUES (
                 $sourceId,
@@ -86,7 +104,9 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 $artist,
                 $filePath,
                 $durationSeconds,
-                $isKaraoke
+                $isKaraoke,
+                $fileSize,
+                $lastModifiedUtc
             );
 
             SELECT last_insert_rowid();
@@ -98,6 +118,8 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
             command.Parameters.AddWithValue("$filePath", track.FilePath);
             command.Parameters.AddWithValue("$durationSeconds", track.DurationSeconds);
             command.Parameters.AddWithValue("$isKaraoke", track.IsKaraoke ? 1 : 0);
+            command.Parameters.AddWithValue("$fileSize", (object?)track.FileSize ?? DBNull.Value);
+            command.Parameters.AddWithValue("$lastModifiedUtc", (object?)track.LastModifiedUtc?.ToString("o") ?? DBNull.Value);
 
             return (long)command.ExecuteScalar()!;
         }
@@ -118,7 +140,9 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 Artist,
                 FilePath,
                 DurationSeconds,
-                IsKaraoke
+                IsKaraoke,
+                FileSize,
+                LastModifiedUtc
             FROM Tracks
             WHERE Id = $id;
             """;
@@ -151,7 +175,9 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 Artist,
                 FilePath,
                 DurationSeconds,
-                IsKaraoke
+                IsKaraoke,
+                FileSize,
+                LastModifiedUtc
             FROM Tracks
             WHERE FilePath = $filePath;
             """;
@@ -182,7 +208,9 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 Artist,
                 FilePath,
                 DurationSeconds,
-                IsKaraoke
+                IsKaraoke,
+                FileSize,
+                LastModifiedUtc
             FROM Tracks
             WHERE FilePath = $filePath;
             """;
@@ -215,7 +243,9 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 Artist,
                 FilePath,
                 DurationSeconds,
-                IsKaraoke
+                IsKaraoke,
+                FileSize,
+                LastModifiedUtc
             FROM Tracks
             ORDER BY Id;
             """;
@@ -248,7 +278,9 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 Artist = $artist,
                 FilePath = $filePath,
                 DurationSeconds = $durationSeconds,
-                IsKaraoke = $isKaraoke
+                IsKaraoke = $isKaraoke,
+                FileSize = COALESCE($fileSize, FileSize),
+                LastModifiedUtc = COALESCE($lastModifiedUtc, LastModifiedUtc)
             WHERE Id = $id;
             """;
 
@@ -259,6 +291,8 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
             command.Parameters.AddWithValue("$filePath", track.FilePath);
             command.Parameters.AddWithValue("$durationSeconds", track.DurationSeconds);
             command.Parameters.AddWithValue("$isKaraoke", track.IsKaraoke ? 1 : 0);
+            command.Parameters.AddWithValue("$fileSize", (object?)track.FileSize ?? DBNull.Value);
+            command.Parameters.AddWithValue("$lastModifiedUtc", (object?)track.LastModifiedUtc?.ToString("o") ?? DBNull.Value);
 
             int rowsAffected = command.ExecuteNonQuery();
 
@@ -279,7 +313,9 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
                 Artist = $artist,
                 FilePath = $filePath,
                 DurationSeconds = $durationSeconds,
-                IsKaraoke = $isKaraoke
+                IsKaraoke = $isKaraoke,
+                FileSize = COALESCE($fileSize, FileSize),
+                LastModifiedUtc = COALESCE($lastModifiedUtc, LastModifiedUtc)
             WHERE Id = $id;
             """;
 
@@ -290,6 +326,8 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
             command.Parameters.AddWithValue("$filePath", track.FilePath);
             command.Parameters.AddWithValue("$durationSeconds", track.DurationSeconds);
             command.Parameters.AddWithValue("$isKaraoke", track.IsKaraoke ? 1 : 0);
+            command.Parameters.AddWithValue("$fileSize", (object?)track.FileSize ?? DBNull.Value);
+            command.Parameters.AddWithValue("$lastModifiedUtc", (object?)track.LastModifiedUtc?.ToString("o") ?? DBNull.Value);
 
             int rowsAffected = command.ExecuteNonQuery();
 

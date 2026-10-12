@@ -329,5 +329,246 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Tests
 
             Assert.Throws<SqliteException>(() => repository.Add(track));
         }
+
+        [Fact]
+        public void Add_PersistsFingerprintValues()
+        {
+            using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+            DateTime lastModifiedUtc = new DateTime(2026, 10, 12, 18, 0, 0, DateTimeKind.Utc);
+
+            MediaTrackRecord track = new MediaTrackRecord
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+                DurationSeconds = 354,
+                IsKaraoke = false,
+                FileSize = 12345678,
+                LastModifiedUtc = lastModifiedUtc
+            };
+
+            long id = repository.Add(track);
+
+            MediaTrackRecord? result = repository.GetById(id);
+
+            Assert.NotNull(result);
+            Assert.Equal(track.FileSize, result.FileSize);
+            Assert.Equal(track.LastModifiedUtc, result.LastModifiedUtc);
+        }
+
+        [Fact]
+        public void Add_PersistsNullFingerprints_WhenValuesAreNotProvided()
+        {
+            using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+            MediaTrackRecord track = new MediaTrackRecord
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+                DurationSeconds = 354,
+                IsKaraoke = false
+            };
+
+            long id = repository.Add(track);
+
+            MediaTrackRecord? result = repository.GetById(id);
+
+            Assert.NotNull(result);
+            Assert.Null(result.FileSize);
+            Assert.Null(result.LastModifiedUtc);
+        }
+
+        [Fact]
+        public void Update_PersistsModifiedFingerprintValues()
+        {
+            using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+            DateTime lastModifiedUtc = new DateTime(2026, 10, 12, 18, 0, 0, DateTimeKind.Utc);
+
+            MediaTrackRecord track = new MediaTrackRecord
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+                DurationSeconds = 354,
+                IsKaraoke = false,
+                FileSize = 12345678,
+                LastModifiedUtc = lastModifiedUtc
+            };
+
+            long id = repository.Add(track);
+
+            MediaTrackRecord? insertedTrack = repository.GetById(id);
+
+            Assert.NotNull(insertedTrack);
+
+            // Update the fingerprint values
+            insertedTrack.FileSize = 87654321;
+            insertedTrack.LastModifiedUtc = new DateTime(2026, 10, 13, 12, 0, 0, DateTimeKind.Utc);
+
+            bool updated = repository.Update(insertedTrack);
+
+            MediaTrackRecord? result = repository.GetById(id);
+
+            Assert.True(updated);
+            Assert.NotNull(result);
+            Assert.Equal(insertedTrack.FileSize, result.FileSize);
+            Assert.Equal(insertedTrack.LastModifiedUtc, result.LastModifiedUtc);
+        }
+
+        [Fact]
+        public void Update_PreservesExistingFingerprint_WhenIncomingValuesAreNull()
+        {
+            using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+            DateTime lastModifiedUtc = new DateTime(2026, 10, 12, 18, 0, 0, DateTimeKind.Utc);
+
+            MediaTrackRecord track = new MediaTrackRecord
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+                DurationSeconds = 354,
+                IsKaraoke = false,
+                FileSize = 12345678,
+                LastModifiedUtc = lastModifiedUtc
+            };
+
+            long id = repository.Add(track);
+
+            MediaTrackRecord? insertedTrack = repository.GetById(id);
+
+            Assert.NotNull(insertedTrack);
+
+            // Update the track without providing fingerprint values (set them to null)
+            insertedTrack.FileSize = null;
+            insertedTrack.LastModifiedUtc = null;
+
+            bool updated = repository.Update(insertedTrack);
+
+            MediaTrackRecord? result = repository.GetById(id);
+
+            Assert.True(updated);
+            Assert.NotNull(result);
+            Assert.Equal(track.FileSize, result.FileSize);
+            Assert.Equal(track.LastModifiedUtc, result.LastModifiedUtc);
+        }
+
+        [Fact]
+        public void Add_WithTransaction_PersistsFingerprintValues()
+        {
+            using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+            DateTime lastModifiedUtc = new DateTime(2026, 10, 12, 18, 0, 0, DateTimeKind.Utc);
+
+            MediaTrackRecord track = new MediaTrackRecord
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+                DurationSeconds = 354,
+                IsKaraoke = false,
+                FileSize = 12345678,
+                LastModifiedUtc = lastModifiedUtc
+            };
+
+            using SqliteTransaction transaction = connection.BeginTransaction();
+
+            long id = repository.Add(track, connection, transaction);
+
+            transaction.Commit();
+
+            MediaTrackRecord? result = repository.GetById(id);
+
+            Assert.NotNull(result);
+            Assert.Equal(track.FileSize, result.FileSize);
+            Assert.Equal(track.LastModifiedUtc, result.LastModifiedUtc);
+        }
+
+        [Fact]
+        public void Update_WithTransaction_PersistsModifiedFingerprintValues()
+        {
+            using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+            DateTime lastModifiedUtc = new DateTime(2026, 10, 12, 18, 0, 0, DateTimeKind.Utc);
+
+            MediaTrackRecord track = new MediaTrackRecord
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+                DurationSeconds = 354,
+                IsKaraoke = false,
+                FileSize = 12345678,
+                LastModifiedUtc = lastModifiedUtc
+            };
+
+            long id = repository.Add(track);
+
+            MediaTrackRecord? insertedTrack = repository.GetById(id);
+
+            Assert.NotNull(insertedTrack);
+
+            // Update the fingerprint values
+            insertedTrack.FileSize = 87654321;
+            insertedTrack.LastModifiedUtc = new DateTime(2026, 10, 13, 12, 0, 0, DateTimeKind.Utc);
+
+            using SqliteTransaction transaction = connection.BeginTransaction();
+
+            bool updated = repository.Update(insertedTrack, connection, transaction);
+
+            transaction.Commit();
+
+            MediaTrackRecord? result = repository.GetById(id);
+
+            Assert.True(updated);
+            Assert.NotNull(result);
+            Assert.Equal(insertedTrack.FileSize, result.FileSize);
+            Assert.Equal(insertedTrack.LastModifiedUtc, result.LastModifiedUtc);
+        }
     }
 }
