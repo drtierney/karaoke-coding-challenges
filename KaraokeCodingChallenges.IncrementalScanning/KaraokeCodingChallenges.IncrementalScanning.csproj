@@ -2,6 +2,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KaraokeCodingChallenges.MediaLibraryDatabase\KaraokeCodingChallenges.MediaLibraryDatabase.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MediaScanService\KaraokeCodingChallenges.MediaScanService.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MetadataReader\KaraokeCodingChallenges.MetadataReader.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
