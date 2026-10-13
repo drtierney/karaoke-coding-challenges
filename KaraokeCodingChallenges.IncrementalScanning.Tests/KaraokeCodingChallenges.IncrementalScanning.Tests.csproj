@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KaraokeCodingChallenges.IncrementalScanning\KaraokeCodingChallenges.IncrementalScanning.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MediaLibraryDatabase\KaraokeCodingChallenges.MediaLibraryDatabase.csproj" />
   </ItemGroup>
 
 </Project>
