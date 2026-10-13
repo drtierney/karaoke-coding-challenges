@@ -17,9 +17,14 @@ public class ScannedTrackPersistenceService
         _connectionString = connectionString;
     }
 
-    public long? Persist(MediaScanResult scanResult, long sourceId, bool isKaraoke = false)
+    public long? Persist(
+        MediaScanResult scanResult,
+        long sourceId,
+        bool isKaraoke = false,
+        long? fileSize = null,
+        DateTime? lastModifiedUtc = null)
     {
-        MediaTrackRecord? track = ScannedTrackMapper.Map(scanResult, sourceId, isKaraoke);
+        MediaTrackRecord? track = ScannedTrackMapper.Map(scanResult, sourceId, isKaraoke, fileSize, lastModifiedUtc);
 
         if (track is null)
         {

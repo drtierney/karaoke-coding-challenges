@@ -1,11 +1,17 @@
 using KaraokeCodingChallenges.MediaLibraryDatabase.Models;
 using KaraokeCodingChallenges.ScanResult;
 
+
 namespace KaraokeCodingChallenges.MediaLibraryDatabase.Mapping;
 
 public static class ScannedTrackMapper
 {
-    public static MediaTrackRecord? Map(MediaScanResult scanResult, long sourceId, bool isKaraoke = false)
+    public static MediaTrackRecord? Map(
+        MediaScanResult scanResult, 
+        long sourceId, 
+        bool isKaraoke = false, 
+        long? fileSize = null, 
+        DateTime? lastModifiedUtc = null)
     {
         if (!scanResult.IsSuccess || scanResult.Metadata is null)
         {
@@ -25,7 +31,9 @@ public static class ScannedTrackMapper
             Artist = scanResult.Metadata.Artist ?? string.Empty,
             FilePath = scanResult.FilePath,
             DurationSeconds = scanResult.Metadata.DurationSeconds ?? 0,
-            IsKaraoke = isKaraoke
+            IsKaraoke = isKaraoke,
+            FileSize = fileSize,
+            LastModifiedUtc = lastModifiedUtc
         };
     }
 }
