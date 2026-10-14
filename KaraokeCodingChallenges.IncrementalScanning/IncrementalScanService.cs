@@ -28,10 +28,8 @@ public class IncrementalScanService
         this.persistenceService = persistenceService;
     }
 
-    public FileChangeStatus CheckFile(string filePath)
+    private FileChangeStatus CheckFingerprint(FileFingerprint fingerprint)
     {
-        FileFingerprint fingerprint = fingerprintProvider.GetFingerprint(filePath);
-
         MediaTrackRecord? existingTrack = repository.GetByFilePath(fingerprint.FilePath);
 
         if (existingTrack == null)
@@ -39,7 +37,8 @@ public class IncrementalScanService
             return FileChangeStatus.New;
         }
 
-        if (existingTrack.FileSize == null || existingTrack.LastModifiedUtc == null)
+        if (existingTrack.FileSize == null ||
+            existingTrack.LastModifiedUtc == null)
         {
             return FileChangeStatus.Modified;
         }
@@ -51,9 +50,54 @@ public class IncrementalScanService
             LastModifiedUtc = existingTrack.LastModifiedUtc.Value
         };
 
-        return changeDetector.DetectChange(fingerprint, previousFingerprint);
+        return changeDetector.DetectChange(
+            fingerprint,
+            previousFingerprint);
     }
 
+    public FileChangeStatus CheckFile(string filePath)
+    {
+        FileFingerprint fingerprint =
+            fingerprintProvider.GetFingerprint(filePath);
+
+        return CheckFingerprint(fingerprint);
+    }
+
+    private MediaScanResult ProcessChangedFile(
+    FileFingerprint fingerprint,
+    long sourceId,
+    IMetadataReader metadataReader,
+    bool isKaraoke)
+    {
+        MediaScanResult scanResult = MediaScannerService.ScanFile(fingerprint.FilePath, metadataReader);
+
+        if (!scanResult.IsSuccess || scanResult.Metadata is null)
+        {
+            return scanResult;
+        }
+
+        FileFingerprint latestFingerprint = fingerprintProvider.GetFingerprint(fingerprint.FilePath);
+
+        if (changeDetector.DetectChange(latestFingerprint, fingerprint)
+            != FileChangeStatus.Unchanged)
+        {
+            return scanResult with
+            {
+                IsSuccess = false,
+                Metadata = null,
+                Errors = ["File changed during metadata extraction."]
+            };
+        }
+
+        persistenceService.Persist(
+            scanResult,
+            sourceId,
+            isKaraoke,
+            fingerprint.FileSize,
+            fingerprint.LastModifiedUtc);
+
+        return scanResult;
+    }
 
     public MediaScanResult? ProcessFile(
         string filePath,
@@ -99,4 +143,74 @@ public class IncrementalScanService
 
         return scanResult;
     }
+
+
+
+    public IncrementalScanSummary ProcessFiles(
+        IEnumerable<string> filePaths,
+        long sourceId,
+        IMetadataReader metadataReader,
+        bool isKaraoke = false)
+    {
+        IncrementalScanSummary summary = new IncrementalScanSummary();
+
+        foreach (string filePath in filePaths)
+        {
+            summary.Total++;
+
+            try
+            {
+                FileFingerprint fingerprint = fingerprintProvider.GetFingerprint(filePath);
+
+                FileChangeStatus status = CheckFingerprint(fingerprint);
+
+                if (status == FileChangeStatus.Unchanged)
+                {
+                    summary.Skipped++;
+                    continue;
+                }
+
+                MediaScanResult result = ProcessChangedFile(
+                    fingerprint,
+                    sourceId,
+                    metadataReader,
+                    isKaraoke);
+
+                if (!result.IsSuccess || result.Metadata is null)
+                {
+                    summary.Failed++;
+                    continue;
+                }
+
+                if (status == FileChangeStatus.New)
+                {
+                    summary.Added++;
+                }
+                else if (status == FileChangeStatus.Modified)
+                {
+                    summary.Updated++;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                summary.Failed++;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                summary.Failed++;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                summary.Failed++;
+            }
+            catch (IOException)
+            {
+                summary.Failed++;
+            }
+        }
+
+        return summary;
+    }
+
+
 }

@@ -712,4 +712,457 @@ public class IncrementalScanServiceTests
         }
     }
 
+
+
+    [Fact]
+    public void ProcessFiles_SkipsAllFiles_WhenFingerprintsMatch()
+    {
+        string databasePath = Path.Combine(Path.GetTempPath(), $"incremental-scan-{Guid.NewGuid():N}.db");
+
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        string directoryPath = Path.Combine(Path.GetTempPath(), $"incremental-files-{Guid.NewGuid():N}");
+
+        Directory.CreateDirectory(directoryPath);
+
+        try
+        {
+            MediaLibraryDatabaseInitializer initializer = new MediaLibraryDatabaseInitializer(connectionString);
+
+            initializer.Initialize();
+
+            string[] filePaths =
+            [
+                Path.Combine(directoryPath, "track1.mp3"),
+                Path.Combine(directoryPath, "track2.mp3"),
+                Path.Combine(directoryPath, "track3.mp3")
+            ];
+
+            foreach (string filePath in filePaths)
+            {
+                File.WriteAllText(filePath, "Test");
+            }
+
+            LibrarySourceRepository sourceRepository = new LibrarySourceRepository(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = directoryPath,
+                Type = LibrarySourceType.Music,
+                Enabled = true
+            });
+
+            MediaTrackRepository repository = new MediaTrackRepository(connectionString);
+
+            FileFingerprintProvider fingerprintProvider = new FileFingerprintProvider();
+
+            FileChangeDetector changeDetector = new FileChangeDetector();
+
+            ScannedTrackPersistenceService persistenceService = new ScannedTrackPersistenceService(repository, connectionString);
+
+            IncrementalScanService service =
+                new IncrementalScanService(
+                    repository,
+                    fingerprintProvider,
+                    changeDetector,
+                    persistenceService);
+
+            CountingMetadataReader metadataReader = new CountingMetadataReader();
+
+            // Perform the initial scans to populate SQLite.
+            foreach (string filePath in filePaths)
+            {
+                MediaScanResult? result = service.ProcessFile(
+                    filePath,
+                    sourceId,
+                    metadataReader);
+
+                Assert.NotNull(result);
+                Assert.True(result.IsSuccess);
+            }
+
+            Assert.Equal(3, metadataReader.ReadCount);
+
+            // Scan the same files again.
+            IncrementalScanSummary summary = service.ProcessFiles(
+                filePaths,
+                sourceId,
+                metadataReader);
+
+            // All files should be skipped.
+            Assert.Equal(3, summary.Total);
+            Assert.Equal(0, summary.Added);
+            Assert.Equal(0, summary.Updated);
+            Assert.Equal(3, summary.Skipped);
+            Assert.Equal(0, summary.Failed);
+
+            // No additional metadata reads should have occurred.
+            Assert.Equal(3, metadataReader.ReadCount);
+        }
+        finally
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                Directory.Delete(directoryPath, recursive: true);
+            }
+
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
+
+    [Fact]
+    public void ProcessFiles_AddsNewFiles_AndUpdatesSummary()
+    {
+        string databasePath = Path.Combine(Path.GetTempPath(), $"incremental-scan-{Guid.NewGuid():N}.db");
+
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        string directoryPath = Path.Combine(Path.GetTempPath(), $"incremental-files-{Guid.NewGuid():N}");
+
+        Directory.CreateDirectory(directoryPath);
+
+        try
+        {
+            MediaLibraryDatabaseInitializer initializer = new MediaLibraryDatabaseInitializer(connectionString);
+
+            initializer.Initialize();
+
+            string[] filePaths =
+            [
+                Path.Combine(directoryPath, "track1.mp3"),
+                Path.Combine(directoryPath, "track2.mp3"),
+                Path.Combine(directoryPath, "track3.mp3")
+            ];
+
+            foreach (string filePath in filePaths)
+            {
+                File.WriteAllText(filePath, "Test");
+            }
+
+            LibrarySourceRepository sourceRepository = new LibrarySourceRepository(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = directoryPath,
+                Type = LibrarySourceType.Music,
+                Enabled = true
+            });
+
+            MediaTrackRepository repository = new MediaTrackRepository(connectionString);
+
+            FileFingerprintProvider fingerprintProvider = new FileFingerprintProvider();
+
+            FileChangeDetector changeDetector = new FileChangeDetector();
+
+            ScannedTrackPersistenceService persistenceService = new ScannedTrackPersistenceService(repository, connectionString);
+
+            IncrementalScanService service =
+                new IncrementalScanService(
+                    repository,
+                    fingerprintProvider,
+                    changeDetector,
+                    persistenceService);
+
+            CountingMetadataReader metadataReader = new CountingMetadataReader();
+
+            // Process three new files.
+            IncrementalScanSummary summary = service.ProcessFiles(
+                filePaths,
+                sourceId,
+                metadataReader);
+
+            // Verify scan statistics.
+            Assert.Equal(3, summary.Total);
+            Assert.Equal(3, summary.Added);
+            Assert.Equal(0, summary.Updated);
+            Assert.Equal(0, summary.Skipped);
+            Assert.Equal(0, summary.Failed);
+
+            // Verify each file was scanned exactly once.
+            Assert.Equal(3, metadataReader.ReadCount);
+
+            // Verify all tracks were persisted with fingerprints.
+            foreach (string filePath in filePaths)
+            {
+                MediaTrackRecord? track = repository.GetByFilePath(filePath);
+
+                Assert.NotNull(track);
+                Assert.Equal(sourceId, track.SourceId);
+                Assert.Equal("Test Track", track.Title);
+                Assert.Equal("Test Artist", track.Artist);
+                Assert.NotNull(track.FileSize);
+                Assert.NotNull(track.LastModifiedUtc);
+            }
+        }
+        finally
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                Directory.Delete(directoryPath, recursive: true);
+            }
+
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
+
+
+    [Fact]
+    public void ProcessFiles_ReportsCorrectSummary_WhenFilesHaveMixedStatuses()
+    {
+        string databasePath = Path.Combine(Path.GetTempPath(), $"incremental-scan-{Guid.NewGuid():N}.db");
+
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        string directoryPath = Path.Combine(Path.GetTempPath(), $"incremental-files-{Guid.NewGuid():N}");
+
+        Directory.CreateDirectory(directoryPath);
+
+        try
+        {
+            MediaLibraryDatabaseInitializer initializer = new MediaLibraryDatabaseInitializer(connectionString);
+
+            initializer.Initialize();
+
+            string newFilePath = Path.Combine(directoryPath, "new-track.mp3");
+            string modifiedFilePath = Path.Combine(directoryPath, "modified-track.mp3");
+            string unchangedFilePath = Path.Combine(directoryPath, "unchanged-track.mp3");
+
+            string[] filePaths =
+            [
+                newFilePath,
+                modifiedFilePath,
+                unchangedFilePath
+            ];
+
+            foreach (string filePath in filePaths)
+            {
+                File.WriteAllText(filePath, "Test");
+            }
+
+            LibrarySourceRepository sourceRepository = new LibrarySourceRepository(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = directoryPath,
+                Type = LibrarySourceType.Music,
+                Enabled = true
+            });
+
+            MediaTrackRepository repository = new MediaTrackRepository(connectionString);
+
+            FileFingerprintProvider fingerprintProvider = new FileFingerprintProvider();
+
+            FileChangeDetector changeDetector = new FileChangeDetector();
+
+            ScannedTrackPersistenceService persistenceService = new ScannedTrackPersistenceService(repository, connectionString);
+
+            IncrementalScanService service =
+                new IncrementalScanService(
+                    repository,
+                    fingerprintProvider,
+                    changeDetector,
+                    persistenceService);
+
+            CountingMetadataReader metadataReader = new CountingMetadataReader();
+
+            // Establish existing records for modified and unchanged files.
+            MediaScanResult? modifiedInitialResult = service.ProcessFile(
+                modifiedFilePath,
+                sourceId,
+                metadataReader);
+
+            MediaScanResult? unchangedInitialResult = service.ProcessFile(
+                unchangedFilePath,
+                sourceId,
+                metadataReader);
+
+            Assert.NotNull(modifiedInitialResult);
+            Assert.True(modifiedInitialResult.IsSuccess);
+
+            Assert.NotNull(unchangedInitialResult);
+            Assert.True(unchangedInitialResult.IsSuccess);
+
+            Assert.Equal(2, metadataReader.ReadCount);
+
+            MediaTrackRecord? originalModifiedTrack = repository.GetByFilePath(modifiedFilePath);
+
+            Assert.NotNull(originalModifiedTrack);
+
+            long originalModifiedTrackId = originalModifiedTrack.Id;
+            long originalModifiedFileSize = originalModifiedTrack.FileSize!.Value;
+
+            // Change one file while leaving the other unchanged.
+            File.WriteAllText(modifiedFilePath, "Test - Modified");
+
+            IncrementalScanSummary summary = service.ProcessFiles(
+                filePaths,
+                sourceId,
+                metadataReader);
+
+            // Statistics
+            Assert.Equal(3, summary.Total);
+            Assert.Equal(1, summary.Added);
+            Assert.Equal(1, summary.Updated);
+            Assert.Equal(1, summary.Skipped);
+            Assert.Equal(0, summary.Failed);
+
+            // Two reads during setup, two additional reads during the batch.
+            Assert.Equal(4, metadataReader.ReadCount);
+
+            // New track inserted
+            MediaTrackRecord? newTrack = repository.GetByFilePath(newFilePath);
+
+            Assert.NotNull(newTrack);
+            Assert.NotNull(newTrack.FileSize);
+            Assert.NotNull(newTrack.LastModifiedUtc);
+
+            // Modified track updated without changing its ID
+            MediaTrackRecord? updatedTrack = repository.GetByFilePath(modifiedFilePath);
+
+            Assert.NotNull(updatedTrack);
+            Assert.Equal(originalModifiedTrackId, updatedTrack.Id);
+            Assert.NotEqual(originalModifiedFileSize, updatedTrack.FileSize);
+
+            FileFingerprint updatedFingerprint = fingerprintProvider.GetFingerprint(modifiedFilePath);
+
+            Assert.Equal(updatedFingerprint.FileSize, updatedTrack.FileSize);
+            Assert.Equal(updatedFingerprint.LastModifiedUtc, updatedTrack.LastModifiedUtc);
+
+            // Unchanged track still exists
+            MediaTrackRecord? unchangedTrack = repository.GetByFilePath(unchangedFilePath);
+
+            Assert.NotNull(unchangedTrack);
+        }
+        finally
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                Directory.Delete(directoryPath, recursive: true);
+            }
+
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
+
+
+    [Fact]
+    public void ProcessFiles_ContinuesProcessing_WhenFileFails()
+    {
+        string databasePath = Path.Combine(Path.GetTempPath(), $"incremental-scan-{Guid.NewGuid():N}.db");
+
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        string directoryPath = Path.Combine(Path.GetTempPath(), $"incremental-files-{Guid.NewGuid():N}");
+
+        Directory.CreateDirectory(directoryPath);
+
+        try
+        {
+            MediaLibraryDatabaseInitializer initializer = new MediaLibraryDatabaseInitializer(connectionString);
+
+            initializer.Initialize();
+
+            string firstFilePath = Path.Combine(directoryPath, "track1.mp3");
+            string missingFilePath = Path.Combine(directoryPath, "missing.mp3");
+            string secondFilePath = Path.Combine(directoryPath, "track2.mp3");
+
+            File.WriteAllText(firstFilePath, "Test 1");
+            File.WriteAllText(secondFilePath, "Test 2");
+
+            // Deliberately do not create missing.mp3.
+            string[] filePaths =
+            [
+                firstFilePath,
+                missingFilePath,
+                secondFilePath
+            ];
+
+            LibrarySourceRepository sourceRepository = new LibrarySourceRepository(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = directoryPath,
+                Type = LibrarySourceType.Music,
+                Enabled = true
+            });
+
+            MediaTrackRepository repository = new MediaTrackRepository(connectionString);
+
+            FileFingerprintProvider fingerprintProvider = new FileFingerprintProvider();
+
+            FileChangeDetector changeDetector = new FileChangeDetector();
+
+            ScannedTrackPersistenceService persistenceService = new ScannedTrackPersistenceService(repository, connectionString);
+
+            IncrementalScanService service =
+                new IncrementalScanService(
+                    repository,
+                    fingerprintProvider,
+                    changeDetector,
+                    persistenceService);
+
+            CountingMetadataReader metadataReader = new CountingMetadataReader();
+
+            IncrementalScanSummary summary = service.ProcessFiles(
+                filePaths,
+                sourceId,
+                metadataReader);
+
+            // Statistics
+            Assert.Equal(3, summary.Total);
+            Assert.Equal(2, summary.Added);
+            Assert.Equal(0, summary.Updated);
+            Assert.Equal(0, summary.Skipped);
+            Assert.Equal(1, summary.Failed);
+
+            // Only the two existing files should have their metadata read.
+            Assert.Equal(2, metadataReader.ReadCount);
+
+            // Both valid files were persisted.
+            MediaTrackRecord? firstTrack = repository.GetByFilePath(firstFilePath);
+
+            MediaTrackRecord? secondTrack = repository.GetByFilePath(secondFilePath);
+
+            Assert.NotNull(firstTrack);
+            Assert.NotNull(secondTrack);
+
+            Assert.NotNull(firstTrack.FileSize);
+            Assert.NotNull(firstTrack.LastModifiedUtc);
+
+            Assert.NotNull(secondTrack.FileSize);
+            Assert.NotNull(secondTrack.LastModifiedUtc);
+
+            // Assert - Missing file was not persisted.
+            MediaTrackRecord? missingTrack = repository.GetByFilePath(missingFilePath);
+
+            Assert.Null(missingTrack);
+
+            // Verify the summary accounts for every input file.
+            Assert.Equal(
+                summary.Total,
+                summary.Added + summary.Updated + summary.Skipped + summary.Failed);
+        }
+        finally
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                Directory.Delete(directoryPath, recursive: true);
+            }
+
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
+
 }
