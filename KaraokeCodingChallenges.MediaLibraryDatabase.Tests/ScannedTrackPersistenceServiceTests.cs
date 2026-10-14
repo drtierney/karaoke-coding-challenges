@@ -434,4 +434,171 @@ public class ScannedTrackPersistenceServiceTests
         Assert.Equal(355, result.DurationSeconds);
         Assert.True(result.IsKaraoke);
     }
+
+    [Fact]
+    public void Persist_StoresFingerprint_WhenScanSucceeds()
+    {
+        using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+        using SqliteConnection connection = context.CreateConnection();
+
+        long sourceId = context.InsertLibrarySource(connection);
+
+        MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+        ScannedTrackPersistenceService service = new ScannedTrackPersistenceService(repository, context.ConnectionString);
+
+        MediaScanResult scanResult = new MediaScanResult
+        {
+            FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+            IsSuccess = true,
+            Metadata = new MediaMetadataRecord
+            {
+                FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                DurationSeconds = 354
+            }
+        };
+
+        long fileSize = 1024;
+        DateTime lastModifiedUtc = new DateTime(2026, 10, 13, 18, 0, 0, DateTimeKind.Utc);
+
+        long? resultId = service.Persist(scanResult, sourceId, false, fileSize, lastModifiedUtc);
+
+        Assert.NotNull(resultId);
+
+        MediaTrackRecord? result = repository.GetById(resultId.Value);
+
+        Assert.NotNull(result);
+        Assert.Equal(fileSize, result.FileSize);
+        Assert.Equal(lastModifiedUtc, result.LastModifiedUtc);
+    }
+
+    [Fact]
+    public void Persist_UpdatesFingerprint_WhenExistingTrackIsModified()
+    {
+        using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+        using SqliteConnection connection = context.CreateConnection();
+
+        long sourceId = context.InsertLibrarySource(connection);
+
+        MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+        ScannedTrackPersistenceService service = new ScannedTrackPersistenceService(repository, context.ConnectionString);
+
+        MediaScanResult originalScanResult = new MediaScanResult
+        {
+            FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+            IsSuccess = true,
+            Metadata = new MediaMetadataRecord
+            {
+                FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                DurationSeconds = 354
+            }
+        };
+
+        long originalFileSize = 1024;
+
+        DateTime originalLastModifiedUtc = new DateTime(2026, 10, 13, 18, 0, 0, DateTimeKind.Utc);
+
+        long? originalId = service.Persist(originalScanResult, sourceId, false, originalFileSize, originalLastModifiedUtc);
+
+        Assert.NotNull(originalId);
+
+        MediaScanResult updatedScanResult = new MediaScanResult
+        {
+            FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+            IsSuccess = true,
+            Metadata = new MediaMetadataRecord
+            {
+                FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+                Title = "Bohemian Rhapsody - Remastered",
+                Artist = "Queen",
+                DurationSeconds = 355
+            }
+        };
+
+        long updatedFileSize = 2048;
+
+        DateTime updatedLastModifiedUtc = new DateTime(2026, 10, 14, 12, 0, 0, DateTimeKind.Utc);
+
+        long? updatedId = service.Persist(updatedScanResult, sourceId, false, updatedFileSize, updatedLastModifiedUtc);
+
+        Assert.NotNull(updatedId);
+        Assert.Equal(originalId, updatedId);
+
+        MediaTrackRecord? result = repository.GetById(updatedId.Value);
+
+        Assert.NotNull(result);
+        Assert.Equal(updatedFileSize, result.FileSize);
+        Assert.Equal(updatedLastModifiedUtc, result.LastModifiedUtc);
+
+        Assert.Equal("Bohemian Rhapsody - Remastered", result.Title);
+        Assert.Equal(355, result.DurationSeconds);
+    }
+
+    [Fact]
+    public void Persist_DoesNotUpdateFingerprint_WhenScanFails()
+    {
+        using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+        using SqliteConnection connection = context.CreateConnection();
+
+        long sourceId = context.InsertLibrarySource(connection);
+
+        MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+        ScannedTrackPersistenceService service = new ScannedTrackPersistenceService(repository, context.ConnectionString);
+
+        MediaScanResult originalScanResult = new MediaScanResult
+        {
+            FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+            IsSuccess = true,
+            Metadata = new MediaMetadataRecord
+            {
+                FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                DurationSeconds = 354
+            }
+        };
+
+        long originalFileSize = 1024;
+
+        DateTime originalLastModifiedUtc = new DateTime(2026, 10, 13, 18, 0, 0, DateTimeKind.Utc);
+
+        long? originalId = service.Persist(originalScanResult, sourceId, false, originalFileSize, originalLastModifiedUtc);
+
+        Assert.NotNull(originalId);
+
+        MediaScanResult failedScanResult = new MediaScanResult
+        {
+            FilePath = Path.Combine("Music", "Queen - Bohemian Rhapsody.mp3"),
+            IsSuccess = false,
+            Metadata = null
+        };
+
+        long updatedFileSize = 2048;
+
+        DateTime updatedLastModifiedUtc = originalLastModifiedUtc.AddDays(1);
+
+        long? failedId = service.Persist(
+            failedScanResult,
+            sourceId,
+            false,
+            updatedFileSize,
+            updatedLastModifiedUtc);
+
+        Assert.Null(failedId);
+
+        MediaTrackRecord? result = repository.GetById(originalId.Value);
+
+        Assert.NotNull(result);
+        Assert.Equal(originalFileSize, result.FileSize);
+        Assert.Equal(originalLastModifiedUtc, result.LastModifiedUtc);
+    }
 }

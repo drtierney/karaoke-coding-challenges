@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS Tracks (
     FilePath TEXT NOT NULL UNIQUE COLLATE NOCASE,
     DurationSeconds INTEGER NOT NULL CHECK (DurationSeconds >= 0),
     IsKaraoke INTEGER NOT NULL CHECK (IsKaraoke IN (0, 1)),
+    FileSize INTEGER NULL,
+    LastModifiedUtc TEXT NULL,
     FOREIGN KEY (SourceId)
         REFERENCES LibrarySources(Id)
 );

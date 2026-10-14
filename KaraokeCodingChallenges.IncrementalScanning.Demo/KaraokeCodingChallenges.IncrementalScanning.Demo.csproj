@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\KaraokeCodingChallenges.IncrementalScanning\KaraokeCodingChallenges.IncrementalScanning.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MediaLibraryDatabase\KaraokeCodingChallenges.MediaLibraryDatabase.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.MetadataReader\KaraokeCodingChallenges.MetadataReader.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

@@ -753,17 +753,20 @@
             "category": "File Synchronization",
             "concepts": [
                 "File timestamps",
-                "hashes/identifiers",
+                "filesystem fingerprints",
                 "change detection",
-                "upserts"
+                "upserts",
+                "SQLite schema migrations",
+                "batch processing",
+                "error handling"
             ],
             "buildsOn": [
                 24,
                 38
             ],
             "outcome": "Scan only new or changed files.",
-            "status": "Planned",
-            "notes": null
+            "status": "Completed",
+            "notes": "Introduced incremental library scanning using file size and last-modified UTC timestamps to classify files as new, modified, or unchanged. Extended the SQLite Tracks schema, repository, and scan persistence service to store fingerprints while preserving existing records and identifiers. IncrementalScanService selectively extracts metadata, verifies fingerprints after extraction, skips unchanged files, and processes batches with added, updated, skipped, and failed statistics. Expected filesystem failures are handled per file without stopping the batch. Added 24 tests and a three-pass console demo demonstrating initial scans, unchanged-file skipping, and modified-file updates, bringing the complete solution to 337 passing tests."
         },
         {
             "number": 41,

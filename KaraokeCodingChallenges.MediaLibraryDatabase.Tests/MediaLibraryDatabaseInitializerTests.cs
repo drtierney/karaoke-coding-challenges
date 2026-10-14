@@ -770,5 +770,235 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Tests
             Assert.Throws<SqliteException>(
                 () => command.ExecuteNonQuery());
         }
+
+        [Fact]
+        public void Initialize_CreatesTracksTableWithFingerprintColumns()
+        {
+            using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            using SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = "PRAGMA table_info(Tracks);";
+
+            using SqliteDataReader reader = command.ExecuteReader();
+
+            Dictionary<string, (string Type, bool NotNull)> columns =
+                new Dictionary<string, (string Type, bool NotNull)>();
+
+            while (reader.Read())
+            {
+                string name = reader.GetString(1);
+                string type = reader.GetString(2);
+                bool notNull = reader.GetInt32(3) == 1;
+
+                columns.Add(name, (type, notNull));
+            }
+
+            Assert.Contains("FileSize", columns.Keys);
+            Assert.Contains("LastModifiedUtc", columns.Keys);
+
+            Assert.Equal("INTEGER", columns["FileSize"].Type);
+            Assert.False(columns["FileSize"].NotNull);
+
+            Assert.Equal("TEXT", columns["LastModifiedUtc"].Type);
+            Assert.False(columns["LastModifiedUtc"].NotNull);
+        }
+
+        [Fact]
+        public void Initialize_AddsFingerprintColumnsToExistingTracksTable()
+        {
+            using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+            using SqliteConnection connection = context.CreateConnection();
+
+            // Simulate the Tracks table before Challenge 040
+            using (SqliteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = """
+                    ALTER TABLE Tracks DROP COLUMN FileSize;
+                    ALTER TABLE Tracks DROP COLUMN LastModifiedUtc;
+                    """;
+
+                command.ExecuteNonQuery();
+            }
+
+            // Insert an existing track using the legacy schema
+            long sourceId = context.InsertLibrarySource(connection);
+            long trackId = context.InsertTrack(
+                connection,
+                sourceId,
+                filePath: Path.Combine("Music", "Track1.mp3"));
+
+            MediaLibraryDatabaseInitializer initializer =
+                new MediaLibraryDatabaseInitializer(context.ConnectionString);
+
+            initializer.Initialize();
+
+            // Verify fingerprint columns were added
+            Dictionary<string, (string Type, bool NotNull)> columns =
+                new Dictionary<string, (string Type, bool NotNull)>();
+
+            using (SqliteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = "PRAGMA table_info(Tracks);";
+
+                using SqliteDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    string name = reader.GetString(1);
+                    string type = reader.GetString(2);
+                    bool notNull = reader.GetInt32(3) == 1;
+
+                    columns.Add(name, (type, notNull));
+                }
+            }
+
+            Assert.Contains("FileSize", columns.Keys);
+            Assert.Contains("LastModifiedUtc", columns.Keys);
+
+            Assert.Equal("INTEGER", columns["FileSize"].Type);
+            Assert.False(columns["FileSize"].NotNull);
+
+            Assert.Equal("TEXT", columns["LastModifiedUtc"].Type);
+            Assert.False(columns["LastModifiedUtc"].NotNull);
+
+            // Verify existing track data was preserved
+            using (SqliteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = """
+                    SELECT FilePath, FileSize, LastModifiedUtc
+                    FROM Tracks
+                    WHERE Id = @TrackId;
+                    """;
+
+                command.Parameters.AddWithValue("@TrackId", trackId);
+
+                using SqliteDataReader reader = command.ExecuteReader();
+
+                Assert.True(reader.Read());
+                Assert.Equal(Path.Combine("Music", "Track1.mp3"), reader.GetString(0));
+                Assert.True(reader.IsDBNull(1));
+                Assert.True(reader.IsDBNull(2));
+                Assert.False(reader.Read());
+            }
+
+            // Reinitialization should also be safe
+            initializer.Initialize();
+        }
+
+        [Fact]
+        public void Initialize_PreservesExistingFingerprintValues()
+        {
+            using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            long trackId = context.InsertTrack(
+                connection,
+                sourceId,
+                filePath: Path.Combine("Music", "Track1.mp3"));
+
+            long fileSize = 123456;
+            DateTime lastModifiedUtc = DateTime.UtcNow;
+            string lastModifiedUtcText = lastModifiedUtc.ToString("o");
+
+            // Update the track with fingerprint values
+            using (SqliteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = """
+                    UPDATE Tracks
+                    SET FileSize = @FileSize, LastModifiedUtc = @LastModifiedUtc
+                    WHERE Id = @TrackId;
+                    """;
+
+                command.Parameters.AddWithValue("@FileSize", fileSize);
+                command.Parameters.AddWithValue("@LastModifiedUtc", lastModifiedUtcText);
+                command.Parameters.AddWithValue("@TrackId", trackId);
+
+                command.ExecuteNonQuery();
+            }
+
+            MediaLibraryDatabaseInitializer initializer =
+                new MediaLibraryDatabaseInitializer(context.ConnectionString);
+
+            initializer.Initialize();
+
+            // Verify fingerprint values are preserved
+            using (SqliteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = """
+                    SELECT FileSize, LastModifiedUtc
+                    FROM Tracks
+                    WHERE Id = @TrackId;
+                    """;
+
+                command.Parameters.AddWithValue("@TrackId", trackId);
+
+                using SqliteDataReader reader = command.ExecuteReader();
+
+                Assert.True(reader.Read());
+                Assert.Equal(fileSize, reader.GetInt64(0));
+                Assert.Equal(lastModifiedUtcText, reader.GetString(1));
+                Assert.False(reader.Read());
+            }
+        }
+
+        [Fact]
+        public void Initialize_AddsMissingFingerprintColumn_WhenPartiallyMigrated()
+        {
+            using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            // Simulate a partially migrated Tracks table
+            using (SqliteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = "ALTER TABLE Tracks DROP COLUMN LastModifiedUtc;";
+
+                command.ExecuteNonQuery();
+            }
+
+            // Verify the initial state
+            HashSet<string> columnsBefore = GetTrackColumnNames(connection);
+
+            Assert.Contains("FileSize", columnsBefore);
+            Assert.DoesNotContain("LastModifiedUtc", columnsBefore);
+
+            MediaLibraryDatabaseInitializer initializer =
+                new MediaLibraryDatabaseInitializer(context.ConnectionString);
+
+            initializer.Initialize();
+
+            // Verify the missing column was restored
+            HashSet<string> columnsAfter = GetTrackColumnNames(connection);
+
+            Assert.Contains("FileSize", columnsAfter);
+            Assert.Contains("LastModifiedUtc", columnsAfter);
+        }
+
+        private static HashSet<string> GetTrackColumnNames(SqliteConnection connection)
+        {
+            HashSet<string> columns = new HashSet<string>(
+                StringComparer.OrdinalIgnoreCase);
+
+            using SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = "PRAGMA table_info(Tracks);";
+
+            using SqliteDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                string columnName = reader.GetString(1);
+
+                columns.Add(columnName);
+            }
+
+            return columns;
+        }
     }
 }

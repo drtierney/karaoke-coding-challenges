@@ -15,5 +15,7 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Models
         public int DurationSeconds { get; init; }
 
         public bool IsKaraoke { get; init; }
+        public long? FileSize { get; set; }
+        public DateTime? LastModifiedUtc { get; set; }
     }
 }

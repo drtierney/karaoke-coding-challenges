@@ -25,9 +25,9 @@ Milestone challenges periodically bring several earlier components together into
 
 ## Current Progress
 
-The challenge series has completed **Challenge 039 - Database-Backed Search**, introducing SQLite-backed searches for persisted media tracks using optional title and artist criteria, partial and case-insensitive matching, `All` and `Any` match modes, and literal SQL wildcard escaping.
+The challenge series has completed **Challenge 040 - Incremental Library Scanning**, introducing filesystem fingerprint-based change detection, SQLite fingerprint persistence, selective metadata extraction, and batch scanning with added, updated, skipped, and failed statistics.
 
-The persistence and storage phase now continues with **Challenge 040 - Incremental Library Scanning**, before progressing toward library reconciliation, file system watcher updates, database and persistence testing, and the **Persistent Library Milestone**.
+The persistence and storage phase now continues with **Challenge 041 - Library Reconciliation**, before progressing toward file system watcher updates, database and persistence testing, and the **Persistent Library Milestone**.
 
 The challenge table below shows the completed challenges and the currently planned roadmap. More detailed roadmap information, including concepts, dependencies, expected outcomes, and notes, is available in the [roadmap](roadmap/README.md).
 
@@ -100,7 +100,7 @@ Individual challenge READMEs contain additional information about their implemen
 | 037 | [Database Data Access Layer](KaraokeCodingChallenges.MediaLibraryDatabase/README.md#challenge-037---database-data-access-layer) | ☑ Completed |
 | 038 | [Persist Scanned Tracks](KaraokeCodingChallenges.MediaLibraryDatabase/README.md#challenge-038---persist-scanned-tracks) | ☑ Completed |
 | 039 | [Database-Backed Search](KaraokeCodingChallenges.MediaLibrarySearch/README.md) | ☑ Completed |
-| 040 | Incremental Library Scanning | ☐ Planned |
+| 040 | [Incremental Library Scanning](KaraokeCodingChallenges.IncrementalScanning/README.md) | ☑ Completed |
 | 041 | Library Reconciliation | ☐ Planned |
 | 042 | File System Watcher Library Updates | ☐ Planned |
 | 043 | Database & Persistence Testing | ☐ Planned |
