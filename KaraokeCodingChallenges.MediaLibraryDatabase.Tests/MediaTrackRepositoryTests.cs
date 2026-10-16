@@ -80,6 +80,63 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Tests
         }
 
         [Fact]
+        public void GetBySourceId_ReturnsOnlyTracksForSpecifiedSource()
+        {
+            using MediaLibraryDatabaseTestContext context = new();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long source1Id = context.InsertLibrarySource(connection, @"D:\Karaoke");
+            long source2Id = context.InsertLibrarySource(connection, @"E:\Karaoke");
+
+            long queenId = context.InsertTrack(
+                connection,
+                source1Id,
+                title: "Bohemian Rhapsody",
+                artist: "Queen",
+                filePath: @"D:\Karaoke\Queen.mp3");
+
+            long museId = context.InsertTrack(
+                connection,
+                source1Id,
+                title: "Feeling Good",
+                artist: "Muse",
+                filePath: @"D:\Karaoke\Muse.mp3");
+
+            long paramoreId = context.InsertTrack(
+                connection,
+                source2Id,
+                title: "Ain't It Fun",
+                artist: "Paramore",
+                filePath: @"E:\Karaoke\Paramore.mp3");
+
+            MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+            IReadOnlyList<MediaTrackRecord> results = repository.GetBySourceId(source1Id);
+
+            Assert.Equal(2, results.Count);
+            Assert.All(results, track => Assert.Equal(source1Id, track.SourceId));
+            Assert.Equal([queenId, museId], results.Select(track => track.Id).ToArray());
+            Assert.DoesNotContain(results, track => track.Id == paramoreId);
+        }
+
+        [Fact]
+        public void GetBySourceId_ReturnsEmptyCollection_WhenSourceHasNoTracks()
+        {
+            using MediaLibraryDatabaseTestContext context = new();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new MediaTrackRepository(context.ConnectionString);
+
+            IReadOnlyList<MediaTrackRecord> results = repository.GetBySourceId(sourceId);
+
+            Assert.Empty(results);
+        }
+
+        [Fact]
         public void GetByFilePath_WhenTrackExists_ReturnsTrack()
         {
             using MediaLibraryDatabaseTestContext context = new MediaLibraryDatabaseTestContext();

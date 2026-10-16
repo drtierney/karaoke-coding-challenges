@@ -159,6 +159,44 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
             return MapMediaTrack(reader);
         }
 
+        public IReadOnlyList<MediaTrackRecord> GetBySourceId(long sourceId)
+        {
+            using SqliteConnection connection = new SqliteConnection(_connectionString);
+
+            connection.Open();
+
+            using SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = """
+            SELECT
+                Id,
+                SourceId,
+                Title,
+                Artist,
+                FilePath,
+                DurationSeconds,
+                IsKaraoke,
+                FileSize,
+                LastModifiedUtc
+            FROM Tracks
+            WHERE SourceId = $sourceId
+            ORDER BY Id;
+            """;
+
+            command.Parameters.AddWithValue("$sourceId", sourceId);
+
+            using SqliteDataReader reader = command.ExecuteReader();
+
+            List<MediaTrackRecord> tracks = new();
+
+            while (reader.Read())
+            {
+                tracks.Add(MapMediaTrack(reader));
+            }
+
+            return tracks;
+        }
+
         public MediaTrackRecord? GetByFilePath(string filePath)
         {
             using SqliteConnection connection = new SqliteConnection(_connectionString);

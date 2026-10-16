@@ -7,7 +7,7 @@ namespace KaraokeCodingChallenges.IncrementalScanning.Services;
 public class LibraryReconciliationService
 {
     public LibraryReconciliationResult Reconcile(
-        int sourceId,
+        long sourceId,
         IReadOnlyList<MediaTrackRecord> storedTracks,
         IReadOnlyCollection<string> scannedPaths,
         bool scanCompletedSuccessfully)
