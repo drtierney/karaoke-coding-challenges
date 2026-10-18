@@ -1,4 +1,3 @@
-
 using System.Reflection;
 using Microsoft.Data.Sqlite;
 
@@ -45,6 +44,7 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase
             schemaCommand.ExecuteNonQuery();
 
             EnsureFingerprintColumns(connection);
+            EnsureAvailabilityColumn(connection);
         }
 
         private static void EnsureFingerprintColumns(SqliteConnection connection)
@@ -80,6 +80,37 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase
 
                     addColumnCommand.ExecuteNonQuery();
                 }
+            }
+        }
+
+        private static void EnsureAvailabilityColumn(SqliteConnection connection)
+        {
+            using SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = "PRAGMA table_info(Tracks);";
+
+            HashSet<string> existingColumns = new(StringComparer.OrdinalIgnoreCase);
+
+            using (SqliteDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string columnName = reader.GetString(1);
+                    existingColumns.Add(columnName);
+                }
+            }
+
+            if (!existingColumns.Contains("IsAvailable"))
+            {
+                using SqliteCommand addColumnCommand = connection.CreateCommand();
+
+                addColumnCommand.CommandText = """
+                ALTER TABLE Tracks
+                ADD COLUMN IsAvailable INTEGER NOT NULL DEFAULT 1
+                CHECK (IsAvailable IN (0, 1));
+                """;
+
+                addColumnCommand.ExecuteNonQuery();
             }
         }
     }
