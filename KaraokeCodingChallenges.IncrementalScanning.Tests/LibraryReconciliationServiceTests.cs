@@ -184,4 +184,50 @@ public class LibraryReconciliationServiceTests
         Assert.Equal([1, 3], result.MissingTracks.Select(track => track.Id).ToArray());
         Assert.True(result.ScanCompletedSuccessfully);
     }
+
+    [Fact]
+    public void Reconcile_IdentifiesMovedTracks_WithoutMarkingThemMissing()
+    {
+        DateTime lastModified = new(2026, 10, 1, 12, 0, 0, DateTimeKind.Utc);
+
+        MediaTrackRecord storedTrack = new()
+        {
+            Id = 42,
+            SourceId = 1,
+            Title = "Bohemian Rhapsody",
+            Artist = "Queen",
+            FilePath = Path.Combine("Karaoke", "Queen.mp3"),
+            FileSize = 1024,
+            LastModifiedUtc = lastModified
+        };
+
+        FileFingerprint newFile = new()
+        {
+            FilePath = Path.Combine("Karaoke", "Classics", "Queen.mp3"),
+            FileSize = 1024,
+            LastModifiedUtc = lastModified
+        };
+
+        LibraryReconciliationService service = new();
+
+        LibraryReconciliationResult result = service.Reconcile(
+            sourceId: 1,
+            storedTracks: [storedTrack],
+            scannedPaths: [newFile.FilePath],
+            scanCompletedSuccessfully: true,
+            newFiles: [newFile]);
+
+        Assert.Equal(1, result.StoredTrackCount);
+        Assert.Equal(1, result.ScannedTrackCount);
+
+        Assert.Empty(result.MissingTracks);
+        Assert.Empty(result.PresentTracks);
+
+        FileMoveMatch move = Assert.Single(result.MovedTracks);
+
+        Assert.Equal(42L, move.TrackId);
+        Assert.Equal(storedTrack.FilePath, move.OldFilePath);
+        Assert.Equal(newFile.FilePath, move.NewFilePath);
+    }
+
 }
