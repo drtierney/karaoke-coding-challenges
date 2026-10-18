@@ -355,4 +355,172 @@ public class LibraryReconciliationPersistenceServiceTests
         }
     }
 
+
+    [Fact]
+    public void Apply_UpdatesFilePath_WhenMovedTrackIsDetected()
+    {
+        string databasePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.db");
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        try
+        {
+            MediaLibraryDatabaseInitializer initializer = new(connectionString);
+            initializer.Initialize();
+
+            LibrarySourceRepository sourceRepository = new(connectionString);
+            MediaTrackRepository trackRepository = new(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = Path.Combine("Library", "Karaoke"),
+                Type = LibrarySourceType.Karaoke,
+                Enabled = true
+            });
+
+            string originalPath = Path.Combine("Library", "Karaoke", "Queen.mp3");
+            string movedPath = Path.Combine("Library", "Karaoke", "Classics", "Queen.mp3");
+
+            DateTime lastModified = new(2026, 10, 1, 12, 0, 0, DateTimeKind.Utc);
+
+            long queenId = trackRepository.Add(new MediaTrackRecord
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = originalPath,
+                DurationSeconds = 354,
+                IsKaraoke = true,
+                IsAvailable = true,
+                FileSize = 1024,
+                LastModifiedUtc = lastModified
+            });
+
+            FileMoveMatch move = new()
+            {
+                TrackId = queenId,
+                OldFilePath = originalPath,
+                NewFilePath = movedPath
+            };
+
+            LibraryReconciliationResult result = new()
+            {
+                SourceId = sourceId,
+                StoredTrackCount = 1,
+                ScannedTrackCount = 1,
+                MissingTracks = [],
+                PresentTracks = [],
+                MovedTracks = [move],
+                ScanCompletedSuccessfully = true
+            };
+
+            LibraryReconciliationPersistenceService service = new(connectionString);
+
+            service.Apply(result);
+
+            MediaTrackRecord? queenAfter = trackRepository.GetById(queenId);
+
+            Assert.NotNull(queenAfter);
+
+            Assert.Equal(queenId, queenAfter.Id);
+            Assert.Equal(sourceId, queenAfter.SourceId);
+            Assert.Equal(movedPath, queenAfter.FilePath);
+            Assert.True(queenAfter.IsAvailable);
+
+            Assert.Equal("Bohemian Rhapsody", queenAfter.Title);
+            Assert.Equal("Queen", queenAfter.Artist);
+            Assert.Equal(1024L, queenAfter.FileSize);
+            Assert.Equal(lastModified, queenAfter.LastModifiedUtc);
+        }
+        finally
+        {
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
+
+
+
+    [Fact]
+    public void Apply_RollsBackChanges_WhenMovedTrackOriginalPathDoesNotMatch()
+    {
+        string databasePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.db");
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        try
+        {
+            MediaLibraryDatabaseInitializer initializer = new(connectionString);
+            initializer.Initialize();
+
+            LibrarySourceRepository sourceRepository = new(connectionString);
+            MediaTrackRepository trackRepository = new(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = Path.Combine("Library", "Karaoke"),
+                Type = LibrarySourceType.Karaoke,
+                Enabled = true
+            });
+
+            string originalPath = Path.Combine("Library", "Karaoke", "Queen.mp3");
+            string incorrectPath = Path.Combine("Library", "Karaoke", "Wrong.mp3");
+            string movedPath = Path.Combine("Library", "Karaoke", "Classics", "Queen.mp3");
+
+            long queenId = trackRepository.Add(new MediaTrackRecord
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = originalPath,
+                DurationSeconds = 354,
+                IsKaraoke = true,
+                IsAvailable = true
+            });
+
+            MediaTrackRecord? queenRecord = trackRepository.GetById(queenId);
+
+            Assert.NotNull(queenRecord);
+
+            LibraryReconciliationResult result = new()
+            {
+                SourceId = sourceId,
+                StoredTrackCount = 1,
+                ScannedTrackCount = 1,
+                MissingTracks = [queenRecord],
+                PresentTracks = [],
+                MovedTracks =
+                [
+                    new FileMoveMatch
+                {
+                    TrackId = queenId,
+                    OldFilePath = incorrectPath,
+                    NewFilePath = movedPath
+                }
+                ],
+                ScanCompletedSuccessfully = true
+            };
+
+            LibraryReconciliationPersistenceService service = new(connectionString);
+
+            Assert.Throws<InvalidOperationException>(() => service.Apply(result));
+
+            // Verify that the transaction rolled back
+            MediaTrackRecord? queenAfter = trackRepository.GetById(queenId);
+
+            Assert.NotNull(queenAfter);
+
+            Assert.Equal(originalPath, queenAfter.FilePath);
+            Assert.True(queenAfter.IsAvailable);
+            Assert.Equal(queenId, queenAfter.Id);
+        }
+        finally
+        {
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
+
 }

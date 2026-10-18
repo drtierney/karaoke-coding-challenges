@@ -76,6 +76,34 @@ public class LibraryReconciliationPersistenceService
         }
 
 
+        foreach (FileMoveMatch move in result.MovedTracks)
+        {
+            using SqliteCommand command = connection.CreateCommand();
+
+            command.Transaction = transaction;
+
+            command.CommandText = """
+                UPDATE Tracks
+                SET FilePath = $newFilePath, IsAvailable = 1
+                WHERE Id = $trackId
+                  AND SourceId = $sourceId
+                  AND FilePath = $oldFilePath COLLATE NOCASE;
+                """;
+
+            command.Parameters.AddWithValue("$newFilePath", move.NewFilePath);
+            command.Parameters.AddWithValue("$trackId", move.TrackId);
+            command.Parameters.AddWithValue("$sourceId", result.SourceId);
+            command.Parameters.AddWithValue("$oldFilePath", move.OldFilePath);
+
+            int rowsAffected = command.ExecuteNonQuery();
+
+            if (rowsAffected != 1)
+            {
+                throw new InvalidOperationException($"Unable to reconcile moved track {move.TrackId} for source {result.SourceId}.");
+            }
+        }
+
+
         transaction.Commit();
     }
 
