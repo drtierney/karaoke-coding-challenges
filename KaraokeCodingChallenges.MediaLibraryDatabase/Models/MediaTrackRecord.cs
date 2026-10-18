@@ -1,3 +1,4 @@
+
 namespace KaraokeCodingChallenges.MediaLibraryDatabase.Models
 {
     public sealed record MediaTrackRecord
@@ -15,7 +16,11 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Models
         public int DurationSeconds { get; init; }
 
         public bool IsKaraoke { get; init; }
+
+        public bool IsAvailable { get; set; } = true;
+
         public long? FileSize { get; set; }
+
         public DateTime? LastModifiedUtc { get; set; }
     }
 }

@@ -627,5 +627,175 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Tests
             Assert.Equal(insertedTrack.FileSize, result.FileSize);
             Assert.Equal(insertedTrack.LastModifiedUtc, result.LastModifiedUtc);
         }
+
+        [Fact]
+        public void Add_PersistsUnavailableTrack()
+        {
+            using MediaLibraryDatabaseTestContext context = new();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new(context.ConnectionString);
+
+            MediaTrackRecord track = new()
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = @"D:\Music\Queen.mp3",
+                DurationSeconds = 354,
+                IsKaraoke = false,
+                IsAvailable = false
+            };
+
+            long trackId = repository.Add(track);
+
+            MediaTrackRecord? result = repository.GetById(trackId);
+
+            Assert.NotNull(result);
+            Assert.Equal(trackId, result.Id);
+            Assert.False(result.IsAvailable);
+        }
+
+        [Fact]
+        public void Add_WithTransaction_PersistsAvailability()
+        {
+            using MediaLibraryDatabaseTestContext context = new();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new(context.ConnectionString);
+
+            MediaTrackRecord track = new()
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = @"D:\Music\Queen.mp3",
+                DurationSeconds = 354,
+                IsKaraoke = false,
+                IsAvailable = false
+            };
+
+            long trackId;
+
+            using (SqliteTransaction transaction = connection.BeginTransaction())
+            {
+                trackId = repository.Add(track, connection, transaction);
+
+                transaction.Commit();
+            }
+
+            MediaTrackRecord? result = repository.GetById(trackId);
+
+            Assert.NotNull(result);
+            Assert.Equal(trackId, result.Id);
+            Assert.False(result.IsAvailable);
+        }
+
+        [Fact]
+        public void Update_ChangesTrackAvailability()
+        {
+            using MediaLibraryDatabaseTestContext context = new();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new(context.ConnectionString);
+
+            MediaTrackRecord track = new()
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = @"D:\Music\Queen.mp3",
+                DurationSeconds = 354,
+                IsKaraoke = false
+            };
+
+            long trackId = repository.Add(track);
+
+            // Verify initial availability
+            MediaTrackRecord? storedTrack = repository.GetById(trackId);
+
+            Assert.NotNull(storedTrack);
+            Assert.True(storedTrack.IsAvailable);
+
+            // Mark the track unavailable
+            storedTrack.IsAvailable = false;
+
+            bool updated = repository.Update(storedTrack);
+
+            MediaTrackRecord? unavailableTrack = repository.GetById(trackId);
+
+            Assert.True(updated);
+            Assert.NotNull(unavailableTrack);
+            Assert.False(unavailableTrack.IsAvailable);
+            Assert.Equal(trackId, unavailableTrack.Id);
+
+            // Restore availability
+            unavailableTrack.IsAvailable = true;
+
+            bool restored = repository.Update(unavailableTrack);
+
+            MediaTrackRecord? restoredTrack = repository.GetById(trackId);
+
+            Assert.True(restored);
+            Assert.NotNull(restoredTrack);
+            Assert.True(restoredTrack.IsAvailable);
+            Assert.Equal(trackId, restoredTrack.Id);
+        }
+
+        [Fact]
+        public void Update_WithTransaction_PersistsAvailability()
+        {
+            using MediaLibraryDatabaseTestContext context = new();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            long sourceId = context.InsertLibrarySource(connection);
+
+            MediaTrackRepository repository = new(context.ConnectionString);
+
+            long trackId = repository.Add(new MediaTrackRecord
+            {
+                SourceId = sourceId,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                FilePath = @"D:\Music\Queen.mp3",
+                DurationSeconds = 354,
+                IsKaraoke = false
+            });
+
+            MediaTrackRecord? track = repository.GetById(trackId);
+
+            Assert.NotNull(track);
+
+            track.IsAvailable = false;
+
+            using (SqliteTransaction transaction = connection.BeginTransaction())
+            {
+                bool updated = repository.Update(
+                    track,
+                    connection,
+                    transaction);
+
+                Assert.True(updated);
+
+                transaction.Commit();
+            }
+
+            MediaTrackRecord? result = repository.GetById(trackId);
+
+            Assert.NotNull(result);
+            Assert.False(result.IsAvailable);
+            Assert.Equal(trackId, result.Id);
+        }
+
     }
 }
