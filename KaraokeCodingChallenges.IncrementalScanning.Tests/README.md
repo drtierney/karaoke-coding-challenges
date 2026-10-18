@@ -1,12 +1,10 @@
-# Challenge 040 - Incremental Library Scanning Tests
+# Challenges 040–041 - Incremental Scanning and Reconciliation Tests
 
-Contains xUnit tests for Challenge 040, covering filesystem fingerprints, change detection, SQLite integration, incremental scan processing, and batch statistics.
+Contains xUnit tests for incremental scanning and SQLite-backed library reconciliation. The suite verifies selective metadata extraction, filesystem fingerprints, track availability updates, moved-file identification, transactional persistence and scan orchestration.
 
-The tests verify that new and modified files are processed while unchanged files are skipped without unnecessary metadata extraction.
+## Challenge 040 - Incremental Scanning Tests
 
-## Test Coverage
-
-The project contains **24 tests** covering the following areas.
+Challenge 040 introduced **24 tests** covering the following areas.
 
 ### File Fingerprint Generation
 
@@ -52,49 +50,76 @@ Tests for `IncrementalScanService.ProcessFiles()` cover:
 - Adding multiple new files.
 - Skipping a batch of unchanged files.
 - Handling a mixture of new, modified, and unchanged files.
-- Continuing to process subsequent files when an earlier file is missing.
+- Continuing after an earlier file is missing.
 - Reporting added, updated, skipped, and failed counts correctly.
+
+## Challenge 041 - Library Reconciliation Tests
+
+Challenge 041 extends the project with tests covering:
+
+- Identifying missing and present tracks from discovered paths.
+- Handling unsuccessful and successfully empty filesystem discoveries.
+- Comparing paths case-insensitively.
+- Detecting unambiguous moved files using file size and modification timestamps.
+- Rejecting ambiguous moved-file matches.
+- Marking missing tracks unavailable without deleting their records.
+- Restoring availability when a previously missing track is rediscovered.
+- Preserving original track IDs, paths and metadata where applicable.
+- Rolling back invalid SQLite reconciliation updates.
+- Preventing updates across different library sources.
+- Coordinating reconciliation and incremental scanning through `ProcessLibrary()`.
+- Skipping recognised moves without inserting duplicates or rereading metadata.
+- Persisting genuinely new files and leaving ambiguous move candidates unmatched.
+
+### Challenge 041 Verification
+
+- IncrementalScanning tests: **44 passed**
+- Full solution tests: **366 passed**
+- Failed: **0**
+- Skipped: **0**
+
+These results were recorded on .NET 10 after completing the Challenge 041 implementation.
 
 ## Test Infrastructure
 
 The integration tests use:
 
-- **xUnit** for test execution and assertions.
+- **xUnit** for assertions and test execution.
 - **Temporary SQLite databases** for persistence verification.
-- **Temporary filesystem files and directories** for fingerprint generation and modification.
-- **Controlled `IMetadataReader` implementations** to simulate successful and unsuccessful metadata extraction.
+- **Temporary filesystem files and directories** for fingerprinting, modifications and real file moves.
+- **Controlled `IMetadataReader` implementations** for successful and failed metadata extraction.
 
-The tests exercise the real repository and persistence implementations rather than relying on database mocks.
-
-Temporary resources are cleaned up after execution.
+Tests exercise the real repository and persistence implementations rather than using SQLite mocks. Temporary resources are cleaned up after execution.
 
 ## SQLite Verification
 
 Tests involving persisted tracks confirm that:
 
 - New tracks receive stored fingerprints.
-- Modified tracks retain their existing SQLite identifiers.
-- Updated fingerprints reflect filesystem changes.
-- Failed metadata extraction does not overwrite existing fingerprint values.
-- Unchanged files do not require additional metadata reads.
+- Modified and moved tracks retain their SQLite identifiers.
+- Fingerprint updates reflect filesystem changes.
+- Failed metadata extraction does not overwrite the existing fingerprint.
+- Unchanged files do not require metadata reads.
+- Missing and present tracks receive the correct `IsAvailable` state.
+- Failed reconciliation transactions leave the database unchanged.
 
-Database schema migration and repository-specific fingerprint persistence tests are maintained in their respective project test suites.
+Database schema migration and repository-specific fingerprint and availability tests are maintained in the MediaLibraryDatabase test project.
 
 ## Running the Tests
 
 From the repository root:
 
 ```powershell
-dotnet test .\KaraokeCodingChallenges.IncrementalScanning.Tests\
+dotnet test KaraokeCodingChallenges.IncrementalScanning.Tests
 ```
 
-To run the complete solution test suite:
+To run the complete solution suite:
 
 ```powershell
 dotnet test
 ```
 
-## Verification
+## Challenge 040 Verification
 
 At the completion of Challenge 040's implementation:
 

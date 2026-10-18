@@ -783,8 +783,8 @@
                 40
             ],
             "outcome": "Detect deleted, moved, or unavailable tracks and reconcile stored records.",
-            "status": "Planned",
-            "notes": null
+            "status": "Completed",
+            "notes": "Implemented source-scoped reconciliation of discovered files and persisted SQLite tracks, including missing/present classifications, IsAvailable schema migration, transactional availability and path updates, heuristic moved-file detection using unambiguous size/timestamp fingerprints, failed-discovery protection, and integration with incremental scanning. Verified with 44 IncrementalScanning tests and an extended six-pass demonstration."
         },
         {
             "number": 42,
