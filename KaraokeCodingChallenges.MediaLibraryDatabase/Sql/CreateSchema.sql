@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS Tracks (
     FilePath TEXT NOT NULL UNIQUE COLLATE NOCASE,
     DurationSeconds INTEGER NOT NULL CHECK (DurationSeconds >= 0),
     IsKaraoke INTEGER NOT NULL CHECK (IsKaraoke IN (0, 1)),
+    IsAvailable INTEGER NOT NULL DEFAULT 1 CHECK (IsAvailable IN (0, 1)),
     FileSize INTEGER NULL,
     LastModifiedUtc TEXT NULL,
     FOREIGN KEY (SourceId)

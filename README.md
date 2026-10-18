@@ -25,9 +25,9 @@ Milestone challenges periodically bring several earlier components together into
 
 ## Current Progress
 
-The challenge series has completed **Challenge 040 - Incremental Library Scanning**, introducing filesystem fingerprint-based change detection, SQLite fingerprint persistence, selective metadata extraction, and batch scanning with added, updated, skipped, and failed statistics.
+The challenge series has completed **Challenge 041 - Library Reconciliation**, extending incremental library scanning with missing-file detection, track availability management, moved-file identification, transactional SQLite reconciliation, and integrated scan orchestration.
 
-The persistence and storage phase now continues with **Challenge 041 - Library Reconciliation**, before progressing toward file system watcher updates, database and persistence testing, and the **Persistent Library Milestone**.
+The persistence and storage phase now continues with **Challenge 042 - File System Watcher Library Updates**, followed by database and persistence testing and the **Persistent Library Milestone**.
 
 The challenge table below shows the completed challenges and the currently planned roadmap. More detailed roadmap information, including concepts, dependencies, expected outcomes, and notes, is available in the [roadmap](roadmap/README.md).
 
@@ -101,7 +101,7 @@ Individual challenge READMEs contain additional information about their implemen
 | 038 | [Persist Scanned Tracks](KaraokeCodingChallenges.MediaLibraryDatabase/README.md#challenge-038---persist-scanned-tracks) | ☑ Completed |
 | 039 | [Database-Backed Search](KaraokeCodingChallenges.MediaLibrarySearch/README.md) | ☑ Completed |
 | 040 | [Incremental Library Scanning](KaraokeCodingChallenges.IncrementalScanning/README.md) | ☑ Completed |
-| 041 | Library Reconciliation | ☐ Planned |
+| 041 | [Library Reconciliation](KaraokeCodingChallenges.IncrementalScanning/README.md#challenge-041---library-reconciliation) | ☑ Completed |
 | 042 | File System Watcher Library Updates | ☐ Planned |
 | 043 | Database & Persistence Testing | ☐ Planned |
 | 044 | Persistent Library Milestone | ☐ Planned |

@@ -1000,5 +1000,156 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Tests
 
             return columns;
         }
+
+        [Fact]
+        public void Initialize_CreatesTracksTableWithAvailabilityColumn()
+        {
+            using MediaLibraryDatabaseTestContext context = new();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            using SqliteCommand command = connection.CreateCommand();
+
+            command.CommandText = "PRAGMA table_info(Tracks);";
+
+            using SqliteDataReader reader = command.ExecuteReader();
+
+            Dictionary<string, (string Type, bool NotNull, string? DefaultValue)> columns = new();
+
+            while (reader.Read())
+            {
+                string name = reader.GetString(1);
+                string type = reader.GetString(2);
+                bool notNull = reader.GetInt32(3) == 1;
+                string? defaultValue = reader.IsDBNull(4) ? null : reader.GetString(4);
+
+                columns.Add(name, (type, notNull, defaultValue));
+            }
+
+            Assert.Contains("IsAvailable", columns.Keys);
+
+            Assert.Equal("INTEGER", columns["IsAvailable"].Type);
+            Assert.True(columns["IsAvailable"].NotNull);
+            Assert.Equal("1", columns["IsAvailable"].DefaultValue);
+        }
+
+
+        [Fact]
+        public void Initialize_AddsAvailabilityColumnToExistingTracksTable()
+        {
+            using MediaLibraryDatabaseTestContext context = new();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            // Create existing library source and track
+            long sourceId = context.InsertLibrarySource(connection);
+
+            long trackId = context.InsertTrack(
+                connection,
+                sourceId,
+                title: "Bohemian Rhapsody",
+                artist: "Queen",
+                filePath: @"D:\Music\Queen.mp3");
+
+            // Simulate an older Tracks table without IsAvailable
+            using (SqliteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = "ALTER TABLE Tracks DROP COLUMN IsAvailable;";
+
+                command.ExecuteNonQuery();
+            }
+
+            // Verify the initial state
+            HashSet<string> columnsBefore = GetTrackColumnNames(connection);
+
+            Assert.DoesNotContain("IsAvailable", columnsBefore);
+
+            // Run database migration
+            MediaLibraryDatabaseInitializer initializer = new MediaLibraryDatabaseInitializer(context.ConnectionString);
+
+            initializer.Initialize();
+
+            // Verify the missing column was restored
+            HashSet<string> columnsAfter = GetTrackColumnNames(connection);
+
+            Assert.Contains("IsAvailable", columnsAfter);
+
+            // Verify the existing track was preserved
+            using SqliteCommand verifyCommand = connection.CreateCommand();
+
+            verifyCommand.CommandText = """
+            SELECT Id, Title, FilePath, IsAvailable
+            FROM Tracks
+            WHERE Id = $trackId;
+            """;
+
+            verifyCommand.Parameters.AddWithValue("$trackId", trackId);
+
+            using SqliteDataReader reader = verifyCommand.ExecuteReader();
+
+            Assert.True(reader.Read());
+            Assert.Equal(trackId, reader.GetInt64(0));
+            Assert.Equal("Bohemian Rhapsody", reader.GetString(1));
+            Assert.Equal(@"D:\Music\Queen.mp3", reader.GetString(2));
+            Assert.Equal(1, reader.GetInt32(3));
+        }
+
+
+
+        [Fact]
+        public void Initialize_PreservesExistingAvailabilityValues()
+        {
+            using MediaLibraryDatabaseTestContext context = new();
+
+            using SqliteConnection connection = context.CreateConnection();
+
+            // Create an existing library source and track
+            long sourceId = context.InsertLibrarySource(connection);
+
+            long trackId = context.InsertTrack(
+                connection,
+                sourceId,
+                title: "Bohemian Rhapsody",
+                artist: "Queen",
+                filePath: @"D:\Music\Queen.mp3");
+
+            // Mark the track as unavailable
+            using (SqliteCommand command = connection.CreateCommand())
+            {
+                command.CommandText = """
+                UPDATE Tracks
+                SET IsAvailable = 0
+                WHERE Id = $trackId;
+                """;
+
+                command.Parameters.AddWithValue("$trackId", trackId);
+
+                int rowsAffected = command.ExecuteNonQuery();
+
+                Assert.Equal(1, rowsAffected);
+            }
+
+            // Run the initializer again
+            MediaLibraryDatabaseInitializer initializer = new MediaLibraryDatabaseInitializer(context.ConnectionString);
+
+            initializer.Initialize();
+
+            // Verify availability was preserved
+            using SqliteCommand verifyCommand = connection.CreateCommand();
+
+            verifyCommand.CommandText = """
+            SELECT IsAvailable
+            FROM Tracks
+            WHERE Id = $trackId;
+            """;
+
+            verifyCommand.Parameters.AddWithValue("$trackId", trackId);
+
+            object? result = verifyCommand.ExecuteScalar();
+
+            Assert.NotNull(result);
+            Assert.Equal(0L, Convert.ToInt64(result));
+        }
+
     }
 }

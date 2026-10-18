@@ -11,6 +11,8 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Repositories
 
         MediaTrackRecord? GetById(long id);
 
+        IReadOnlyList<MediaTrackRecord> GetBySourceId(long sourceId);
+
         MediaTrackRecord? GetByFilePath(string filePath);
 
         MediaTrackRecord? GetByFilePath(string filePath, SqliteConnection connection, SqliteTransaction transaction);
