@@ -18,12 +18,17 @@ public class LibraryReconciliationService
             ? storedTracks.Where(track => !scannedPathSet.Contains(track.FilePath)).ToList()
             : [];
 
+        List<MediaTrackRecord> presentTracks = scanCompletedSuccessfully
+            ? storedTracks.Where(track => scannedPathSet.Contains(track.FilePath)).ToList()
+            : [];
+
         return new LibraryReconciliationResult
         {
             SourceId = sourceId,
             StoredTrackCount = storedTracks.Count,
             ScannedTrackCount = scannedPaths.Count,
             MissingTracks = missingTracks,
+            PresentTracks = presentTracks,
             ScanCompletedSuccessfully = scanCompletedSuccessfully
         };
     }

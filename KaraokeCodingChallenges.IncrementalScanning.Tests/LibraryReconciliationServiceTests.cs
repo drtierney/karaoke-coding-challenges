@@ -54,8 +54,13 @@ public class LibraryReconciliationServiceTests
 
         Assert.Equal(3, result.StoredTrackCount);
         Assert.Equal(2, result.ScannedTrackCount);
+
         Assert.Equal(1, result.MissingTrackCount);
-        Assert.Equal(2, Assert.Single(result.MissingTracks).Id);
+        Assert.Equal(2L, Assert.Single(result.MissingTracks).Id);
+
+        Assert.Equal(2, result.PresentTracks.Count);
+        Assert.Equal([1L, 3L], result.PresentTracks.Select(track => track.Id).ToArray());
+
         Assert.True(result.ScanCompletedSuccessfully);
     }
 
@@ -89,6 +94,7 @@ public class LibraryReconciliationServiceTests
 
         Assert.Equal(0, result.MissingTrackCount);
         Assert.Empty(result.MissingTracks);
+        Assert.Empty(result.PresentTracks);
         Assert.False(result.ScanCompletedSuccessfully);
     }
 
