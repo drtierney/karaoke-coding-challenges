@@ -16,21 +16,21 @@ public class LibraryReconciliationServiceTests
             new MediaTrackRecord
             {
                 Id = 1,
-                FilePath = @"D:\Karaoke\Queen.mp3",
+                FilePath = Path.Combine("Library", "Karaoke", "Queen.mp3"),
                 Artist = "Queen",
                 Title = "Bohemian Rhapsody"
             },
             new MediaTrackRecord
             {
                 Id = 2,
-                FilePath = @"D:\Karaoke\Muse.mp3",
+                FilePath = Path.Combine("Library", "Karaoke", "Muse.mp3"),
                 Artist = "Muse",
                 Title = "Feeling Good"
             },
             new MediaTrackRecord
             {
                 Id = 3,
-                FilePath = @"D:\Karaoke\Paramore.mp3",
+                FilePath = Path.Combine("Library", "Karaoke", "Paramore.mp3"),
                 Artist = "Paramore",
                 Title = "Ain't it Fun"
             }
@@ -38,8 +38,8 @@ public class LibraryReconciliationServiceTests
 
         List<string> scannedPaths = new()
         {
-            @"D:\Karaoke\Queen.mp3",
-            @"D:\Karaoke\Paramore.mp3"
+            Path.Combine("Library", "Karaoke", "Queen.mp3"),
+            Path.Combine("Library", "Karaoke", "Paramore.mp3")
         };
 
         LibraryReconciliationService service = new();
@@ -74,7 +74,7 @@ public class LibraryReconciliationServiceTests
             new MediaTrackRecord
             {
                 Id = 1,
-                FilePath = @"D:\Karaoke\Queen.mp3",
+                FilePath = Path.Combine("Library", "Karaoke", "Queen.mp3"),
                 Artist = "Queen",
                 Title = "Bohemian Rhapsody"
             }
@@ -108,14 +108,14 @@ public class LibraryReconciliationServiceTests
             new MediaTrackRecord
             {
                 Id = 1,
-                FilePath = @"D:\KARAOKE\QUEEN.MP3",
+                FilePath = Path.Combine("LIBRARY", "KARAOKE", "QUEEN.MP3"),
                 Artist = "Queen",
                 Title = "Bohemian Rhapsody"
             },
             new MediaTrackRecord
             {
                 Id = 2,
-                FilePath = @"d:\karaoke\muse.mp3",
+                FilePath = Path.Combine("library", "karaoke", "muse.mp3"),
                 Artist = "Muse",
                 Title = "Feeling Good"
             }
@@ -123,8 +123,8 @@ public class LibraryReconciliationServiceTests
 
         List<string> scannedPaths = new()
         {
-            @"D:\Karaoke\Queen.mp3",
-            @"D:\Karaoke\muse.mp3"
+            Path.Combine("Library", "Karaoke", "Queen.mp3"),
+            Path.Combine("Library", "Karaoke", "muse.mp3")
         };
 
         LibraryReconciliationService service = new();
@@ -154,14 +154,14 @@ public class LibraryReconciliationServiceTests
             new MediaTrackRecord
             {
                 Id = 1,
-                FilePath = @"D:\Karaoke\Queen.mp3",
+                FilePath = Path.Combine("Library", "Karaoke", "Queen.mp3"),
                 Artist = "Queen",
                 Title = "Bohemian Rhapsody"
             },
             new MediaTrackRecord
             {
                 Id = 3,
-                FilePath = @"D:\Karaoke\Paramore.mp3",
+                FilePath = Path.Combine("Library", "Karaoke", "Paramore.mp3"),
                 Artist = "Paramore",
                 Title = "Ain't it Fun"
             }
@@ -229,5 +229,4 @@ public class LibraryReconciliationServiceTests
         Assert.Equal(storedTrack.FilePath, move.OldFilePath);
         Assert.Equal(newFile.FilePath, move.NewFilePath);
     }
-
 }

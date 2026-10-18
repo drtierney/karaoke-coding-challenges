@@ -45,7 +45,7 @@ public class LibraryReconciliationPersistenceServiceTests
 
             long sourceId = sourceRepository.Add(new LibrarySourceRecord
             {
-                Path = @"D:\Karaoke",
+                Path = Path.Combine("LibraryA", "Karaoke"),
                 Type = LibrarySourceType.Karaoke,
                 Enabled = true
             });
@@ -55,7 +55,7 @@ public class LibraryReconciliationPersistenceServiceTests
                 SourceId = sourceId,
                 Title = "Bohemian Rhapsody",
                 Artist = "Queen",
-                FilePath = @"D:\Karaoke\Queen.mp3",
+                FilePath = Path.Combine("LibraryA", "Karaoke", "Queen.mp3"),
                 DurationSeconds = 354,
                 IsKaraoke = true
             });
@@ -65,7 +65,7 @@ public class LibraryReconciliationPersistenceServiceTests
                 SourceId = sourceId,
                 Title = "Feeling Good",
                 Artist = "Muse",
-                FilePath = @"D:\Karaoke\Muse.mp3",
+                FilePath = Path.Combine("LibraryA", "Karaoke", "Muse.mp3"),
                 DurationSeconds = 218,
                 IsKaraoke = true
             });
@@ -128,14 +128,14 @@ public class LibraryReconciliationPersistenceServiceTests
 
             long source1Id = sourceRepository.Add(new LibrarySourceRecord
             {
-                Path = @"D:\Karaoke",
+                Path = Path.Combine("LibraryA", "Karaoke"),
                 Type = LibrarySourceType.Karaoke,
                 Enabled = true
             });
 
             long source2Id = sourceRepository.Add(new LibrarySourceRecord
             {
-                Path = @"E:\Karaoke",
+                Path = Path.Combine("LibraryB", "Karaoke"),
                 Type = LibrarySourceType.Karaoke,
                 Enabled = true
             });
@@ -145,7 +145,7 @@ public class LibraryReconciliationPersistenceServiceTests
                 SourceId = source1Id,
                 Title = "Bohemian Rhapsody",
                 Artist = "Queen",
-                FilePath = @"D:\Karaoke\Queen.mp3",
+                FilePath = Path.Combine("LibraryA", "Karaoke", "Queen.mp3"),
                 DurationSeconds = 354,
                 IsKaraoke = true
             });
@@ -155,7 +155,7 @@ public class LibraryReconciliationPersistenceServiceTests
                 SourceId = source2Id,
                 Title = "Feeling Good",
                 Artist = "Muse",
-                FilePath = @"E:\Karaoke\Muse.mp3",
+                FilePath = Path.Combine("LibraryB", "Karaoke", "Muse.mp3"),
                 DurationSeconds = 218,
                 IsKaraoke = true
             });
@@ -218,7 +218,7 @@ public class LibraryReconciliationPersistenceServiceTests
 
             long sourceId = sourceRepository.Add(new LibrarySourceRecord
             {
-                Path = @"D:\Karaoke",
+                Path = Path.Combine("LibraryA", "Karaoke"),
                 Type = LibrarySourceType.Karaoke,
                 Enabled = true
             });
@@ -228,7 +228,7 @@ public class LibraryReconciliationPersistenceServiceTests
                 SourceId = sourceId,
                 Title = "Feeling Good",
                 Artist = "Muse",
-                FilePath = @"D:\Karaoke\Muse.mp3",
+                FilePath = Path.Combine("LibraryA", "Karaoke", "Muse.mp3"),
                 DurationSeconds = 218,
                 IsKaraoke = true,
                 IsAvailable = false
@@ -286,7 +286,7 @@ public class LibraryReconciliationPersistenceServiceTests
 
             long sourceId = sourceRepository.Add(new LibrarySourceRecord
             {
-                Path = @"D:\Karaoke",
+                Path = Path.Combine("LibraryA", "Karaoke"),
                 Type = LibrarySourceType.Karaoke,
                 Enabled = true
             });
@@ -296,7 +296,7 @@ public class LibraryReconciliationPersistenceServiceTests
                 SourceId = sourceId,
                 Title = "Bohemian Rhapsody",
                 Artist = "Queen",
-                FilePath = @"D:\Karaoke\Queen.mp3",
+                FilePath = Path.Combine("LibraryA", "Karaoke", "Queen.mp3"),
                 DurationSeconds = 354,
                 IsKaraoke = true,
                 IsAvailable = true
@@ -307,7 +307,7 @@ public class LibraryReconciliationPersistenceServiceTests
                 SourceId = sourceId,
                 Title = "Feeling Good",
                 Artist = "Muse",
-                FilePath = @"D:\Karaoke\Muse.mp3",
+                FilePath = Path.Combine("LibraryA", "Karaoke", "Muse.mp3"),
                 DurationSeconds = 218,
                 IsKaraoke = true,
                 IsAvailable = false
