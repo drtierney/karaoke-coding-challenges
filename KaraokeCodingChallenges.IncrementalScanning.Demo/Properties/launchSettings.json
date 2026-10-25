@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Incremental Scanning (040)": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    },
+    "File System Watcher (042)": {
+      "commandName": "Project",
+      "commandLineArgs": "--watcher"
+    }
+  }
+}

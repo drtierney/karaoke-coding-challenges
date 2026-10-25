@@ -8,6 +8,13 @@ using KaraokeCodingChallenges.MediaLibraryDatabase;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Models;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Repositories;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Services;
+using KaraokeCodingChallenges.IncrementalScanning.Demo.Demos;
+
+if (args.Contains("--watcher", StringComparer.OrdinalIgnoreCase))
+{
+    FileWatcherDemo.Run();
+    return;
+}
 
 string databasePath = Path.Combine(
     Path.GetTempPath(),
