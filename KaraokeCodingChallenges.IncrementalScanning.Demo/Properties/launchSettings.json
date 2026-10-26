@@ -7,6 +7,10 @@
     "File System Watcher (042)": {
       "commandName": "Project",
       "commandLineArgs": "--watcher"
+    },
+    "File System Watcher - Raw Events (042)": {
+      "commandName": "Project",
+      "commandLineArgs": "--watcher --raw"
     }
   }
 }

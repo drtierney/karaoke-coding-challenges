@@ -12,7 +12,9 @@ using KaraokeCodingChallenges.IncrementalScanning.Demo.Demos;
 
 if (args.Contains("--watcher", StringComparer.OrdinalIgnoreCase))
 {
-    FileWatcherDemo.Run();
+    bool showRawEvents = args.Contains("--raw", StringComparer.OrdinalIgnoreCase);
+
+    FileWatcherDemo.Run(showRawEvents);
     return;
 }
 

@@ -126,4 +126,56 @@ public class FileEventDebouncerTests
 
         Assert.Equal(2, callbackCount);
     }
+
+    [Fact]
+    public async Task CancelPending_WithPendingEvents_PreventsCallbacks()
+    {
+        FileEventDebouncer debouncer = new FileEventDebouncer(TimeSpan.FromMilliseconds(500));
+
+        int callbackCount = 0;
+
+        Task firstEvent = debouncer.DebounceAsync("song1.mp3", () =>
+        {
+            Interlocked.Increment(ref callbackCount);
+            return Task.CompletedTask;
+        });
+
+        Task secondEvent = debouncer.DebounceAsync("song2.mp3", () =>
+        {
+            Interlocked.Increment(ref callbackCount);
+            return Task.CompletedTask;
+        });
+
+        debouncer.CancelPending();
+
+        await Task.WhenAll(firstEvent, secondEvent);
+
+        Assert.Equal(0, callbackCount);
+    }
+
+    [Fact]
+    public async Task CancelPending_WithSpecificFile_CancelsOnlyMatchingCallback()
+    {
+        FileEventDebouncer debouncer = new FileEventDebouncer(TimeSpan.FromMilliseconds(100));
+
+        int callbackCount = 0;
+
+        Task firstEvent = debouncer.DebounceAsync("song1.mp3", () =>
+        {
+            Interlocked.Increment(ref callbackCount);
+            return Task.CompletedTask;
+        });
+
+        Task secondEvent = debouncer.DebounceAsync("song2.mp3", () =>
+        {
+            Interlocked.Increment(ref callbackCount);
+            return Task.CompletedTask;
+        });
+
+        debouncer.CancelPending("song1.mp3");
+
+        await Task.WhenAll(firstEvent, secondEvent);
+
+        Assert.Equal(1, callbackCount);
+    }
 }

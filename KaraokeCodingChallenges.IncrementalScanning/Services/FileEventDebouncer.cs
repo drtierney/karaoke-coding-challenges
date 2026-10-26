@@ -53,4 +53,28 @@ public class FileEventDebouncer
             }
         }
     }
+
+    public void CancelPending()
+    {
+        lock (_sync)
+        {
+            foreach (CancellationTokenSource cancellation in _pendingEvents.Values)
+            {
+                cancellation.Cancel();
+            }
+        }
+    }
+
+    public void CancelPending(string filePath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+
+        lock (_sync)
+        {
+            if (_pendingEvents.TryGetValue(filePath, out CancellationTokenSource? cancellation))
+            {
+                cancellation.Cancel();
+            }
+        }
+    }
 }
