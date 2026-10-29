@@ -1,3 +1,4 @@
+
 using KaraokeCodingChallenges.IncrementalScanning.Watchers;
 
 namespace KaraokeCodingChallenges.IncrementalScanning.Services;
@@ -10,6 +11,8 @@ public sealed class WatchedLibraryEventCoordinator : IDisposable
     private readonly bool _isKaraoke;
 
     private readonly FileEventDebouncer _debouncer = new(TimeSpan.FromMilliseconds(500));
+
+    private readonly object _processingSync = new();
 
     private bool _isDisposed;
 
@@ -38,19 +41,22 @@ public sealed class WatchedLibraryEventCoordinator : IDisposable
 
     public void Dispose()
     {
-        if (_isDisposed)
+        lock (_processingSync)
         {
-            return;
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _isDisposed = true;
+
+            _watcher.FileCreated -= OnFileCreated;
+            _watcher.FileChanged -= OnFileChanged;
+            _watcher.FileDeleted -= OnFileDeleted;
+            _watcher.FileRenamed -= OnFileRenamed;
+
+            _debouncer.CancelPending();
         }
-
-        _watcher.FileCreated -= OnFileCreated;
-        _watcher.FileChanged -= OnFileChanged;
-        _watcher.FileDeleted -= OnFileDeleted;
-        _watcher.FileRenamed -= OnFileRenamed;
-
-        _isDisposed = true;
-
-        _debouncer.CancelPending();
     }
 
     private void OnFileCreated(object sender, FileSystemEventArgs e)
@@ -82,8 +88,21 @@ public sealed class WatchedLibraryEventCoordinator : IDisposable
 
         try
         {
-            _debouncer.CancelPending(e.FullPath);
-            _updateService.HandleDeleted(e.FullPath);
+            lock (_processingSync)
+            {
+                if (_isDisposed)
+                {
+                    return;
+                }
+
+                _debouncer.CancelPending(e.FullPath);
+
+                // Only mark unavailable if the file is still missing.
+                if (!File.Exists(e.FullPath))
+                {
+                    _updateService.HandleDeleted(e.FullPath);
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -101,20 +120,44 @@ public sealed class WatchedLibraryEventCoordinator : IDisposable
             return;
         }
 
+        bool processNewFile = false;
+
         try
         {
-            _debouncer.CancelPending(e.OldFullPath);
-            _debouncer.CancelPending(e.FullPath);
+            lock (_processingSync)
+            {
+                if (_isDisposed)
+                {
+                    return;
+                }
 
-            if (oldSupported && newSupported)
-            {
-                _updateService.HandleRenamed(e.OldFullPath, e.FullPath);
+                _debouncer.CancelPending(e.OldFullPath);
+                _debouncer.CancelPending(e.FullPath);
+
+                // Ignore stale rename notifications where the old path
+                // still exists or the destination has disappeared.
+                if (File.Exists(e.OldFullPath) || !File.Exists(e.FullPath))
+                {
+                    return;
+                }
+
+                if (oldSupported && newSupported)
+                {
+                    _updateService.HandleRenamed(
+                        e.OldFullPath,
+                        e.FullPath);
+                }
+                else if (oldSupported)
+                {
+                    _updateService.HandleDeleted(e.OldFullPath);
+                }
+                else
+                {
+                    processNewFile = true;
+                }
             }
-            else if (oldSupported)
-            {
-                _updateService.HandleDeleted(e.OldFullPath);
-            }
-            else
+
+            if (processNewFile)
             {
                 _ = ProcessFileAsync(e.FullPath);
             }
@@ -125,31 +168,19 @@ public sealed class WatchedLibraryEventCoordinator : IDisposable
         }
     }
 
-    private static bool IsSupportedFile(string filePath)
-    {
-        return string.Equals(Path.GetExtension(filePath), ".mp3", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private void ReportProcessingError(Exception exception)
-    {
-        try
-        {
-            ProcessingError?.Invoke(this, exception);
-        }
-        catch
-        {
-            // Prevent error-reporting failures from escaping the watcher callback.
-        }
-    }
-
     private async Task ProcessFileAsync(string filePath)
     {
         try
         {
             await _debouncer.DebounceAsync(filePath, () =>
             {
-                if (!_isDisposed && File.Exists(filePath))
+                lock (_processingSync)
                 {
+                    if (_isDisposed || !File.Exists(filePath))
+                    {
+                        return Task.CompletedTask;
+                    }
+
                     _updateService.HandleChanged(
                         filePath,
                         _sourceId,
@@ -162,6 +193,23 @@ public sealed class WatchedLibraryEventCoordinator : IDisposable
         catch (Exception ex)
         {
             ReportProcessingError(ex);
+        }
+    }
+
+    private static bool IsSupportedFile(string filePath)
+    {
+        return string.Equals(Path.GetExtension(filePath),".mp3", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void ReportProcessingError(Exception exception)
+    {
+        try
+        {
+            ProcessingError?.Invoke(this, exception);
+        }
+        catch
+        {
+            // Prevent error-reporting failures from escaping watcher callbacks.
         }
     }
 }

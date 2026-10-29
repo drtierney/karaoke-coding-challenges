@@ -350,4 +350,42 @@ public class WatchedLibraryEventCoordinatorTests
         Assert.Null(environment.Repository.GetByFilePath(originalPath));
         Assert.Single(environment.Repository.GetAll());
     }
+
+
+    [Fact]
+    public async Task FileDeleted_BeforePendingScan_CompletesWithoutPersistingTrack()
+    {
+        using TestEnvironment environment = new();
+
+        string filePath = environment.GetFilePath("TemporaryTrack.mp3");
+
+        TaskCompletionSource<bool> creationReceived = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        environment.Watcher.FileCreated += (_, e) =>
+        {
+            if (string.Equals(
+                e.FullPath,
+                filePath,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                creationReceived.TrySetResult(true);
+            }
+        };
+
+        environment.Watcher.Start();
+
+        File.WriteAllText(filePath, "Temporary audio content");
+
+        await creationReceived.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        File.Delete(filePath);
+
+        // Allow time for any delayed scan to execute incorrectly.
+        await Task.Delay(1500);
+
+        Assert.False(File.Exists(filePath));
+        Assert.Null(environment.Repository.GetByFilePath(filePath));
+        Assert.Empty(environment.Repository.GetAll());
+    }
+
 }
