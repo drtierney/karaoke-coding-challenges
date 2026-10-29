@@ -802,8 +802,8 @@
                 41
             ],
             "outcome": "React to library file changes without requiring a full manual rescan.",
-            "status": "Planned",
-            "notes": null
+            "status": "Completed",
+            "notes": "Implemented FileSystemWatcher-based library monitoring with created, changed, deleted and renamed notifications, per-file debouncing, lifecycle management, cancellation and error reporting. Added a watcher event coordinator with synchronized SQLite updates, filesystem-state checks, fingerprint-based selective scanning, track availability changes and rename handling. Verified with 71 IncrementalScanning tests, 393 passing solution tests and an interactive live SQLite demonstration. The coordinator currently supports MP3 primary files. MP3+CDG companion-file integration, transient file-copy retry handling and broader recovery mechanisms are deferred to the Persistent Library Milestone."
         },
         {
             "number": 43,
@@ -854,7 +854,7 @@
             ],
             "outcome": "Deliver a database-backed media library that survives restarts and updates efficiently.",
             "status": "Planned",
-            "notes": null
+            "notes": "Review cross-platform file paths and persistence architecture; integrate MP3+CDG companion-file updates with the watcher; assess transient scanning retries, missed-event recovery, filesystem race conditions and performance."
         },
         {
             "number": 45,

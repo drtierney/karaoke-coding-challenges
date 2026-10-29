@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "Incremental Scanning (040)": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    },
+    "File System Watcher (042)": {
+      "commandName": "Project",
+      "commandLineArgs": "--watcher"
+    },
+    "File System Watcher - Raw Events (042)": {
+      "commandName": "Project",
+      "commandLineArgs": "--watcher --raw"
+    },
+    "Live Library Updates (042)": {
+      "commandName": "Project",
+      "commandLineArgs": "--library-watch"
+    }
+  }
+}

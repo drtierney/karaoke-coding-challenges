@@ -8,6 +8,21 @@ using KaraokeCodingChallenges.MediaLibraryDatabase;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Models;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Repositories;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Services;
+using KaraokeCodingChallenges.IncrementalScanning.Demo.Demos;
+
+if (args.Contains("--watcher", StringComparer.OrdinalIgnoreCase))
+{
+    bool showRawEvents = args.Contains("--raw", StringComparer.OrdinalIgnoreCase);
+
+    FileWatcherDemo.Run(showRawEvents);
+    return;
+}
+
+if (args.Contains("--library-watch", StringComparer.OrdinalIgnoreCase))
+{
+    WatchedLibraryDemo.Run();
+    return;
+}
 
 string databasePath = Path.Combine(
     Path.GetTempPath(),

@@ -1,8 +1,8 @@
-# Challenges 040–041 - Incremental Library Scanning and Library Reconciliation
+# Challenges 040–042 - Incremental Library Scanning, Reconciliation and File Watcher Updates
 
-Introduces incremental media library scanning and reconciliation using filesystem fingerprints and SQLite persistence. Challenge 040 avoids unnecessary metadata extraction for unchanged files; Challenge 041 keeps persisted track records aligned with completed filesystem discoveries.
+Introduces incremental media library scanning, reconciliation and event-driven library updates using filesystem fingerprints and SQLite persistence.
 
-Builds on Challenge 038 (Persist Scanned Tracks) and Challenge 039 (Database-Backed Search) through fingerprint-based change detection, transactional availability updates, moved-file identification and scan orchestration.
+Challenge 040 avoids unnecessary metadata extraction for unchanged files. Challenge 041 reconciles persisted records against completed filesystem discoveries. Challenge 042 extends these capabilities with FileSystemWatcher notifications, debouncing and automatic SQLite updates when supported media files change.
 
 ## Concepts Practised
 
@@ -15,6 +15,9 @@ Builds on Challenge 038 (Persist Scanned Tracks) and Challenge 039 (Database-Bac
 - Exception handling and failed-discovery safeguards
 - Batch scanning and statistics
 - Preserving persisted track identity
+- `FileSystemWatcher`
+- Asynchronous event handling
+- Debouncing and event coordination
 
 ## Challenge 040 - Incremental Library Scanning
 
@@ -151,6 +154,108 @@ flowchart TD
     G --> H[Run incremental scan]
     H --> I[Return reconciliation and scan results]
 ```
+
+
+## Challenge 042 - File System Watcher Library Updates
+
+Extends incremental scanning with filesystem notifications so supported media changes can update the SQLite library without requiring a full manual rescan.
+
+### `LibraryFileWatcher`
+
+Wraps `FileSystemWatcher` and monitors a configured directory, including its subdirectories.
+
+Exposes notifications for:
+
+- `FileCreated`
+- `FileChanged`
+- `FileDeleted`
+- `FileRenamed`
+- `WatcherError`
+
+`RawFileChanged` provides optional diagnostic output before change notifications are debounced.
+
+The watcher supports starting, stopping and disposal. Pending changed-file notifications are cancelled when appropriate.
+
+### `FileEventDebouncer`
+
+Consolidates repeated notifications for the same file path.
+
+- Maintains separate pending operations for different paths.
+- Cancels earlier pending callbacks when another event arrives for the same path.
+- Supports cancelling all pending callbacks or those associated with a specific path.
+- Uses cancellation tokens to avoid executing superseded delayed callbacks.
+
+The default watcher debounce interval is 500 milliseconds.
+
+### `WatchedLibraryUpdateService`
+
+Coordinates existing media scanning, fingerprint detection and SQLite persistence.
+
+Supported operations:
+
+- `HandleCreated()` - scans a file and persists its metadata and fingerprint.
+- `HandleChanged()` - compares fingerprints and rescans files when necessary.
+- `HandleDeleted()` - marks a stored track unavailable without deleting its record.
+- `HandleRenamed()` - updates a stored file path while preserving the track ID.
+
+Unchanged, available tracks skip unnecessary metadata extraction. Previously unavailable tracks can be processed again when their files reappear.
+
+Rename conflicts are rejected when the destination path already belongs to a different stored track.
+
+### `WatchedLibraryEventCoordinator`
+
+Connects `LibraryFileWatcher` notifications to `WatchedLibraryUpdateService`.
+
+Each coordinator is associated with a library source ID and a karaoke classification flag.
+
+Created and changed notifications use deferred processing. Deletion and rename notifications cancel relevant pending operations before updating the database.
+
+The coordinator also:
+
+- Filters supported file extensions.
+- Handles renames between supported and unsupported extensions.
+- Serializes its database update operations through a shared synchronization lock.
+- Rechecks relevant filesystem state before applying operations.
+- Reports processing failures through `ProcessingError`.
+- Unsubscribes from watcher events and cancels pending work when disposed.
+
+### Extension Transition Behaviour
+
+| Operation | Behaviour |
+|---|---|
+| `.mp3` created | Scan and persist the track |
+| `.mp3` modified | Compare fingerprints and update if changed |
+| `.mp3` deleted | Mark the track unavailable |
+| `.mp3` renamed to `.mp3` | Update the stored path and preserve its ID |
+| `.mp3` renamed to unsupported extension | Mark the original track unavailable |
+| Unsupported extension renamed to `.mp3` | Scan and persist the newly supported file |
+
+### Event-Driven Update Workflow
+
+```mermaid
+flowchart TD
+    A[Filesystem notification] --> B[LibraryFileWatcher]
+    B --> C[WatchedLibraryEventCoordinator]
+    C --> D{Event type}
+    D -->|Created or Changed| E[Debounce and compare fingerprints]
+    E --> F[Scan and persist if necessary]
+    D -->|Deleted| G[Mark unavailable]
+    D -->|Renamed| H[Update path or availability]
+    F --> I[SQLite media library]
+    G --> I
+    H --> I
+```
+
+### Scope and Limitations
+
+- The current event coordinator processes `.mp3` as its supported primary media format.
+- MP3+CDG companion-file updates are deferred to the Persistent Library Milestone (Challenge 044).
+- Debouncing reduces duplicate processing but does not guarantee that a large file has finished copying.
+- Transient scanning failures do not currently trigger an automatic retry.
+- Synchronization protects coordinator-managed database operations but does not coordinate independent external writers.
+- Filesystem notifications are not a substitute for periodic full-library reconciliation. Missed events or watcher failures may require a subsequent scan.
+
+These limitations will be revisited during later integration and reliability work.
 
 ## Design Decisions
 

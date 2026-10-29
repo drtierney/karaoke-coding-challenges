@@ -1,4 +1,4 @@
-# Challenges 040–041 - Incremental Scanning and Reconciliation Tests
+# Challenges 040–042 - Incremental Scanning, Reconciliation and Watcher Tests
 
 Contains xUnit tests for incremental scanning and SQLite-backed library reconciliation. The suite verifies selective metadata extraction, filesystem fingerprints, track availability updates, moved-file identification, transactional persistence and scan orchestration.
 
@@ -79,6 +79,73 @@ Challenge 041 extends the project with tests covering:
 - Skipped: **0**
 
 These results were recorded on .NET 10 after completing the Challenge 041 implementation.
+
+
+## Challenge 042 - File System Watcher Tests
+
+Challenge 042 adds tests for filesystem notifications, event debouncing, SQLite-backed library updates and end-to-end event processing.
+
+### LibraryFileWatcher Tests
+
+Verify watcher lifecycle behaviour, including:
+
+- Starting and stopping filesystem monitoring.
+- Cancelling pending changed-file notifications when stopped.
+- Preventing pending notifications after disposal.
+- Rejecting attempts to restart a disposed watcher.
+
+### FileEventDebouncer Tests
+
+Verify:
+
+- A single notification executes its callback.
+- Repeated notifications for the same path execute only the latest pending callback.
+- Different paths are debounced independently.
+- Pending callbacks can be cancelled individually or together.
+- Cancellation does not interrupt a callback that has already started.
+- Invalid debounce intervals are rejected.
+
+### WatchedLibraryUpdateService Tests
+
+Seven SQLite integration tests verify:
+
+- Deleted files are marked unavailable while preserving their records.
+- Unknown deletion paths do not modify existing tracks.
+- Renamed files update their stored paths and preserve track IDs.
+- Conflicting rename destinations are rejected.
+- Created files persist metadata and filesystem fingerprints.
+- Unchanged files skip unnecessary metadata reads.
+- Modified files update fingerprints while preserving track identity.
+
+These tests use temporary SQLite databases, temporary filesystem files and a controlled `IMetadataReader`.
+
+### WatchedLibraryEventCoordinator Tests
+
+Eight end-to-end tests exercise actual filesystem events through the watcher, coordinator and SQLite persistence services.
+
+Coverage includes:
+
+- File deletion updating track availability.
+- File renaming preserving track IDs.
+- New supported files being persisted.
+- Modified files updating their fingerprints.
+- Unsupported files being ignored.
+- Renaming from supported to unsupported extensions.
+- Renaming from unsupported to supported extensions.
+- Rapid deletion cancelling pending file processing.
+
+The tests use bounded asynchronous waits to observe database changes.
+
+The rapid-deletion test covers cancellation before a pending scan executes; it does not exhaustively prove every possible concurrent filesystem event ordering.
+
+### Challenge 042 Verification
+
+- IncrementalScanning tests: **71 passed**
+- Full solution tests: **393 passed**
+- Failed: **0**
+- Skipped: **0**
+
+These results were recorded on .NET 10 following the Challenge 042 implementation and reliability updates.
 
 ## Test Infrastructure
 
