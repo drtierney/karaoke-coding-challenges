@@ -18,6 +18,12 @@ if (args.Contains("--watcher", StringComparer.OrdinalIgnoreCase))
     return;
 }
 
+if (args.Contains("--library-watch", StringComparer.OrdinalIgnoreCase))
+{
+    WatchedLibraryDemo.Run();
+    return;
+}
+
 string databasePath = Path.Combine(
     Path.GetTempPath(),
     $"incremental-demo-{Guid.NewGuid():N}.db");

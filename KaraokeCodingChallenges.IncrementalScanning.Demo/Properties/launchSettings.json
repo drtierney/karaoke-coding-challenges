@@ -11,6 +11,10 @@
     "File System Watcher - Raw Events (042)": {
       "commandName": "Project",
       "commandLineArgs": "--watcher --raw"
+    },
+    "Live Library Updates (042)": {
+      "commandName": "Project",
+      "commandLineArgs": "--library-watch"
     }
   }
 }
