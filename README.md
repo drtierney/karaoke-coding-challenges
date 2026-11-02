@@ -26,11 +26,13 @@ Milestone challenges periodically bring several earlier components together into
 
 ## Current Progress
 
-The challenge series has completed **Challenge 042 - File System Watcher Library Updates**, introducing event-driven filesystem monitoring, per-file debouncing, coordinated SQLite updates, and automatic handling of supported media file creation, modification, deletion and renaming.
+The challenge series has completed **Challenge 043 - Database & Persistence Testing**, adding integration tests for SQLite persistence across database connections, persisted record updates, transaction rollback, and temporary database isolation and cleanup.
 
-The implementation builds on incremental scanning and library reconciliation, preserving track identities and avoiding unnecessary metadata extraction. The challenge also introduces a live SQLite integration demo and end-to-end filesystem tests.
+The challenge builds on the database, incremental scanning, reconciliation, and filesystem watcher functionality introduced in Challenges 035–042. Existing integration coverage was reviewed to avoid duplicating tests already implemented in earlier challenges.
 
-The persistence and storage phase now continues with **Challenge 043 - Database & Persistence Testing**, followed by the **Persistent Library Milestone**.
+The complete solution now contains **397 passing tests**, with no failures, skipped tests, or build warnings.
+
+The persistence and storage phase now progresses to **Challenge 044 - Persistent Library Milestone**, focusing on architecture review, integration, performance, and refactoring.
 
 The challenge table below shows the completed challenges and the currently planned roadmap. More detailed roadmap information, including concepts, dependencies, expected outcomes, and notes, is available in the [roadmap](roadmap/README.md).
 
@@ -107,7 +109,7 @@ Individual challenge READMEs contain additional information about their implemen
 | 040 | [Incremental Library Scanning](KaraokeCodingChallenges.IncrementalScanning/README.md) | ☑ Completed |
 | 041 | [Library Reconciliation](KaraokeCodingChallenges.IncrementalScanning/README.md#challenge-041---library-reconciliation) | ☑ Completed |
 | 042 | [File System Watcher Library Updates](KaraokeCodingChallenges.IncrementalScanning/README.md#challenge-042---file-system-watcher-library-updates) | ☑ Completed |
-| 043 | Database & Persistence Testing | ☐ Planned |
+| 043 | [Database & Persistence Testing](KaraokeCodingChallenges.MediaLibraryDatabase.Tests/README.md#challenge-043---database--persistence-testing) | ☑ Completed |
 | 044 | Persistent Library Milestone | ☐ Planned |
 | 045 | Async Library Scanner | ☐ Planned |
 | 046 | Scan Progress Reporting | ☐ Planned |

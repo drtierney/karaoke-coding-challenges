@@ -411,3 +411,75 @@ After Challenge 038, the complete solution test suite reports:
 ```text
 Test summary: total: 268, failed: 0, succeeded: 268, skipped: 0
 ```
+
+
+## Challenge 043 - Database & Persistence Testing
+
+Challenge 043 adds four integration tests to verify SQLite persistence, transaction rollback, and temporary database isolation.
+
+The tests reuse the existing `MediaLibraryDatabaseTestContext` and `MediaTrackRepository` implementations rather than introducing additional test infrastructure.
+
+### Persistence Across Connections
+
+`DatabasePersistenceIntegrationTests` verifies that:
+
+- Newly inserted tracks remain accessible through separate repository instances.
+- Persisted track IDs and metadata are preserved.
+- Updates remain persisted across independent repository operations.
+- Updated tracks retain their original database IDs.
+
+### Transaction Rollback
+
+The transaction integration test verifies that:
+
+- Multiple track updates can participate in the same SQLite transaction.
+- Successful updates are visible within the active transaction.
+- Invalid updates trigger SQLite constraint violations.
+- Explicit rollback restores the original persisted values.
+- Failed transactions do not leave partially updated records.
+
+### Temporary Database Isolation & Cleanup
+
+The temporary database test verifies that:
+
+- Each test context creates a unique SQLite database.
+- Records stored in one database are not visible in another.
+- Temporary database files exist while their contexts are active.
+- Database files are deleted when their contexts are disposed.
+
+### Existing Integration Coverage
+
+Earlier challenges already provide extensive integration testing for:
+
+- Database schema constraints and migrations.
+- Repository CRUD operations and referential integrity.
+- Scanned-track persistence and batch rollback.
+- Incremental scanning and fingerprint persistence.
+- Library reconciliation and availability updates.
+- Filesystem watcher events and SQLite-backed updates.
+
+Challenge 043 builds on this coverage without duplicating existing tests.
+
+### Verification
+
+Run the Challenge 043 integration tests:
+
+```powershell
+dotnet test KaraokeCodingChallenges.MediaLibraryDatabase.Tests --filter "FullyQualifiedName~DatabasePersistenceIntegrationTests"
+```
+
+Run the complete solution test suite:
+
+```powershell
+dotnet test
+```
+
+Challenge 043 verification results:
+
+- New integration tests: **4 passed**
+- Full solution tests: **397 passed**
+- Failed: **0**
+- Skipped: **0**
+- Build warnings: **0**
+
+All tests passed on .NET 10.

@@ -827,8 +827,8 @@
                 42
             ],
             "outcome": "Verify database persistence and incremental scanning behaviour.",
-            "status": "Planned",
-            "notes": null
+            "status": "Completed",
+            "notes": "Added four SQLite integration tests covering persistence across independent repository operations, persisted record updates, transaction rollback, and temporary database isolation and cleanup. Reused existing test infrastructure and reviewed database, incremental scanning, reconciliation, and watcher integration coverage to avoid duplicate tests. Verified with 397 passing solution tests, no failures, no skipped tests, and no build warnings on .NET 10."
         },
         {
             "number": 44,
