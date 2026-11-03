@@ -85,21 +85,28 @@ public class WatchedLibraryUpdateService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
 
+        FileFingerprint initialFingerprint = _fingerprintProvider.GetFingerprint(filePath);
+
         MediaScanResult scanResult = MediaScannerService.ScanFile(filePath, _metadataReader);
 
-        if (!scanResult.IsSuccess)
+        if (!scanResult.IsSuccess || scanResult.Metadata is null)
         {
             return null;
         }
 
-        FileFingerprint fingerprint = _fingerprintProvider.GetFingerprint(filePath);
+        FileFingerprint latestFingerprint = _fingerprintProvider.GetFingerprint(filePath);
+
+        if (_changeDetector.DetectChange(latestFingerprint, initialFingerprint) != FileChangeStatus.Unchanged)
+        {
+            return null;
+        }
 
         return _persistenceService.Persist(
             scanResult,
             sourceId,
             isKaraoke,
-            fingerprint.FileSize,
-            fingerprint.LastModifiedUtc);
+            latestFingerprint.FileSize,
+            latestFingerprint.LastModifiedUtc);
     }
 
     public long? HandleChanged(string filePath, long sourceId, bool isKaraoke = false)

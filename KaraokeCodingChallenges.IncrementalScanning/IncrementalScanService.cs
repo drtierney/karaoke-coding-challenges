@@ -105,46 +105,21 @@ public class IncrementalScanService
         IMetadataReader metadataReader,
         bool isKaraoke = false)
     {
-        FileChangeStatus status = CheckFile(filePath);
+        FileFingerprint fingerprint = fingerprintProvider.GetFingerprint(filePath);
+
+        FileChangeStatus status = CheckFingerprint(fingerprint);
 
         if (status == FileChangeStatus.Unchanged)
         {
             return null;
         }
 
-        FileFingerprint fingerprint = fingerprintProvider.GetFingerprint(filePath);
-
-        MediaScanResult scanResult = MediaScannerService.ScanFile(fingerprint.FilePath, metadataReader);
-
-        if (!scanResult.IsSuccess || scanResult.Metadata is null)
-        {
-            return scanResult;
-        }
-
-        // Ensure the file didn't change while metadata was being extracted.
-        FileFingerprint latestFingerprint = fingerprintProvider.GetFingerprint(filePath);
-
-        if (changeDetector.DetectChange(latestFingerprint, fingerprint) != FileChangeStatus.Unchanged)
-        {
-            return scanResult with
-            {
-                IsSuccess = false,
-                Metadata = null,
-                Errors = ["File changed during metadata extraction."]
-            };
-        }
-
-        persistenceService.Persist(
-            scanResult,
+        return ProcessChangedFile(
+            fingerprint,
             sourceId,
-            isKaraoke,
-            fingerprint.FileSize,
-            fingerprint.LastModifiedUtc);
-
-        return scanResult;
+            metadataReader,
+            isKaraoke);
     }
-
-
 
     public IncrementalScanSummary ProcessFiles(
         IEnumerable<string> filePaths,

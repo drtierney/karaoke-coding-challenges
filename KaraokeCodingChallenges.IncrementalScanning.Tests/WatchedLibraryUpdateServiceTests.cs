@@ -28,6 +28,21 @@ public class WatchedLibraryUpdateServiceTests
         }
     }
 
+    private sealed class ModifyingMetadataReader : IMetadataReader
+    {
+        public EmbeddedMetadata Read(string filePath)
+        {
+            File.AppendAllText(filePath, " Additional content");
+
+            return new EmbeddedMetadata
+            {
+                Title = "Test Track",
+                Artist = "Test Artist",
+                DurationSeconds = 180
+            };
+        }
+    }
+
     private static WatchedLibraryUpdateService CreateService(
         IMediaTrackRepository repository,
         string connectionString,
@@ -516,4 +531,57 @@ public class WatchedLibraryUpdateServiceTests
         }
     }
 
+    [Fact]
+    public void HandleCreated_WhenFileChangesDuringMetadataExtraction_DoesNotPersistTrack()
+    {
+        string databasePath = Path.Combine(Path.GetTempPath(), $"watched-library-{Guid.NewGuid():N}.db");
+
+        string filePath = Path.ChangeExtension(databasePath, ".mp3");
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        try
+        {
+            MediaLibraryDatabaseInitializer initializer = new(connectionString);
+            initializer.Initialize();
+
+            LibrarySourceRepository sourceRepository = new(connectionString);
+
+            LibrarySourceRecord source = new()
+            {
+                Path = Path.GetDirectoryName(filePath)!,
+                Type = LibrarySourceType.Music,
+                Enabled = true
+            };
+
+            long sourceId = sourceRepository.Add(source);
+
+            File.WriteAllText(filePath, "Test audio content");
+
+            MediaTrackRepository repository = new(connectionString);
+
+            ModifyingMetadataReader metadataReader = new();
+
+            WatchedLibraryUpdateService service = CreateService(
+                repository,
+                connectionString,
+                metadataReader);
+
+            long? trackId = service.HandleCreated(filePath, sourceId);
+
+            Assert.Null(trackId);
+            Assert.Empty(repository.GetAll());
+        }
+        finally
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            if (File.Exists(databasePath))
+            {
+                File.Delete(databasePath);
+            }
+        }
+    }
 }
