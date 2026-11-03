@@ -26,7 +26,12 @@ public class FileMoveDetector
                     file.FilePath,
                     StringComparison.OrdinalIgnoreCase))
                 {
-                    if (track.FileSize == file.FileSize && track.LastModifiedUtc == file.LastModifiedUtc)
+                    if (string.Equals(
+                            Path.GetFileName(track.FilePath),
+                            Path.GetFileName(file.FilePath),
+                            StringComparison.OrdinalIgnoreCase) &&
+                        track.FileSize == file.FileSize &&
+                        track.LastModifiedUtc == file.LastModifiedUtc)
                     {
                         matches.Add(new FileMoveMatch
                         {
