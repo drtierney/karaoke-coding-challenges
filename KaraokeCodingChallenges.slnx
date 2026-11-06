@@ -8,6 +8,7 @@
   <Project Path="KaraokeCodingChallenges.IncrementalScanning.Demo/KaraokeCodingChallenges.IncrementalScanning.Demo.csproj" />
   <Project Path="KaraokeCodingChallenges.IncrementalScanning.Tests/KaraokeCodingChallenges.IncrementalScanning.Tests.csproj" />
   <Project Path="KaraokeCodingChallenges.IncrementalScanning/KaraokeCodingChallenges.IncrementalScanning.csproj" />
+  <Project Path="KaraokeCodingChallenges.KaraokeFilePairing.Tests/KaraokeCodingChallenges.KaraokeFilePairing.Tests.csproj" />
   <Project Path="KaraokeCodingChallenges.KaraokeFilePairing/KaraokeCodingChallenges.KaraokeFilePairing.csproj" Id="1149c48f-9176-4b73-9b8e-66b4e4719c95" />
   <Project Path="KaraokeCodingChallenges.LibraryPersistence.Demo/KaraokeCodingChallenges.LibraryPersistence.Demo.csproj" />
   <Project Path="KaraokeCodingChallenges.LibraryPersistence.Tests/KaraokeCodingChallenges.LibraryPersistence.Tests.csproj" />
