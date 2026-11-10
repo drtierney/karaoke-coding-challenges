@@ -2,15 +2,44 @@
 using KaraokeCodingChallenges.Configuration;
 using KaraokeCodingChallenges.IncrementalScanning.Models;
 using KaraokeCodingChallenges.IncrementalScanning.Services;
+using KaraokeCodingChallenges.KaraokeFilePairing;
 using KaraokeCodingChallenges.MediaLibraryDatabase;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Models;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Repositories;
 using KaraokeCodingChallenges.MediaLibraryDatabase.Services;
+using Microsoft.Data.Sqlite;
 
 namespace KaraokeCodingChallenges.IncrementalScanning.Tests;
 
 public class LibraryScanOrchestrationServiceTests
 {
+    private sealed class FailingKaraokeFileRepository : IKaraokeFileRepository
+    {
+        public string? GetByTrackId(long trackId)
+        {
+            return null;
+        }
+
+        public void Upsert(long trackId, string cdgFilePath)
+        {
+            throw new InvalidOperationException("Non-transactional CDG persistence was attempted.");
+        }
+
+        public void Upsert(
+            long trackId,
+            string cdgFilePath,
+            SqliteConnection connection,
+            SqliteTransaction transaction)
+        {
+            throw new InvalidOperationException("Simulated CDG persistence failure.");
+        }
+
+        public void DeleteByTrackId(long trackId)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     [Fact]
     public void Reconcile_DoesNotModifyTracks_WhenDiscoveryFails()
     {
@@ -58,12 +87,15 @@ public class LibraryScanOrchestrationServiceTests
 
             LibraryReconciliationPersistenceService reconciliationPersistenceService = new(connectionString);
 
+            KaraokeFileRepository karaokeFileRepository = new(connectionString);
+
             LibraryScanOrchestrationService service = new(
                 trackRepository,
                 fingerprintProvider,
                 reconciliationService,
                 reconciliationPersistenceService,
-                incrementalScanService);
+                incrementalScanService,
+                karaokeFileRepository);
 
             LibraryReconciliationResult result = service.Reconcile(
                 sourceId,
@@ -155,12 +187,15 @@ public class LibraryScanOrchestrationServiceTests
             LibraryReconciliationPersistenceService reconciliationPersistenceService =
                 new(connectionString);
 
+            KaraokeFileRepository karaokeFileRepository = new(connectionString);
+
             LibraryScanOrchestrationService service = new(
                 trackRepository,
                 fingerprintProvider,
                 reconciliationService,
                 reconciliationPersistenceService,
-                incrementalScanService);
+                incrementalScanService,
+                karaokeFileRepository);
 
             LibraryReconciliationResult result = service.Reconcile(
                 sourceId,
@@ -261,12 +296,15 @@ public class LibraryScanOrchestrationServiceTests
 
             LibraryReconciliationPersistenceService reconciliationPersistenceService = new(connectionString);
 
+            KaraokeFileRepository karaokeFileRepository = new(connectionString);
+
             LibraryScanOrchestrationService service = new(
                 trackRepository,
                 fingerprintProvider,
                 reconciliationService,
                 reconciliationPersistenceService,
-                incrementalScanService);
+                incrementalScanService,
+                karaokeFileRepository);
 
             // Move the physical file
             Directory.CreateDirectory(classicsDirectory);
@@ -391,12 +429,15 @@ public class LibraryScanOrchestrationServiceTests
 
             LibraryReconciliationPersistenceService reconciliationPersistenceService = new(connectionString);
 
+            KaraokeFileRepository karaokeFileRepository = new(connectionString);
+
             LibraryScanOrchestrationService service = new(
                 trackRepository,
                 fingerprintProvider,
                 reconciliationService,
                 reconciliationPersistenceService,
-                incrementalScanService);
+                incrementalScanService,
+                karaokeFileRepository);
 
             CountingMetadataReader metadataReader = new();
 
@@ -518,12 +559,15 @@ public class LibraryScanOrchestrationServiceTests
 
             LibraryReconciliationPersistenceService reconciliationPersistenceService = new(connectionString);
 
+            KaraokeFileRepository karaokeFileRepository = new(connectionString);
+
             LibraryScanOrchestrationService service = new(
                 trackRepository,
                 fingerprintProvider,
                 reconciliationService,
                 reconciliationPersistenceService,
-                incrementalScanService);
+                incrementalScanService,
+                karaokeFileRepository);
 
             CountingMetadataReader metadataReader = new();
 
@@ -570,6 +614,633 @@ public class LibraryScanOrchestrationServiceTests
             Assert.NotEqual(firstId, newTrack.Id);
             Assert.NotEqual(secondId, newTrack.Id);
             Assert.True(newTrack.IsAvailable);
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, recursive: true);
+            }
+        }
+    }
+
+
+    [Fact]
+    public void ProcessLibrary_WhenKaraokeFilesContainCdg_OnlyProcessesMp3Tracks()
+    {
+        // Arrange
+        string tempDirectory = Path.Combine(Path.GetTempPath(), $"karaoke-cdg-filter-{Guid.NewGuid():N}");
+
+        string databasePath = Path.Combine(tempDirectory, "library.db");
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        string mp3Path = Path.Combine(tempDirectory, "Queen.mp3");
+        string cdgPath = Path.Combine(tempDirectory, "Queen.cdg");
+
+        Directory.CreateDirectory(tempDirectory);
+
+        try
+        {
+            File.WriteAllText(mp3Path, "Simulated MP3 content");
+            File.WriteAllText(cdgPath, "Simulated CDG content");
+
+            MediaLibraryDatabaseInitializer initializer = new(connectionString);
+            initializer.Initialize();
+
+            LibrarySourceRepository sourceRepository = new(connectionString);
+            MediaTrackRepository trackRepository = new(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = tempDirectory,
+                Type = LibrarySourceType.Karaoke,
+                Enabled = true
+            });
+
+            FileFingerprintProvider fingerprintProvider = new();
+            FileChangeDetector changeDetector = new();
+
+            ScannedTrackPersistenceService persistenceService =
+                new(trackRepository, connectionString);
+
+            KaraokeFileRepository karaokeFileRepository =
+                new(connectionString);
+
+            KaraokeFilePairingService pairingService = new();
+
+            KaraokeLibraryPersistenceService karaokePersistenceService = new(
+                persistenceService,
+                karaokeFileRepository,
+                pairingService,
+                connectionString);
+
+            IncrementalScanService incrementalScanService = new(
+                trackRepository,
+                fingerprintProvider,
+                changeDetector,
+                persistenceService,
+                karaokePersistenceService);
+
+            LibraryReconciliationService reconciliationService = new();
+
+            LibraryReconciliationPersistenceService reconciliationPersistenceService = new(connectionString);
+
+            LibraryScanOrchestrationService service = new(
+                trackRepository,
+                fingerprintProvider,
+                reconciliationService,
+                reconciliationPersistenceService,
+                incrementalScanService,
+                karaokeFileRepository);
+
+            CountingMetadataReader metadataReader = new();
+
+            // Act
+            (LibraryReconciliationResult reconciliation,
+             IncrementalScanSummary scan) = service.ProcessLibrary(
+                sourceId,
+                [mp3Path, cdgPath],
+                discoveryCompletedSuccessfully: true,
+                metadataReader,
+                isKaraoke: true);
+
+            // Assert - Reconciliation
+            Assert.True(reconciliation.ScanCompletedSuccessfully);
+            Assert.Equal(1, reconciliation.ScannedTrackCount);
+            Assert.Empty(reconciliation.MissingTracks);
+            Assert.Empty(reconciliation.MovedTracks);
+
+            // Assert - Incremental scanning
+            Assert.Equal(1, scan.Total);
+            Assert.Equal(1, scan.Added);
+            Assert.Equal(0, scan.Updated);
+            Assert.Equal(0, scan.Skipped);
+            Assert.Equal(0, scan.Failed);
+
+            Assert.Equal(1, metadataReader.ReadCount);
+
+            // Assert - Database persistence
+            MediaTrackRecord? mp3Track = trackRepository.GetByFilePath(mp3Path);
+            MediaTrackRecord? cdgTrack = trackRepository.GetByFilePath(cdgPath);
+
+            Assert.NotNull(mp3Track);
+            Assert.True(mp3Track.IsKaraoke);
+            Assert.Null(cdgTrack);
+
+            Assert.Single(trackRepository.GetBySourceId(sourceId));
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, recursive: true);
+            }
+        }
+    }
+
+
+    [Fact]
+    public void ProcessLibrary_WhenCdgIsAddedToUnchangedMp3_CreatesRelationshipWithoutRescanning()
+    {
+        // Arrange
+        string tempDirectory = Path.Combine(Path.GetTempPath(), $"karaoke-cdg-added-{Guid.NewGuid():N}");
+
+        string databasePath = Path.Combine(tempDirectory, "library.db");
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        string mp3Path = Path.Combine(tempDirectory, "Queen.mp3");
+        string cdgPath = Path.Combine(tempDirectory, "Queen.cdg");
+
+        Directory.CreateDirectory(tempDirectory);
+
+        try
+        {
+            File.WriteAllText(mp3Path, "Simulated MP3 content");
+
+            MediaLibraryDatabaseInitializer initializer = new(connectionString);
+            initializer.Initialize();
+
+            LibrarySourceRepository sourceRepository = new(connectionString);
+            MediaTrackRepository trackRepository = new(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = tempDirectory,
+                Type = LibrarySourceType.Karaoke,
+                Enabled = true
+            });
+
+            FileFingerprintProvider fingerprintProvider = new();
+            FileChangeDetector changeDetector = new();
+
+            ScannedTrackPersistenceService persistenceService =
+                new(trackRepository, connectionString);
+
+            KaraokeFileRepository karaokeFileRepository =
+                new(connectionString);
+
+            KaraokeFilePairingService pairingService = new();
+
+            KaraokeLibraryPersistenceService karaokePersistenceService = new(
+                persistenceService,
+                karaokeFileRepository,
+                pairingService,
+                connectionString);
+
+            IncrementalScanService incrementalScanService = new(
+                trackRepository,
+                fingerprintProvider,
+                changeDetector,
+                persistenceService,
+                karaokePersistenceService);
+
+            LibraryReconciliationService reconciliationService = new();
+
+            LibraryReconciliationPersistenceService reconciliationPersistenceService = new(connectionString);
+
+            LibraryScanOrchestrationService service = new(
+                trackRepository,
+                fingerprintProvider,
+                reconciliationService,
+                reconciliationPersistenceService,
+                incrementalScanService,
+                karaokeFileRepository);
+
+            CountingMetadataReader metadataReader = new();
+
+            // Act - First scan: MP3 only
+            var initialResult = service.ProcessLibrary(
+                sourceId,
+                [mp3Path],
+                discoveryCompletedSuccessfully: true,
+                metadataReader,
+                isKaraoke: true);
+
+            MediaTrackRecord? originalTrack = trackRepository.GetByFilePath(mp3Path);
+
+            Assert.NotNull(originalTrack);
+
+            long originalTrackId = originalTrack.Id;
+
+            Assert.Equal(1, initialResult.Scan.Added);
+            Assert.Equal(1, metadataReader.ReadCount);
+            Assert.Null(karaokeFileRepository.GetByTrackId(originalTrackId));
+
+            // Act - Add the CDG companion without modifying the MP3
+            File.WriteAllText(cdgPath, "Simulated CDG content");
+
+            var secondResult = service.ProcessLibrary(
+                sourceId,
+                [mp3Path, cdgPath],
+                discoveryCompletedSuccessfully: true,
+                metadataReader,
+                isKaraoke: true);
+
+            // Assert - MP3 was not rescanned
+            Assert.Equal(1, secondResult.Scan.Total);
+            Assert.Equal(1, secondResult.Scan.Skipped);
+            Assert.Equal(0, secondResult.Scan.Added);
+            Assert.Equal(0, secondResult.Scan.Updated);
+            Assert.Equal(0, secondResult.Scan.Failed);
+
+            Assert.Equal(1, metadataReader.ReadCount);
+
+            // Assert - Existing track ID was preserved
+            MediaTrackRecord? updatedTrack = trackRepository.GetByFilePath(mp3Path);
+
+            Assert.NotNull(updatedTrack);
+            Assert.Equal(originalTrackId, updatedTrack.Id);
+            Assert.True(updatedTrack.IsAvailable);
+
+            // Assert - CDG relationship was created
+            Assert.Equal(cdgPath, karaokeFileRepository.GetByTrackId(originalTrackId));
+
+            // Assert - CDG was not created as a separate track
+            Assert.Null(trackRepository.GetByFilePath(cdgPath));
+            Assert.Single(trackRepository.GetBySourceId(sourceId));
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, recursive: true);
+            }
+        }
+    }
+
+
+    [Fact]
+    public void ProcessLibrary_WhenCdgIsRemovedFromUnchangedMp3_RemovesRelationshipWithoutRescanning()
+    {
+        // Arrange
+        string tempDirectory = Path.Combine(Path.GetTempPath(), $"karaoke-cdg-removed-{Guid.NewGuid():N}");
+
+        string databasePath = Path.Combine(tempDirectory, "library.db");
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        string mp3Path = Path.Combine(tempDirectory, "Queen.mp3");
+        string cdgPath = Path.Combine(tempDirectory, "Queen.cdg");
+
+        Directory.CreateDirectory(tempDirectory);
+
+        try
+        {
+            File.WriteAllText(mp3Path, "Simulated MP3 content");
+            File.WriteAllText(cdgPath, "Simulated CDG content");
+
+            MediaLibraryDatabaseInitializer initializer = new(connectionString);
+            initializer.Initialize();
+
+            LibrarySourceRepository sourceRepository = new(connectionString);
+            MediaTrackRepository trackRepository = new(connectionString);
+            KaraokeFileRepository karaokeFileRepository = new(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = tempDirectory,
+                Type = LibrarySourceType.Karaoke,
+                Enabled = true
+            });
+
+            FileFingerprintProvider fingerprintProvider = new();
+            FileChangeDetector changeDetector = new();
+
+            ScannedTrackPersistenceService persistenceService =
+                new(trackRepository, connectionString);
+
+            KaraokeFilePairingService pairingService = new();
+
+            KaraokeLibraryPersistenceService karaokePersistenceService = new(
+                persistenceService,
+                karaokeFileRepository,
+                pairingService,
+                connectionString);
+
+            IncrementalScanService incrementalScanService = new(
+                trackRepository,
+                fingerprintProvider,
+                changeDetector,
+                persistenceService,
+                karaokePersistenceService);
+
+            LibraryReconciliationService reconciliationService = new();
+
+            LibraryReconciliationPersistenceService reconciliationPersistenceService = new(connectionString);
+
+            LibraryScanOrchestrationService service = new(
+                trackRepository,
+                fingerprintProvider,
+                reconciliationService,
+                reconciliationPersistenceService,
+                incrementalScanService,
+                karaokeFileRepository);
+
+            CountingMetadataReader metadataReader = new();
+
+            // Act - First scan: MP3 + CDG
+            var initialResult = service.ProcessLibrary(
+                sourceId,
+                [mp3Path, cdgPath],
+                discoveryCompletedSuccessfully: true,
+                metadataReader,
+                isKaraoke: true);
+
+            MediaTrackRecord? originalTrack = trackRepository.GetByFilePath(mp3Path);
+
+            Assert.NotNull(originalTrack);
+
+            long originalTrackId = originalTrack.Id;
+            long? originalFileSize = originalTrack.FileSize;
+            DateTime? originalLastModifiedUtc = originalTrack.LastModifiedUtc;
+
+            // Assert - Initial relationship exists
+            Assert.Equal(1, initialResult.Scan.Added);
+            Assert.Equal(1, metadataReader.ReadCount);
+
+            Assert.Equal(cdgPath, karaokeFileRepository.GetByTrackId(originalTrackId));
+
+            // Act - Remove CDG, leaving the MP3 unchanged
+            File.Delete(cdgPath);
+
+            var secondResult = service.ProcessLibrary(
+                sourceId,
+                [mp3Path],
+                discoveryCompletedSuccessfully: true,
+                metadataReader,
+                isKaraoke: true);
+
+            // Assert - MP3 was not rescanned
+            Assert.Equal(1, secondResult.Scan.Total);
+            Assert.Equal(1, secondResult.Scan.Skipped);
+            Assert.Equal(0, secondResult.Scan.Added);
+            Assert.Equal(0, secondResult.Scan.Updated);
+            Assert.Equal(0, secondResult.Scan.Failed);
+
+            Assert.Equal(1, metadataReader.ReadCount);
+
+            // Assert - Original MP3 track was preserved
+            MediaTrackRecord? updatedTrack = trackRepository.GetByFilePath(mp3Path);
+
+            Assert.NotNull(updatedTrack);
+            Assert.Equal(originalTrackId, updatedTrack.Id);
+            Assert.True(updatedTrack.IsAvailable);
+            Assert.True(updatedTrack.IsKaraoke);
+
+            // Assert - Fingerprint remains unchanged
+            Assert.Equal(originalFileSize, updatedTrack.FileSize);
+            Assert.Equal(originalLastModifiedUtc, updatedTrack.LastModifiedUtc);
+
+            // Assert - CDG relationship was removed
+            Assert.Null(karaokeFileRepository.GetByTrackId(originalTrackId));
+
+            // Assert - MP3 remains the only track
+            Assert.Single(trackRepository.GetBySourceId(sourceId));
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, recursive: true);
+            }
+        }
+    }
+
+
+    [Fact]
+    public void ProcessLibrary_WhenNewMp3CdgPairIsDiscovered_PersistsBothWithFingerprint()
+    {
+        // Arrange
+        string tempDirectory = Path.Combine(Path.GetTempPath(), $"karaoke-transaction-success-{Guid.NewGuid():N}");
+
+        string databasePath = Path.Combine(tempDirectory, "library.db");
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        string mp3Path = Path.Combine(tempDirectory, "Queen.mp3");
+        string cdgPath = Path.Combine(tempDirectory, "Queen.cdg");
+
+        Directory.CreateDirectory(tempDirectory);
+
+        try
+        {
+            File.WriteAllText(mp3Path, "Simulated MP3 content");
+            File.WriteAllText(cdgPath, "Simulated CDG content");
+
+            MediaLibraryDatabaseInitializer initializer = new(connectionString);
+            initializer.Initialize();
+
+            LibrarySourceRepository sourceRepository = new(connectionString);
+            MediaTrackRepository trackRepository = new(connectionString);
+            KaraokeFileRepository karaokeFileRepository = new(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = tempDirectory,
+                Type = LibrarySourceType.Karaoke,
+                Enabled = true
+            });
+
+            FileFingerprintProvider fingerprintProvider = new();
+            FileFingerprint expectedFingerprint = fingerprintProvider.GetFingerprint(mp3Path);
+
+            FileChangeDetector changeDetector = new();
+
+            ScannedTrackPersistenceService persistenceService = new(trackRepository, connectionString);
+
+            KaraokeFilePairingService pairingService = new();
+
+            KaraokeLibraryPersistenceService karaokePersistenceService = new(
+                persistenceService,
+                karaokeFileRepository,
+                pairingService,
+                connectionString);
+
+            IncrementalScanService incrementalScanService = new(
+                trackRepository,
+                fingerprintProvider,
+                changeDetector,
+                persistenceService,
+                karaokePersistenceService);
+
+            LibraryReconciliationService reconciliationService = new();
+
+            LibraryReconciliationPersistenceService reconciliationPersistenceService =
+                new(connectionString);
+
+            LibraryScanOrchestrationService service = new(
+                trackRepository,
+                fingerprintProvider,
+                reconciliationService,
+                reconciliationPersistenceService,
+                incrementalScanService,
+                karaokeFileRepository);
+
+            CountingMetadataReader metadataReader = new();
+
+            // Act - Initial scan
+            var result = service.ProcessLibrary(
+                sourceId,
+                [mp3Path, cdgPath],
+                discoveryCompletedSuccessfully: true,
+                metadataReader,
+                isKaraoke: true);
+
+            // Assert - Initial scan
+            Assert.True(result.Reconciliation.ScanCompletedSuccessfully);
+
+            Assert.Equal(1, result.Scan.Total);
+            Assert.Equal(1, result.Scan.Added);
+            Assert.Equal(0, result.Scan.Updated);
+            Assert.Equal(0, result.Scan.Skipped);
+            Assert.Equal(0, result.Scan.Failed);
+
+            Assert.Equal(1, metadataReader.ReadCount);
+
+            // Assert - MP3 persisted
+            MediaTrackRecord? track = trackRepository.GetByFilePath(mp3Path);
+
+            Assert.NotNull(track);
+            Assert.Equal(sourceId, track.SourceId);
+            Assert.True(track.IsKaraoke);
+            Assert.True(track.IsAvailable);
+
+            // Assert - Fingerprint persisted
+            Assert.Equal(expectedFingerprint.FileSize, track.FileSize);
+            Assert.Equal(expectedFingerprint.LastModifiedUtc, track.LastModifiedUtc);
+
+            // Assert - CDG relationship persisted
+            Assert.Equal(cdgPath, karaokeFileRepository.GetByTrackId(track.Id));
+
+            // Assert - CDG is not a separate track
+            Assert.Null(trackRepository.GetByFilePath(cdgPath));
+            Assert.Single(trackRepository.GetBySourceId(sourceId));
+
+            // Act - Repeat scan without changing either file
+            var secondResult = service.ProcessLibrary(
+                sourceId,
+                [mp3Path, cdgPath],
+                discoveryCompletedSuccessfully: true,
+                metadataReader,
+                isKaraoke: true);
+
+            // Assert - No unnecessary metadata scan
+            Assert.Equal(1, secondResult.Scan.Total);
+            Assert.Equal(1, secondResult.Scan.Skipped);
+            Assert.Equal(0, secondResult.Scan.Added);
+            Assert.Equal(0, secondResult.Scan.Updated);
+            Assert.Equal(0, secondResult.Scan.Failed);
+
+            Assert.Equal(1, metadataReader.ReadCount);
+
+            // Assert - Relationship and track ID preserved
+            MediaTrackRecord? trackAfter = trackRepository.GetByFilePath(mp3Path);
+
+            Assert.NotNull(trackAfter);
+            Assert.Equal(track.Id, trackAfter.Id);
+
+            Assert.Equal(cdgPath, karaokeFileRepository.GetByTrackId(trackAfter.Id));
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, recursive: true);
+            }
+        }
+    }
+
+
+    [Fact]
+    public void ProcessLibrary_WhenCdgPersistenceFails_RollsBackMp3()
+    {
+        // Arrange
+        string tempDirectory = Path.Combine(Path.GetTempPath(), $"karaoke-transaction-failure-{Guid.NewGuid():N}");
+
+        string databasePath = Path.Combine(tempDirectory, "library.db");
+        string connectionString = $"Data Source={databasePath};Pooling=False";
+
+        string mp3Path = Path.Combine(tempDirectory, "Queen.mp3");
+        string cdgPath = Path.Combine(tempDirectory, "Queen.cdg");
+
+        Directory.CreateDirectory(tempDirectory);
+
+        try
+        {
+            File.WriteAllText(mp3Path, "Simulated MP3 content");
+            File.WriteAllText(cdgPath, "Simulated CDG content");
+
+            MediaLibraryDatabaseInitializer initializer = new(connectionString);
+            initializer.Initialize();
+
+            LibrarySourceRepository sourceRepository = new(connectionString);
+            MediaTrackRepository trackRepository = new(connectionString);
+
+            long sourceId = sourceRepository.Add(new LibrarySourceRecord
+            {
+                Path = tempDirectory,
+                Type = LibrarySourceType.Karaoke,
+                Enabled = true
+            });
+
+            FileFingerprintProvider fingerprintProvider = new();
+            FileChangeDetector changeDetector = new();
+
+            ScannedTrackPersistenceService persistenceService = new(trackRepository, connectionString);
+
+            // Simulate failure during transactional CDG persistence.
+            FailingKaraokeFileRepository failingRepository = new();
+
+            KaraokeFilePairingService pairingService = new();
+
+            KaraokeLibraryPersistenceService karaokePersistenceService = new(
+                persistenceService,
+                failingRepository,
+                pairingService,
+                connectionString);
+
+            IncrementalScanService incrementalScanService = new(
+                trackRepository,
+                fingerprintProvider,
+                changeDetector,
+                persistenceService,
+                karaokePersistenceService);
+
+            LibraryReconciliationService reconciliationService = new();
+
+            LibraryReconciliationPersistenceService reconciliationPersistenceService = new(connectionString);
+
+            LibraryScanOrchestrationService service = new(
+                trackRepository,
+                fingerprintProvider,
+                reconciliationService,
+                reconciliationPersistenceService,
+                incrementalScanService,
+                failingRepository);
+
+            CountingMetadataReader metadataReader = new();
+
+            // Act - CDG persistence throws during the transaction.
+            InvalidOperationException exception =
+                Assert.Throws<InvalidOperationException>(() =>
+                    service.ProcessLibrary(
+                        sourceId,
+                        [mp3Path, cdgPath],
+                        discoveryCompletedSuccessfully: true,
+                        metadataReader,
+                        isKaraoke: true));
+
+            // Assert - Expected failure
+            Assert.Equal("Simulated CDG persistence failure.", exception.Message);
+
+            Assert.Equal(1, metadataReader.ReadCount);
+
+            // Assert - MP3 insertion was rolled back
+            Assert.Null(trackRepository.GetByFilePath(mp3Path));
+
+            // Assert - No CDG relationship was persisted
+            Assert.Empty(trackRepository.GetBySourceId(sourceId));
+
+            // Verify the database directly using the real repository.
+            Assert.Null(trackRepository.GetByFilePath(cdgPath));
         }
         finally
         {

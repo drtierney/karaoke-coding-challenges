@@ -260,4 +260,67 @@ public class KaraokeLibraryPersistenceServiceTests
 
         Assert.Null(mediaTrackRepository.GetByFilePath(mp3Path));
     }
+
+    [Fact]
+    public void PersistPair_WhenFingerprintProvided_PersistsFingerprint()
+    {
+        using MediaLibraryDatabaseTestContext context = new();
+
+        using SqliteConnection connection = context.CreateConnection();
+
+        long sourceId = context.InsertLibrarySource(connection);
+
+        string mp3Path = Path.Combine("Karaoke", "Queen - Bohemian Rhapsody.mp3");
+        string cdgPath = Path.Combine("Karaoke", "Queen - Bohemian Rhapsody.cdg");
+
+        long fileSize = 1024;
+        DateTime lastModifiedUtc = new(2026, 11, 10, 12, 0, 0, DateTimeKind.Utc);
+
+        MediaTrackRepository mediaTrackRepository = new(context.ConnectionString);
+
+        ScannedTrackPersistenceService scannedTrackPersistenceService = new(mediaTrackRepository, context.ConnectionString);
+
+        KaraokeFileRepository karaokeFileRepository = new(context.ConnectionString);
+
+        KaraokeFilePairingService karaokeFilePairingService = new();
+
+        KaraokeLibraryPersistenceService karaokeLibraryPersistenceService = new(
+            scannedTrackPersistenceService,
+            karaokeFileRepository,
+            karaokeFilePairingService,
+            context.ConnectionString);
+
+        MediaScanResult scanResult = new()
+        {
+            FilePath = mp3Path,
+            IsSuccess = true,
+            Metadata = new MediaMetadataRecord
+            {
+                FilePath = mp3Path,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                DurationSeconds = 354
+            }
+        };
+
+        long? trackId = karaokeLibraryPersistenceService.PersistPair(
+            scanResult,
+            cdgPath,
+            sourceId,
+            fileSize: fileSize,
+            lastModifiedUtc: lastModifiedUtc);
+
+        Assert.NotNull(trackId);
+
+        MediaTrackRecord? track = mediaTrackRepository.GetById(trackId.Value);
+
+        Assert.NotNull(track);
+        Assert.Equal(mp3Path, track.FilePath);
+        Assert.True(track.IsKaraoke);
+
+        Assert.Equal(fileSize, track.FileSize);
+        Assert.Equal(lastModifiedUtc, track.LastModifiedUtc);
+
+        Assert.Equal(cdgPath, karaokeFileRepository.GetByTrackId(trackId.Value));
+    }
 }

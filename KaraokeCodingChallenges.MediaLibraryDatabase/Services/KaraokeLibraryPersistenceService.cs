@@ -27,7 +27,9 @@ public class KaraokeLibraryPersistenceService
     public long? PersistPair(
         MediaScanResult mp3ScanResult,
         string cdgFilePath,
-        long sourceId)
+        long sourceId,
+        long? fileSize = null,
+        DateTime? lastModifiedUtc = null)
     {
         if (!mp3ScanResult.IsSuccess || mp3ScanResult.Metadata is null)
         {
@@ -56,7 +58,9 @@ public class KaraokeLibraryPersistenceService
                 sourceId,
                 connection,
                 transaction,
-                isKaraoke: true);
+                isKaraoke: true,
+                fileSize: fileSize,
+                lastModifiedUtc: lastModifiedUtc);
 
             if (trackId is null)
             {

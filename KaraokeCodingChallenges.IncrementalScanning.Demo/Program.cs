@@ -66,8 +66,7 @@ try
     FileFingerprintProvider fingerprintProvider = new();
     FileChangeDetector changeDetector = new();
 
-    ScannedTrackPersistenceService persistenceService =
-        new(repository, connectionString);
+    ScannedTrackPersistenceService persistenceService = new(repository, connectionString);
 
     IncrementalScanService incrementalScanService = new(
         repository,
@@ -77,15 +76,17 @@ try
 
     LibraryReconciliationService reconciliationService = new();
 
-    LibraryReconciliationPersistenceService reconciliationPersistenceService =
-        new(connectionString);
+    LibraryReconciliationPersistenceService reconciliationPersistenceService = new(connectionString);
+
+    KaraokeFileRepository karaokeFileRepository = new(connectionString);
 
     LibraryScanOrchestrationService orchestrationService = new(
         repository,
         fingerprintProvider,
         reconciliationService,
         reconciliationPersistenceService,
-        incrementalScanService);
+        incrementalScanService,
+        karaokeFileRepository);
 
     DemoMetadataReader metadataReader = new();
 
