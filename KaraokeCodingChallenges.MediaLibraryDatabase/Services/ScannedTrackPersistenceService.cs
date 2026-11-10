@@ -48,6 +48,48 @@ public class ScannedTrackPersistenceService
         return existingTrack.Id;
     }
 
+    public long? Persist(
+        MediaScanResult scanResult,
+        long sourceId,
+        SqliteConnection connection,
+        SqliteTransaction transaction,
+        bool isKaraoke = false,
+        long? fileSize = null,
+        DateTime? lastModifiedUtc = null)
+    {
+        MediaTrackRecord? track = ScannedTrackMapper.Map(
+            scanResult,
+            sourceId,
+            isKaraoke,
+            fileSize,
+            lastModifiedUtc);
+
+        if (track is null)
+        {
+            return null;
+        }
+
+        MediaTrackRecord? existingTrack =
+            _trackRepository.GetByFilePath(
+                track.FilePath,
+                connection,
+                transaction);
+
+        if (existingTrack is null)
+        {
+            return _trackRepository.Add(track, connection, transaction);
+        }
+
+        MediaTrackRecord updatedTrack = track with
+        {
+            Id = existingTrack.Id
+        };
+
+        _trackRepository.Update(updatedTrack, connection, transaction);
+
+        return existingTrack.Id;
+    }
+
     public IReadOnlyList<long> PersistBatch(IEnumerable<MediaScanResult> scanResults, long sourceId, bool isKaraoke = false)
     {
         List<long> persistedTrackIds = new List<long>();

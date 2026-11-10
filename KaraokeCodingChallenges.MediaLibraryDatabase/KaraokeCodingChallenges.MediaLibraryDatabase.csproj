@@ -22,6 +22,7 @@
     <ProjectReference Include="..\KaraokeCodingChallenges.Configuration\KaraokeCodingChallenges.Configuration.csproj" />
     <ProjectReference Include="..\KaraokeCodingChallenges.MediaMetadata\KaraokeCodingChallenges.MediaMetadata.csproj" />
     <ProjectReference Include="..\KaraokeCodingChallenges.ScanResult\KaraokeCodingChallenges.ScanResult.csproj" />
+    <ProjectReference Include="..\KaraokeCodingChallenges.KaraokeFilePairing\KaraokeCodingChallenges.KaraokeFilePairing.csproj" />
   </ItemGroup>
 
 </Project>

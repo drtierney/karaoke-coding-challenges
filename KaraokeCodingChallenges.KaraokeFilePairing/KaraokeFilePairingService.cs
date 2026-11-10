@@ -1,4 +1,4 @@
-﻿namespace KaraokeCodingChallenges.KaraokeFilePairing;
+namespace KaraokeCodingChallenges.KaraokeFilePairing;
 
 public class KaraokeFilePairingService
 {
@@ -8,6 +8,10 @@ public class KaraokeFilePairingService
 
     public void PairFiles(IEnumerable<string> filePaths)
     {
+        MatchedPairs.Clear();
+        UnmatchedMp3Files.Clear();
+        UnmatchedCdgFiles.Clear();
+
         HashSet<string> supportedExtensions = new(StringComparer.OrdinalIgnoreCase)
         {
             ".mp3",

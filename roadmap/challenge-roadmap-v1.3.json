@@ -838,7 +838,12 @@
             "concepts": [
                 "Architecture review",
                 "performance measurement",
-                "refactoring"
+                "refactoring",
+                "incremental scanning",
+                "library reconciliation",
+                "transactional persistence",
+                "MP3+CDG companion synchronisation",
+                "integration testing"
             ],
             "buildsOn": [
                 34,
@@ -853,8 +858,8 @@
                 43
             ],
             "outcome": "Deliver a database-backed media library that survives restarts and updates efficiently.",
-            "status": "Planned",
-            "notes": "Review cross-platform file paths and persistence architecture; integrate MP3+CDG companion-file updates with the watcher; assess transient scanning retries, missed-event recovery, filesystem race conditions and performance."
+            "status": "Completed",
+            "notes": "Integrated incremental scanning, SQLite persistence, library reconciliation, and MP3+CDG companion synchronisation. Added transactional persistence for matched karaoke pairs, fingerprint preservation, CDG relationship updates without unnecessary metadata extraction, and integration tests verifying persistence and rollback. Created a seven-pass milestone demo covering initial scanning, unchanged files, modified tracks, companion additions and removals, missing-file reconciliation, and restoration. Verified 422 passing solution tests before final demo integration. Live watcher MP3+CDG synchronisation, transient retry handling, and formal performance profiling remain future improvements."
         },
         {
             "number": 45,

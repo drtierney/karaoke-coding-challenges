@@ -15,17 +15,36 @@ public class IncrementalScanService
     private readonly FileFingerprintProvider fingerprintProvider;
     private readonly FileChangeDetector changeDetector;
     private readonly ScannedTrackPersistenceService persistenceService;
+    private readonly KaraokeLibraryPersistenceService? karaokePersistenceService;
 
+    // Original constructor - maintains compatibility with existing tests
     public IncrementalScanService(
-        MediaTrackRepository repository, 
-        FileFingerprintProvider fingerprintProvider, 
+        MediaTrackRepository repository,
+        FileFingerprintProvider fingerprintProvider,
         FileChangeDetector changeDetector,
         ScannedTrackPersistenceService persistenceService)
+        : this(
+            repository,
+            fingerprintProvider,
+            changeDetector,
+            persistenceService,
+            null)
+    {
+    }
+
+    // New constructor - supports transactional MP3+CDG persistence
+    public IncrementalScanService(
+        MediaTrackRepository repository,
+        FileFingerprintProvider fingerprintProvider,
+        FileChangeDetector changeDetector,
+        ScannedTrackPersistenceService persistenceService,
+        KaraokeLibraryPersistenceService? karaokePersistenceService)
     {
         this.repository = repository;
         this.fingerprintProvider = fingerprintProvider;
         this.changeDetector = changeDetector;
         this.persistenceService = persistenceService;
+        this.karaokePersistenceService = karaokePersistenceService;
     }
 
     private FileChangeStatus CheckFingerprint(FileFingerprint fingerprint)
@@ -67,7 +86,8 @@ public class IncrementalScanService
     FileFingerprint fingerprint,
     long sourceId,
     IMetadataReader metadataReader,
-    bool isKaraoke)
+    bool isKaraoke,
+    string? cdgFilePath)
     {
         MediaScanResult scanResult = MediaScannerService.ScanFile(fingerprint.FilePath, metadataReader);
 
@@ -89,12 +109,29 @@ public class IncrementalScanService
             };
         }
 
-        persistenceService.Persist(
-            scanResult,
-            sourceId,
-            isKaraoke,
-            fingerprint.FileSize,
-            fingerprint.LastModifiedUtc);
+        if (isKaraoke && cdgFilePath is not null)
+        {
+            if (karaokePersistenceService is null)
+            {
+                throw new InvalidOperationException("Karaoke persistence service is required for MP3+CDG pairs.");
+            }
+
+            karaokePersistenceService.PersistPair(
+                scanResult,
+                cdgFilePath,
+                sourceId,
+                fileSize: fingerprint.FileSize,
+                lastModifiedUtc: fingerprint.LastModifiedUtc);
+        }
+        else
+        {
+            persistenceService.Persist(
+                scanResult,
+                sourceId,
+                isKaraoke,
+                fingerprint.FileSize,
+                fingerprint.LastModifiedUtc);
+        }
 
         return scanResult;
     }
@@ -103,54 +140,32 @@ public class IncrementalScanService
         string filePath,
         long sourceId,
         IMetadataReader metadataReader,
-        bool isKaraoke = false)
+        bool isKaraoke = false,
+        string? cdgFilePath = null)
     {
-        FileChangeStatus status = CheckFile(filePath);
+        FileFingerprint fingerprint = fingerprintProvider.GetFingerprint(filePath);
+
+        FileChangeStatus status = CheckFingerprint(fingerprint);
 
         if (status == FileChangeStatus.Unchanged)
         {
             return null;
         }
 
-        FileFingerprint fingerprint = fingerprintProvider.GetFingerprint(filePath);
-
-        MediaScanResult scanResult = MediaScannerService.ScanFile(fingerprint.FilePath, metadataReader);
-
-        if (!scanResult.IsSuccess || scanResult.Metadata is null)
-        {
-            return scanResult;
-        }
-
-        // Ensure the file didn't change while metadata was being extracted.
-        FileFingerprint latestFingerprint = fingerprintProvider.GetFingerprint(filePath);
-
-        if (changeDetector.DetectChange(latestFingerprint, fingerprint) != FileChangeStatus.Unchanged)
-        {
-            return scanResult with
-            {
-                IsSuccess = false,
-                Metadata = null,
-                Errors = ["File changed during metadata extraction."]
-            };
-        }
-
-        persistenceService.Persist(
-            scanResult,
+        return ProcessChangedFile(
+            fingerprint,
             sourceId,
+            metadataReader,
             isKaraoke,
-            fingerprint.FileSize,
-            fingerprint.LastModifiedUtc);
-
-        return scanResult;
+            cdgFilePath);
     }
-
-
 
     public IncrementalScanSummary ProcessFiles(
         IEnumerable<string> filePaths,
         long sourceId,
         IMetadataReader metadataReader,
-        bool isKaraoke = false)
+        bool isKaraoke = false,
+        IReadOnlyDictionary<string, string>? cdgPathsByMp3 = null)
     {
         IncrementalScanSummary summary = new IncrementalScanSummary();
 
@@ -160,6 +175,13 @@ public class IncrementalScanService
 
             try
             {
+                string? cdgFilePath = null;
+
+                if (isKaraoke && cdgPathsByMp3 is not null)
+                {
+                    cdgPathsByMp3.TryGetValue(filePath, out cdgFilePath);
+                }
+
                 FileFingerprint fingerprint = fingerprintProvider.GetFingerprint(filePath);
 
                 FileChangeStatus status = CheckFingerprint(fingerprint);
@@ -174,7 +196,8 @@ public class IncrementalScanService
                     fingerprint,
                     sourceId,
                     metadataReader,
-                    isKaraoke);
+                    isKaraoke,
+                    cdgFilePath);
 
                 if (!result.IsSuccess || result.Metadata is null)
                 {

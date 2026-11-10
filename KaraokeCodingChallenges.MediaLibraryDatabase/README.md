@@ -618,3 +618,62 @@ The following remain intentionally deferred:
 - Full karaoke companion-file persistence workflows
 
 These capabilities are introduced when required by later persistence challenges.
+
+---
+
+# Challenge 044 - Transactional Karaoke Persistence
+
+Challenge 044 extends the media library persistence layer to support MP3+CDG companion relationships.
+
+## Karaoke File Repository
+
+`IKaraokeFileRepository` and `KaraokeFileRepository` provide SQLite operations for the `KaraokeFiles` table.
+
+Supported operations include:
+
+- Retrieving a CDG companion path by track ID.
+- Inserting or updating a CDG relationship.
+- Removing an existing CDG relationship.
+- Performing relationship updates within an existing SQLite transaction.
+
+Each CDG relationship references an existing media track through its database ID.
+
+## Karaoke Library Persistence Service
+
+`KaraokeLibraryPersistenceService` coordinates track persistence and CDG relationship persistence for matched MP3+CDG pairs.
+
+The `PersistPair()` workflow:
+
+1. Validates the supplied media scan result.
+2. Confirms the MP3 and CDG files form a matching pair.
+3. Opens a SQLite connection and begins a transaction.
+4. Inserts or updates the MP3 track, including its filesystem fingerprint.
+5. Inserts or updates the associated CDG relationship.
+6. Commits the transaction when both operations succeed.
+
+If either persistence operation fails, the transaction is rolled back.
+
+This prevents an MP3 track from being partially persisted when its accompanying CDG relationship cannot be saved.
+
+## Incremental Scanning Integration
+
+The service is used by `IncrementalScanService` when processing new or modified MP3 files with matching CDG companions.
+
+Standalone MP3 files continue to use `ScannedTrackPersistenceService` directly.
+
+Adding or removing a CDG companion for an unchanged MP3 is handled separately through library orchestration, without requiring another metadata extraction.
+
+## Testing
+
+Integration tests verify:
+
+- Successful MP3+CDG persistence.
+- Rejection of mismatched companion files.
+- Handling unsuccessful media scans.
+- Updating existing tracks without duplication.
+- Preserving filesystem fingerprints.
+- Transaction rollback when CDG persistence fails.
+
+Additional end-to-end tests in `KaraokeCodingChallenges.IncrementalScanning.Tests` verify transactional persistence through the full library scanning workflow.
+
+See the [Persistent Library Milestone README](../KaraokeCodingChallenges.PersistentLibraryMilestone/README.md) for the complete demonstration.

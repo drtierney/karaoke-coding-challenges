@@ -54,7 +54,7 @@ public class FileMoveDetectorTests
             SourceId = 1,
             Title = "Bohemian Rhapsody",
             Artist = "Queen",
-            FilePath = Path.Combine("Karaoke", "Queen.mp3"),
+            FilePath = Path.Combine("Karaoke", "Queen", "Track1.mp3"),
             FileSize = 1024,
             LastModifiedUtc = lastModified
         };
@@ -65,14 +65,14 @@ public class FileMoveDetectorTests
             SourceId = 1,
             Title = "Feeling Good",
             Artist = "Muse",
-            FilePath = Path.Combine("Karaoke", "Muse.mp3"),
+            FilePath = Path.Combine("Karaoke", "Muse", "Track1.mp3"),
             FileSize = 1024,
             LastModifiedUtc = lastModified
         };
 
         FileFingerprint newFile = new()
         {
-            FilePath = Path.Combine("Karaoke", "Classics", "Unknown.mp3"),
+            FilePath = Path.Combine("Karaoke", "Classics", "Track1.mp3"),
             FileSize = 1024,
             LastModifiedUtc = lastModified
         };
@@ -121,6 +121,38 @@ public class FileMoveDetectorTests
         IReadOnlyList<FileMoveMatch> matches = detector.DetectMoves(
             [storedTrack],
             [newFileA, newFileB]);
+
+        Assert.Empty(matches);
+    }
+
+    [Fact]
+    public void DetectMoves_ReturnsNoMatches_WhenFilenameDiffers()
+    {
+        DateTime lastModified = new(2026, 10, 3, 12, 0, 0, DateTimeKind.Utc);
+
+        MediaTrackRecord storedTrack = new()
+        {
+            Id = 42,
+            SourceId = 1,
+            Title = "Bohemian Rhapsody",
+            Artist = "Queen",
+            FilePath = Path.Combine("Karaoke", "Queen", "Track1.mp3"),
+            FileSize = 1024,
+            LastModifiedUtc = lastModified
+        };
+
+        FileFingerprint newFile = new()
+        {
+            FilePath = Path.Combine("Karaoke", "Queen", "Bohemian Rhapsody.mp3"),
+            FileSize = 1024,
+            LastModifiedUtc = lastModified
+        };
+
+        FileMoveDetector detector = new();
+
+        IReadOnlyList<FileMoveMatch> matches = detector.DetectMoves(
+            [storedTrack],
+            [newFile]);
 
         Assert.Empty(matches);
     }

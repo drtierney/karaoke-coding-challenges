@@ -66,18 +66,21 @@ public class ScannedTrackMapperTests
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Map_WhenTitleIsMissing_UsesFileName(string? title)
+    [InlineData(null, @"D:\Music\Queen - Bohemian Rhapsody.mp3")]
+    [InlineData("", @"D:\Music\Queen - Bohemian Rhapsody.mp3")]
+    [InlineData("   ", @"D:\Music\Queen - Bohemian Rhapsody.mp3")]
+    [InlineData(null, "/music/Queen - Bohemian Rhapsody.mp3")]
+    [InlineData("", "/music/Queen - Bohemian Rhapsody.mp3")]
+    [InlineData("   ", "/music/Queen - Bohemian Rhapsody.mp3")]
+    public void Map_WhenTitleIsMissing_UsesFileName(string? title, string filePath)
     {
         MediaScanResult scanResult = new MediaScanResult
         {
-            FilePath = @"D:\Music\Queen - Bohemian Rhapsody.mp3",
+            FilePath = filePath,
             IsSuccess = true,
             Metadata = new MediaMetadataRecord
             {
-                FilePath = @"D:\Music\Queen - Bohemian Rhapsody.mp3",
+                FilePath = filePath,
                 Title = title,
                 Artist = "Queen",
                 DurationSeconds = 354
