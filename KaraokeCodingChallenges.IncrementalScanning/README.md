@@ -1,4 +1,4 @@
-# Challenges 040–042 - Incremental Library Scanning, Reconciliation and File Watcher Updates
+# Challenges 040–042 and 044 - Incremental Library Scanning and Integration
 
 Introduces incremental media library scanning, reconciliation and event-driven library updates using filesystem fingerprints and SQLite persistence.
 
@@ -249,13 +249,55 @@ flowchart TD
 ### Scope and Limitations
 
 - The current event coordinator processes `.mp3` as its supported primary media format.
-- MP3+CDG companion-file updates are deferred to the Persistent Library Milestone (Challenge 044).
+- MP3+CDG companion synchronisation is supported through the Challenge 044 full-library scanning workflow. Automatic companion synchronisation through filesystem watcher events remains outside the current watcher implementation.
 - Debouncing reduces duplicate processing but does not guarantee that a large file has finished copying.
 - Transient scanning failures do not currently trigger an automatic retry.
 - Synchronization protects coordinator-managed database operations but does not coordinate independent external writers.
 - Filesystem notifications are not a substitute for periodic full-library reconciliation. Missed events or watcher failures may require a subsequent scan.
 
 These limitations will be revisited during later integration and reliability work.
+
+## Challenge 044 - Persistent Library Milestone Integration
+
+Challenge 044 extends the incremental scanning and reconciliation workflow to support MP3+CDG karaoke libraries.
+
+### Karaoke-Aware Library Scanning
+
+`LibraryScanOrchestrationService.ProcessLibrary()` now supports karaoke library discovery containing both MP3 and CDG files.
+
+For karaoke sources:
+
+- Only MP3 files are processed as media tracks.
+- Matching CDG files are identified using `KaraokeFilePairingService`.
+- Matched MP3+CDG pairs are passed to incremental scanning for transactional persistence.
+- Unchanged MP3 files skip metadata extraction.
+- CDG companion relationships are synchronised independently of MP3 fingerprint changes.
+
+CDG files are stored as companion relationships rather than separate track records.
+
+### Transactional MP3+CDG Processing
+
+`IncrementalScanService` integrates with `KaraokeLibraryPersistenceService` to persist matching MP3+CDG pairs.
+
+Track metadata, fingerprints and CDG relationships are committed within a single transaction for each matched pair.
+
+If CDG persistence fails, the associated track insert or update is rolled back.
+
+Standalone MP3 files continue to use standard track persistence.
+
+### Companion Relationship Synchronisation
+
+After incremental scanning, `LibraryScanOrchestrationService` synchronises CDG relationships for available tracks.
+
+This supports:
+
+- Adding a CDG companion to an unchanged MP3.
+- Removing a CDG companion without rescanning the MP3.
+- Avoiding unnecessary database updates when the relationship is unchanged.
+- Retaining existing CDG relationships for unavailable tracks when their companion files remain present.
+
+The complete workflow is demonstrated in [Challenge 044 – Persistent Library Milestone](../KaraokeCodingChallenges.PersistentLibraryMilestone/README.md).
+
 
 ## Design Decisions
 
@@ -277,11 +319,22 @@ Availability and move updates are applied together within a transaction. The sub
 
 ## Testing
 
-The `KaraokeCodingChallenges.IncrementalScanning.Tests` project contains **44 passing tests** across Challenges 040 and 041, covering fingerprint generation, incremental scanning, reconciliation, moved-file ambiguity, transactional persistence and orchestration.
+The `KaraokeCodingChallenges.IncrementalScanning.Tests` project contains **78 passing tests** covering incremental scanning, reconciliation, filesystem watcher updates, and Challenge 044 integration.
 
-Temporary SQLite databases and filesystem files are used for integration tests. At the completion of Challenge 041, the full solution had **366 passing tests** (zero failed, zero skipped).
+Test coverage includes:
 
-See the test project README for detailed coverage and the historical Challenge 040 counts.
+- File fingerprint generation and change detection.
+- Incremental scanning and metadata extraction.
+- Missing-file reconciliation and moved-file detection.
+- Filesystem watcher event handling and debouncing.
+- MP3+CDG pairing and companion relationship synchronisation.
+- Transactional karaoke persistence and rollback.
+
+Temporary SQLite databases and filesystem files are used for integration tests.
+
+Following Challenge 044, the full solution contains **422 passing tests**, with no failures or skipped tests.
+
+See the test project README for detailed coverage and historical results from earlier challenges.
 
 ## Demonstration
 

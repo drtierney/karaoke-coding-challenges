@@ -10,7 +10,7 @@ The current roadmap is:
 
 - [`challenge-roadmap-v1.3.json`](challenge-roadmap-v1.3.json)
 
-Version 1.3 represents the roadmap following completion of **Milestone 3 – Search & Playlist Milestone**.
+Version 1.3 was introduced following completion of **Milestone 3 – Search & Playlist Milestone** and continues to track progress through subsequent challenges.
 
 The roadmap is stored as JSON to provide a structured representation of each challenge, including:
 
@@ -32,19 +32,16 @@ The completed challenges have progressed through:
 - Metadata
 - Configuration and library architecture
 - Library features
-- Three integration milestones
+- Persistence and database integration
+- Four integration milestones
 
-The next phase focuses on **Persistence**, beginning with JSON library persistence before introducing SQLite, database-backed search, incremental scanning, and library reconciliation.
+The **Persistence** phase is complete, culminating in **Challenge 044 – Persistent Library Milestone**.
 
-Later phases currently explore:
+This phase introduced JSON and SQLite persistence, relational database repositories, database-backed search, incremental file scanning, filesystem watcher updates, reconciliation, and transactional MP3+CDG companion persistence.
 
-- Application architecture
-- Asynchronous scanning and cancellation
-- Events and dependency injection
-- Performance and broader testing
-- Playback architecture
-- MVVM and desktop UI development
-- A small desktop music and karaoke player prototype
+The next phase focuses on **Application Architecture**, beginning with asynchronous library scanning, progress reporting, cancellation, application events, service interfaces, dependency injection, performance profiling, and broader testing.
+
+Later challenges will introduce playback architecture, MVVM, desktop UI development, and a small music and karaoke player prototype.
 
 The roadmap is expected to continue evolving as the challenges progress and earlier implementations influence later design decisions.
 
