@@ -10,6 +10,33 @@ namespace KaraokeCodingChallenges.MediaLibraryDatabase.Tests;
 
 public class KaraokeLibraryPersistenceServiceTests
 {
+    private sealed class FailingKaraokeFileRepository : IKaraokeFileRepository
+    {
+        public string? GetByTrackId(long trackId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Upsert(long trackId, string cdgFilePath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Upsert(
+            long trackId,
+            string cdgFilePath,
+            SqliteConnection connection,
+            SqliteTransaction transaction)
+        {
+            throw new InvalidOperationException("Simulated CDG persistence failure.");
+        }
+
+        public void DeleteByTrackId(long trackId)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     [Fact]
     public void PersistPair_WhenFilesMatch_PersistsTrackAndCdgRelationship()
     {
@@ -40,7 +67,7 @@ public class KaraokeLibraryPersistenceServiceTests
             }
         };
 
-        KaraokeLibraryPersistenceService karaokeLibraryPersistenceService = new(scannedTrackPersistenceService, karaokeFileRepository, karaokeFilePairingService);
+        KaraokeLibraryPersistenceService karaokeLibraryPersistenceService = new(scannedTrackPersistenceService, karaokeFileRepository, karaokeFilePairingService, context.ConnectionString);
 
         long? trackId = karaokeLibraryPersistenceService.PersistPair(scanResult, cdgPath, sourceId);
 
@@ -84,7 +111,7 @@ public class KaraokeLibraryPersistenceServiceTests
             }
         };
 
-        KaraokeLibraryPersistenceService karaokeLibraryPersistenceService = new(scannedTrackPersistenceService, karaokeFileRepository, karaokeFilePairingService);
+        KaraokeLibraryPersistenceService karaokeLibraryPersistenceService = new(scannedTrackPersistenceService, karaokeFileRepository, karaokeFilePairingService, context.ConnectionString);
 
         long? trackId = karaokeLibraryPersistenceService.PersistPair(scanResult, cdgPath, sourceId);
 
@@ -117,8 +144,7 @@ public class KaraokeLibraryPersistenceServiceTests
             Metadata = null
         };
 
-        KaraokeLibraryPersistenceService karaokeLibraryPersistenceService = new(scannedTrackPersistenceService, karaokeFileRepository, karaokeFilePairingService);
-
+        KaraokeLibraryPersistenceService karaokeLibraryPersistenceService = new(scannedTrackPersistenceService, karaokeFileRepository, karaokeFilePairingService, context.ConnectionString);
         long? trackId = karaokeLibraryPersistenceService.PersistPair(scanResult, cdgPath, sourceId);
 
         Assert.Null(trackId);
@@ -156,7 +182,7 @@ public class KaraokeLibraryPersistenceServiceTests
             }
         };
 
-        KaraokeLibraryPersistenceService karaokeLibraryPersistenceService = new(scannedTrackPersistenceService, karaokeFileRepository, karaokeFilePairingService);
+        KaraokeLibraryPersistenceService karaokeLibraryPersistenceService = new(scannedTrackPersistenceService, karaokeFileRepository, karaokeFilePairingService, context.ConnectionString);
 
         long? originalTrackId = karaokeLibraryPersistenceService.PersistPair(scanResult, cdgPath, sourceId);
 
@@ -183,5 +209,55 @@ public class KaraokeLibraryPersistenceServiceTests
         Assert.True(updatedTrack.IsKaraoke);
 
         Assert.Equal(cdgPath, karaokeFileRepository.GetByTrackId(updatedTrackId.Value));
+    }
+
+    [Fact]
+    public void PersistPair_WhenCdgPersistenceFails_RollsBackTrack()
+    {
+        using MediaLibraryDatabaseTestContext context = new();
+
+        using SqliteConnection connection = context.CreateConnection();
+
+        long sourceId = context.InsertLibrarySource(connection);
+
+        string mp3Path = Path.Combine("Karaoke", "Queen - Bohemian Rhapsody.mp3");
+        string cdgPath = Path.Combine("Karaoke", "Queen - Bohemian Rhapsody.cdg");
+
+        MediaTrackRepository mediaTrackRepository = new(context.ConnectionString);
+
+        ScannedTrackPersistenceService scannedTrackPersistenceService = new(mediaTrackRepository, context.ConnectionString);
+
+        FailingKaraokeFileRepository failingKaraokeFileRepository = new();
+
+        KaraokeFilePairingService karaokeFilePairingService = new();
+
+        MediaScanResult scanResult = new()
+        {
+            FilePath = mp3Path,
+            IsSuccess = true,
+            Metadata = new MediaMetadataRecord
+            {
+                FilePath = mp3Path,
+                Title = "Bohemian Rhapsody",
+                Artist = "Queen",
+                DurationSeconds = 354
+            }
+        };
+
+        KaraokeLibraryPersistenceService karaokeLibraryPersistenceService = new(
+            scannedTrackPersistenceService,
+            failingKaraokeFileRepository,
+            karaokeFilePairingService,
+            context.ConnectionString);
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(() =>
+            karaokeLibraryPersistenceService.PersistPair(
+                scanResult,
+                cdgPath,
+                sourceId));
+
+        Assert.Equal("Simulated CDG persistence failure.", exception.Message);
+
+        Assert.Null(mediaTrackRepository.GetByFilePath(mp3Path));
     }
 }

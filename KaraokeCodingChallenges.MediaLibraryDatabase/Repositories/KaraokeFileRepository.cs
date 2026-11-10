@@ -51,6 +51,25 @@ public class KaraokeFileRepository : IKaraokeFileRepository
         command.ExecuteNonQuery();
     }
 
+    public void Upsert(long trackId, string cdgFilePath, SqliteConnection connection, SqliteTransaction transaction)
+    {
+        using SqliteCommand command = connection.CreateCommand();
+
+        command.Transaction = transaction;
+
+        command.CommandText = """
+        INSERT INTO KaraokeFiles (TrackId, FilePath)
+        VALUES ($trackId, $filePath)
+        ON CONFLICT(TrackId)
+        DO UPDATE SET FilePath = excluded.FilePath;
+        """;
+
+        command.Parameters.AddWithValue("$trackId", trackId);
+        command.Parameters.AddWithValue("$filePath", cdgFilePath);
+
+        command.ExecuteNonQuery();
+    }
+
     public void DeleteByTrackId(long trackId)
     {
         using SqliteConnection connection = new SqliteConnection(_connectionString);
